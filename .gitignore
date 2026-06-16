@@ -1,0 +1,66 @@
+# Dependency directories (node)
+node_modules/
+jspm_packages/
+web_modules/
+
+# Compiled output
+dist/
+tmp/
+out-tsc/
+bazel-out/
+build/
+bin/
+obj/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment and local config files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.local
+
+# IDEs / Editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/
+.history/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing
+coverage/
+.nyc_output/
+
+# Angular cache
+.angular/
+
+# Miscellaneous
+.vercel/
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db

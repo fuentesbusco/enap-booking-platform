@@ -1,0 +1,79 @@
+<app-navbar />
+<div class="pt-16 min-h-screen bg-mist">
+  <div class="max-w-4xl mx-auto px-4 py-10">
+    <div class="mb-8">
+      <p class="text-xs font-mono text-sage uppercase tracking-widest mb-1">
+        Mi cuenta
+      </p>
+      <h1 class="font-display text-4xl text-charcoal">Mis Reservas</h1>
+    </div>
+
+    <div *ngIf="bookings.length === 0" class="card p-12 text-center">
+      <span class="text-4xl block mb-3">📭</span>
+      <p class="text-charcoal/50 mb-4">Todavía no tienes reservas.</p>
+      <a routerLink="/espacios" class="btn-primary">Ver espacios disponibles</a>
+    </div>
+
+    <div class="space-y-4">
+      <div *ngFor="let b of bookings" class="card p-5">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1 flex-wrap">
+              <span class="font-mono text-xs text-charcoal/40">{{
+                b.booking_code
+              }}</span>
+              <span [class]="badgeClass(b.status)">{{
+                statusLabel(b.status)
+              }}</span>
+            </div>
+            <h3 class="font-semibold text-charcoal">{{ b.space.name }}</h3>
+            <p class="text-charcoal/50 text-sm mt-0.5">
+              {{ b.check_in }} →
+              {{ b.check_out }}
+              &nbsp;·&nbsp; {{ b.guests.length }} invitado(s)
+            </p>
+          </div>
+          <div class="text-right shrink-0">
+            <p class="text-[10px] font-mono text-charcoal/35 uppercase">
+              Total
+            </p>
+            <p class="font-semibold text-forest text-lg">
+              {{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Detalle si está pendiente de pago -->
+        <div
+          *ngIf="b.status === 'pending_payment'"
+          class="mt-4 bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap"
+        >
+          <div>
+            <p class="text-sm font-medium text-yellow-800">Pago pendiente</p>
+            <p class="text-xs text-yellow-600 mt-0.5">
+              Tienes 24 horas para realizar la transferencia y subir el
+              comprobante.
+            </p>
+          </div>
+          <a
+            [routerLink]="['/reservar', b.space.id]"
+            class="btn-sand text-sm py-2 shrink-0"
+          >
+            Completar pago
+          </a>
+        </div>
+
+        <!-- Estado pendiente aprobación -->
+        <div
+          *ngIf="b.status === 'pending_approval'"
+          class="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-3"
+        >
+          <p class="text-sm text-blue-800">
+            ✅ Comprobante recibido. La administración validará tu pago en los
+            próximos días hábiles.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

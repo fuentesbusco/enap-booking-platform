@@ -1,0 +1,66 @@
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-display text-2xl text-charcoal">Usuarios</h1>
+      <p class="text-charcoal/45 text-sm">
+        Gestión de socios y usuarios externos
+      </p>
+    </div>
+    <button class="btn-primary text-sm">+ Nuevo usuario</button>
+  </div>
+  <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-charcoal/5 bg-mist/40">
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Nombre
+          </th>
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            RUT
+          </th>
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Email
+          </th>
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Rol
+          </th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let u of users"
+          class="border-b border-charcoal/5 hover:bg-mist/30"
+        >
+          <td class="px-5 py-3.5 font-medium text-charcoal">{{ u.name }}</td>
+          <td class="px-5 py-3.5 font-mono text-xs text-charcoal/50">
+            {{ u.rut }}
+          </td>
+          <td class="px-5 py-3.5 text-charcoal/60">{{ u.email }}</td>
+          <td class="px-5 py-3.5">
+            <span
+              [class]="
+                u.role === 'socio' ? 'badge badge-green' : 'badge badge-gray'
+              "
+            >
+              {{ u.role === "socio" ? "Socio" : "Externo" }}
+            </span>
+          </td>
+          <td
+            class="px-5 py-3.5 text-xs text-charcoal/40 hover:text-charcoal cursor-pointer"
+          >
+            Editar
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

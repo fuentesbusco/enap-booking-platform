@@ -1,0 +1,113 @@
+<app-navbar />
+<div class="pt-16 min-h-screen bg-mist">
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <!-- Header -->
+    <div class="mb-8">
+      <p class="text-xs font-mono text-sage uppercase tracking-widest mb-1">
+        Centro Vacacional ENAP
+      </p>
+      <h1 class="font-display text-4xl text-charcoal">Espacios disponibles</h1>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex gap-2 mb-8 flex-wrap">
+      <button
+        *ngFor="let f of filters"
+        (click)="activeType = f.value; filterSpaces()"
+        class="text-sm px-4 py-2 rounded-full border transition-all"
+        [class.bg-forest]="activeType === f.value"
+        [class.text-white]="activeType === f.value"
+        [class.border-forest]="activeType === f.value"
+        [class.border-charcoal]="activeType !== f.value"
+        [class.text-charcoal]="activeType !== f.value"
+      >
+        {{ f.emoji }} {{ f.label }}
+      </button>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <article
+        *ngFor="let s of filtered"
+        class="card overflow-hidden group cursor-pointer hover:shadow-card-hover transition-all"
+        [routerLink]="['/reservar', s.id]"
+      >
+        <div class="relative h-48 overflow-hidden">
+          <img
+            [src]="s.images[0]"
+            [alt]="s.name"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <span
+            class="absolute top-3 left-3 badge bg-forest/80 text-white backdrop-blur-sm"
+          >
+            {{ typeLabel(s.type) }}
+          </span>
+          <span class="absolute top-3 right-3 badge bg-white/90 text-charcoal">
+            Hasta {{ s.max_capacity }} personas
+          </span>
+        </div>
+        <div class="p-5">
+          <h3 class="font-semibold text-charcoal text-lg mb-1">
+            {{ s.name }}
+          </h3>
+          <p class="text-charcoal/55 text-sm leading-relaxed mb-4">
+            {{ s.description }}
+          </p>
+
+          <!-- Amenidades -->
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            <span
+              *ngFor="let am of s.amenities.slice(0, 3)"
+              class="text-xs bg-mist text-charcoal/60 px-2.5 py-1 rounded-lg"
+            >
+              {{ am }}
+            </span>
+            <span
+              *ngIf="s.amenities.length > 3"
+              class="text-xs bg-mist text-charcoal/40 px-2.5 py-1 rounded-lg"
+            >
+              +{{ s.amenities.length - 3 }} más
+            </span>
+          </div>
+
+          <!-- Precios -->
+          <div
+            class="flex items-end justify-between border-t border-charcoal/5 pt-4"
+          >
+            <div>
+              <p
+                class="text-[10px] font-mono text-charcoal/35 uppercase tracking-wider"
+              >
+                Socios
+              </p>
+              <p class="font-semibold text-forest">
+                {{
+                  s.socio_price === 0
+                    ? "Incluido"
+                    : (s.socio_price | currency: "CLP" : "$" : "1.0-0")
+                }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p
+                class="text-[10px] font-mono text-charcoal/35 uppercase tracking-wider"
+              >
+                Externos
+              </p>
+              <p class="font-semibold text-charcoal/60">
+                {{ s.base_price | currency: "CLP" : "$" : "1.0-0" }}
+              </p>
+            </div>
+            <a
+              [routerLink]="['/reservar', s.id]"
+              class="btn-primary text-sm py-2"
+            >
+              Reservar
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-display text-2xl text-charcoal">Avisos</h1>
+      <p class="text-charcoal/45 text-sm">
+        Noticias visibles en la página principal
+      </p>
+    </div>
+    <button class="btn-primary text-sm">+ Nuevo aviso</button>
+  </div>
+  <div class="space-y-4">
+    <div *ngFor="let a of announcements" class="card p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <h3 class="font-semibold text-charcoal">{{ a.title }}</h3>
+            <span *ngIf="a.is_pinned" class="badge badge-yellow"
+              >Destacado</span
+            >
+            <span class="badge badge-green">Publicado</span>
+          </div>
+          <p class="text-charcoal/55 text-sm line-clamp-2">{{ a.body }}</p>
+          <p class="text-xs font-mono text-charcoal/30 mt-2">
+            {{ a.published_at | date: "d MMM yyyy" }}
+          </p>
+        </div>
+        <div class="flex gap-2 shrink-0">
+          <button
+            class="text-xs text-charcoal/40 hover:text-charcoal px-2 py-1 rounded-lg hover:bg-mist transition-colors"
+          >
+            Editar
+          </button>
+          <button
+            class="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

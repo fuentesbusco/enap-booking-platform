@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { font-family: 'Inter', system-ui, sans-serif; color: #1A1A2E; background: #F0F4F1; -webkit-font-smoothing: antialiased; }
+  h1,h2,h3 { font-family: 'Playfair Display', Georgia, serif; }
+}
+
+@layer components {
+  .btn-primary   { @apply bg-forest text-white font-medium px-5 py-2.5 rounded-xl hover:bg-sage active:scale-95 transition-all duration-200; }
+  .btn-secondary { @apply bg-white text-forest font-medium px-5 py-2.5 rounded-xl border border-forest/20 hover:bg-mist active:scale-95 transition-all duration-200; }
+  .btn-sand      { @apply bg-sand text-charcoal font-semibold px-5 py-2.5 rounded-xl hover:brightness-95 active:scale-95 transition-all duration-200; }
+  .card          { @apply bg-white rounded-2xl shadow-card; }
+  .input         { @apply w-full border border-charcoal/20 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest/30 focus:border-forest transition-all; }
+  .badge         { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  .badge-green   { @apply badge bg-green-100 text-green-800; }
+  .badge-yellow  { @apply badge bg-yellow-100 text-yellow-800; }
+  .badge-blue    { @apply badge bg-blue-100 text-blue-800; }
+  .badge-red     { @apply badge bg-red-100 text-red-800; }
+  .badge-gray    { @apply badge bg-gray-100 text-gray-600; }
+}

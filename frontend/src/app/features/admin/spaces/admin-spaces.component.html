@@ -1,0 +1,37 @@
+<div class="p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="font-display text-2xl text-charcoal">Espacios</h1>
+      <p class="text-charcoal/45 text-sm">
+        {{ spaces.length }} espacios registrados
+      </p>
+    </div>
+    <button class="btn-primary text-sm">+ Nuevo espacio</button>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div *ngFor="let s of spaces" class="card p-4 flex items-center gap-4">
+      <img
+        [src]="s.images[0]"
+        [alt]="s.name"
+        class="w-16 h-16 object-cover rounded-xl shrink-0"
+      />
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-charcoal">{{ s.name }}</p>
+        <p class="text-xs text-charcoal/45 mt-0.5">
+          Capacidad: {{ s.max_capacity }} personas
+        </p>
+        <p class="text-xs text-forest font-mono mt-1">
+          Socios: {{ s.socio_price | currency: "CLP" : "$" : "1.0-0" }} /
+          Externos: {{ s.base_price | currency: "CLP" : "$" : "1.0-0" }}
+        </p>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <button
+          class="text-xs text-charcoal/50 hover:text-charcoal transition-colors px-2 py-1 rounded-lg hover:bg-mist"
+        >
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

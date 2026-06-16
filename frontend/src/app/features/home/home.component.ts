@@ -1,0 +1,74 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { NavbarComponent } from '../../shared/components/navbar.component';
+import { SpacesService } from '../../core/services/spaces.service';
+import { AnnouncementsService } from '../../core/services/announcements.service';
+import { Space, Announcement } from '../../core/models';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule, RouterLink, NavbarComponent],
+  templateUrl: './home.component.html',
+})
+export class HomeComponent implements OnInit {
+  private spacesService = inject(SpacesService);
+  private announcementsService = inject(AnnouncementsService);
+
+  spaces: Space[] = [];
+  announcements: Announcement[] = [];
+
+  tiposEspacio = [
+    {
+      key: 'cabin',
+      emoji: '🏡',
+      label: 'Cabañas',
+      sublabel: 'Check-in 14:00 hrs',
+    },
+    {
+      key: 'quincho',
+      emoji: '🔥',
+      label: 'Quinchos',
+      sublabel: 'Con parrilla',
+    },
+    {
+      key: 'pool',
+      emoji: '🏊',
+      label: 'Piscina',
+      sublabel: '5 invitados gratis socios',
+    },
+  ];
+
+  beneficios = [
+    {
+      icon: '🏷️',
+      title: 'Tarifas preferenciales',
+      desc: 'Precio especial en cabañas y quinchos, solo para socios.',
+    },
+    {
+      icon: '🏊',
+      title: '5 invitados gratis en piscina',
+      desc: 'Trae a tu familia sin costo adicional en la Piscina General.',
+    },
+    {
+      icon: '📋',
+      title: 'Historial y comprobantes',
+      desc: 'Todas tus reservas y pagos en un solo lugar.',
+    },
+  ];
+
+  ngOnInit() {
+    this.spacesService.getAll().subscribe((d) => (this.spaces = d));
+    this.announcementsService
+      .getPublic()
+      .subscribe((d) => (this.announcements = d));
+  }
+
+  spaceLabel(type: string) {
+    return (
+      ({ cabin: 'Cabaña', quincho: 'Quincho', pool: 'Piscina' } as any)[type] ??
+      type
+    );
+  }
+}

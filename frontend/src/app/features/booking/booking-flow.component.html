@@ -1,0 +1,401 @@
+<app-navbar />
+<div class="pt-16 min-h-screen bg-mist">
+  <div class="max-w-3xl mx-auto px-4 py-10">
+    <!-- Pasos -->
+    <div class="flex items-center gap-0 mb-10">
+      <div
+        *ngFor="let step of steps; let i = index; let last = last"
+        class="flex items-center gap-0 flex-1"
+        [class.flex-none]="last"
+      >
+        <div class="flex flex-col items-center">
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all"
+            [class.bg-forest]="currentStep >= i + 1"
+            [class.text-white]="currentStep >= i + 1"
+            [class.bg-white]="currentStep < i + 1"
+            [class.text-charcoal30]="currentStep < i + 1"
+            [class.border]="currentStep < i + 1"
+            [class.border-charcoal20]="currentStep < i + 1"
+          >
+            <span *ngIf="currentStep > i + 1">✓</span>
+            <span *ngIf="currentStep <= i + 1">{{ i + 1 }}</span>
+          </div>
+          <span
+            class="text-[10px] mt-1 font-mono text-charcoal/50 hidden sm:block"
+            >{{ step }}</span
+          >
+        </div>
+        <div
+          *ngIf="!last"
+          class="flex-1 h-px mx-2 transition-all"
+          [class.bg-forest]="currentStep > i + 1"
+          [class.bg-charcoal15]="currentStep <= i + 1"
+        ></div>
+      </div>
+    </div>
+
+    <!-- PASO 1: Espacio y fechas -->
+    <div *ngIf="currentStep === 1" class="card p-6">
+      <h2 class="font-display text-2xl text-charcoal mb-1">
+        {{ space?.name }}
+      </h2>
+      <p class="text-charcoal/50 text-sm mb-6">{{ space?.description }}</p>
+
+      <!-- <img
+        *ngIf="space?.images[0]"
+        [src]="space!.images[0]"
+        [alt]="space!.name"
+        class="w-full h-48 object-cover rounded-xl mb-6"
+      /> -->
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <label
+            class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5"
+            >Check-in</label
+          >
+          <input
+            type="date"
+            [(ngModel)]="checkIn"
+            [min]="today"
+            class="input"
+            (change)="recalculate()"
+          />
+        </div>
+        <div>
+          <label
+            class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5"
+            >Check-out</label
+          >
+          <input
+            type="date"
+            [(ngModel)]="checkOut"
+            [min]="checkIn || today"
+            class="input"
+            (change)="recalculate()"
+          />
+        </div>
+      </div>
+
+      <!-- Fechas bloqueadas aviso -->
+      <div
+        *ngIf="hasConflict"
+        class="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-sm text-red-700"
+      >
+        ⚠️ Las fechas seleccionadas no están disponibles. Por favor elige otras
+        fechas.
+      </div>
+
+      <!-- Calendario visual de fechas ocupadas -->
+      <div class="bg-mist rounded-xl p-4 mb-6">
+        <p
+          class="text-xs font-mono text-charcoal/40 uppercase tracking-wider mb-3"
+        >
+          Fechas no disponibles
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span
+            *ngFor="let d of blockedDates"
+            class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-lg font-mono"
+          >
+            {{ d | date: "dd/MM" }}
+          </span>
+          <span
+            *ngIf="blockedDates.length === 0"
+            class="text-xs text-charcoal/40"
+            >Sin bloqueos próximos</span
+          >
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <a routerLink="/espacios" class="btn-secondary flex-1 text-center"
+          >Volver</a
+        >
+        <button
+          class="btn-primary flex-1"
+          [disabled]="!checkIn || !checkOut || hasConflict"
+          (click)="nextStep()"
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 2: Invitados -->
+    <div *ngIf="currentStep === 2" class="card p-6">
+      <h2 class="font-display text-2xl text-charcoal mb-1">Invitados</h2>
+      <p class="text-charcoal/50 text-sm mb-6">
+        Registra a quienes te acompañarán. Los datos pueden completarse después
+        si no los tienes ahora.
+      </p>
+
+      <!-- Beneficio socio piscina -->
+      <div
+        *ngIf="isSocio && space?.type === 'pool'"
+        class="bg-forest/8 border border-forest/20 rounded-xl p-3 mb-5 flex items-center gap-3"
+      >
+        <span class="text-xl">🎁</span>
+        <p class="text-sm text-forest font-medium">
+          Como socio, tus primeros 5 invitados a la piscina no tienen costo
+          adicional.
+        </p>
+      </div>
+
+      <div class="space-y-3 mb-4">
+        <div
+          *ngFor="let g of guests; let i = index"
+          class="grid grid-cols-12 gap-2 items-center"
+        >
+          <div
+            class="col-span-1 text-charcoal/30 text-sm font-mono text-center"
+          >
+            {{ i + 1 }}
+          </div>
+          <input
+            [(ngModel)]="g.full_name"
+            placeholder="Nombre completo"
+            class="input col-span-5"
+            type="text"
+          />
+          <input
+            [(ngModel)]="g.rut"
+            placeholder="RUT"
+            class="input col-span-4"
+            type="text"
+          />
+          <button
+            (click)="removeGuest(i)"
+            class="col-span-2 text-red-400 hover:text-red-600 text-sm transition-colors"
+          >
+            Quitar
+          </button>
+        </div>
+      </div>
+
+      <button
+        (click)="addGuest()"
+        [disabled]="guests.length >= (space?.max_capacity ?? 0) - 1"
+        class="w-full border-2 border-dashed border-charcoal/15 rounded-xl py-3 text-sm text-charcoal/40 hover:border-forest/30 hover:text-forest transition-all"
+      >
+        + Agregar invitado
+      </button>
+
+      <!-- Resumen parcial precio -->
+      <div *ngIf="breakdown" class="bg-mist rounded-xl p-4 mt-5">
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-charcoal/60"
+            >{{ space?.name }} × {{ breakdown.days }} día(s)</span
+          >
+          <span>{{ breakdown.base | currency: "CLP" : "$" : "1.0-0" }}</span>
+        </div>
+        <div
+          *ngIf="guests.length > 0"
+          class="flex justify-between text-sm mb-1"
+        >
+          <span class="text-charcoal/60">{{ guests.length }} invitado(s)</span>
+          <span>{{
+            breakdown.guests_total | currency: "CLP" : "$" : "1.0-0"
+          }}</span>
+        </div>
+        <div
+          *ngIf="breakdown.free_guests_applied > 0"
+          class="flex justify-between text-sm mb-1 text-forest"
+        >
+          <span
+            >{{ breakdown.free_guests_applied }} invitados gratis (beneficio
+            socio)</span
+          >
+          <span
+            >-{{ breakdown.discount | currency: "CLP" : "$" : "1.0-0" }}</span
+          >
+        </div>
+        <div
+          class="border-t border-charcoal/10 pt-2 mt-2 flex justify-between font-semibold"
+        >
+          <span>Total estimado</span>
+          <span class="text-forest">{{
+            breakdown.total | currency: "CLP" : "$" : "1.0-0"
+          }}</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-6">
+        <button (click)="prevStep()" class="btn-secondary flex-1">
+          Volver
+        </button>
+        <button (click)="nextStep()" class="btn-primary flex-1">
+          Continuar
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Comprobante de pago -->
+    <div *ngIf="currentStep === 3" class="card p-6">
+      <h2 class="font-display text-2xl text-charcoal mb-1">Pago</h2>
+      <p class="text-charcoal/50 text-sm mb-6">
+        Realiza una transferencia bancaria al siguiente número de cuenta y sube
+        el comprobante. La reserva quedará confirmada una vez que la
+        administración valide el pago.
+      </p>
+
+      <!-- Datos bancarios -->
+      <div class="bg-forest/5 border border-forest/15 rounded-xl p-5 mb-6">
+        <p
+          class="text-xs font-mono text-charcoal/40 uppercase tracking-wider mb-3"
+        >
+          Datos de transferencia
+        </p>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Banco</span>
+            <span class="font-medium">Banco Estado</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Tipo de cuenta</span>
+            <span class="font-medium">Cuenta Corriente</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Número</span>
+            <span class="font-medium font-mono">12345678-9</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Titular</span>
+            <span class="font-medium">Sindicato ENAP Refinería</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">RUT</span>
+            <span class="font-medium font-mono">71.234.567-8</span>
+          </div>
+          <div
+            class="flex justify-between border-t border-charcoal/10 pt-2 mt-1"
+          >
+            <span class="font-semibold text-charcoal">Monto a transferir</span>
+            <span class="font-bold text-forest text-lg">{{
+              breakdown?.total | currency: "CLP" : "$" : "1.0-0"
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload comprobante simulado -->
+      <div class="mb-6">
+        <label
+          class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2"
+        >
+          Comprobante de transferencia
+        </label>
+        <div
+          *ngIf="!receiptUploaded"
+          (click)="simulateUpload()"
+          class="border-2 border-dashed border-charcoal/15 rounded-xl p-8 text-center cursor-pointer hover:border-forest/40 hover:bg-forest/3 transition-all"
+        >
+          <span class="text-3xl block mb-2">📎</span>
+          <p class="text-sm text-charcoal/50">
+            Haz clic para adjuntar el comprobante
+          </p>
+          <p class="text-xs text-charcoal/30 mt-1">PDF, JPG o PNG, máx 5MB</p>
+        </div>
+        <div
+          *ngIf="receiptUploaded"
+          class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3"
+        >
+          <span class="text-green-600 text-xl">✓</span>
+          <div>
+            <p class="text-sm font-medium text-green-800">
+              comprobante_transferencia.pdf
+            </p>
+            <p class="text-xs text-green-600">Archivo listo para enviar</p>
+          </div>
+          <button
+            (click)="receiptUploaded = false"
+            class="ml-auto text-green-600 hover:text-green-800 text-xs"
+          >
+            Cambiar
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button (click)="prevStep()" class="btn-secondary flex-1">
+          Volver
+        </button>
+        <button
+          (click)="nextStep()"
+          [disabled]="!receiptUploaded"
+          class="btn-primary flex-1"
+        >
+          Enviar reserva
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 4: Confirmación -->
+    <div *ngIf="currentStep === 4" class="card p-8 text-center">
+      <div
+        class="w-16 h-16 bg-forest/10 rounded-full flex items-center justify-center mx-auto mb-5"
+      >
+        <span class="text-3xl">✅</span>
+      </div>
+      <h2 class="font-display text-3xl text-charcoal mb-2">
+        ¡Reserva enviada!
+      </h2>
+      <p class="text-charcoal/55 mb-2">
+        Tu solicitud fue recibida correctamente.
+      </p>
+      <p class="text-charcoal/55 mb-6 text-sm">
+        La administración validará el comprobante de pago y confirmará tu
+        reserva. Te notificaremos por correo a
+        <strong>{{ auth.currentUser()?.email }}</strong
+        >.
+      </p>
+
+      <div class="bg-mist rounded-xl p-5 text-left mb-8">
+        <p
+          class="text-xs font-mono text-charcoal/40 uppercase tracking-wider mb-3"
+        >
+          Resumen de tu reserva
+        </p>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Código</span>
+            <span class="font-mono font-medium text-forest">{{
+              createdBookingCode
+            }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Espacio</span>
+            <span class="font-medium">{{ space?.name }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Fechas</span>
+            <span class="font-mono"
+              >{{ checkIn | date: "dd/MM/yy" }} →
+              {{ checkOut | date: "dd/MM/yy" }}</span
+            >
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Invitados</span>
+            <span>{{ guests.length }}</span>
+          </div>
+          <div
+            class="flex justify-between border-t border-charcoal/10 pt-2 mt-1"
+          >
+            <span class="font-semibold">Total</span>
+            <span class="font-bold text-forest">{{
+              breakdown?.total | currency: "CLP" : "$" : "1.0-0"
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <a routerLink="/mis-reservas" class="btn-secondary flex-1"
+          >Ver mis reservas</a
+        >
+        <a routerLink="/" class="btn-primary flex-1">Volver al inicio</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<nav class="fixed top-0 left-0 right-0 z-50 bg-forest/95 backdrop-blur-sm">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <a routerLink="/" class="flex items-center gap-2.5 shrink-0">
+      <div
+        class="w-8 h-8 bg-sand rounded-lg flex items-center justify-center shrink-0"
+      >
+        <span class="text-charcoal font-bold text-sm font-mono">ENAP</span>
+      </div>
+      <div class="leading-none">
+        <p class="text-white font-semibold text-sm">Centro Vacacional</p>
+        <p class="text-sand/70 text-[10px] tracking-widest uppercase font-mono">
+          Sindicato ENAP
+        </p>
+      </div>
+    </a>
+
+    <div class="hidden md:flex items-center gap-6 text-sm text-white/70">
+      <a
+        routerLink="/"
+        routerLinkActive="text-white"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="hover:text-white transition-colors"
+        >Inicio</a
+      >
+      <a
+        routerLink="/espacios"
+        routerLinkActive="text-white"
+        class="hover:text-white transition-colors"
+        >Espacios</a
+      >
+      <a
+        *ngIf="auth.isLoggedIn()"
+        routerLink="/mis-reservas"
+        routerLinkActive="text-white"
+        class="hover:text-white transition-colors"
+        >Mis Reservas</a
+      >
+      <a
+        *ngIf="auth.isAdmin()"
+        routerLink="/admin"
+        routerLinkActive="text-white"
+        class="hover:text-white transition-colors"
+        >Administración</a
+      >
+    </div>
+
+    <div class="flex items-center gap-2">
+      <ng-container *ngIf="!auth.isLoggedIn()">
+        <a
+          routerLink="/ingresar"
+          class="text-white/70 hover:text-white text-sm transition-colors hidden md:block"
+        >
+          Ingresar
+        </a>
+        <a routerLink="/espacios" class="btn-sand text-sm py-2 px-4"
+          >Reservar</a
+        >
+      </ng-container>
+
+      <ng-container *ngIf="auth.isLoggedIn()">
+        <span class="text-white/60 text-sm hidden md:block">
+          <!-- {{ auth.currentUser()?.full_name?.split(" ")[0] }} -->
+        </span>
+        <button (click)="auth.logout()" class="btn-secondary text-sm py-2 px-4">
+          Salir
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</nav>

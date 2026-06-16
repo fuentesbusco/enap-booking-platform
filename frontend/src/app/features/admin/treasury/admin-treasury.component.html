@@ -1,0 +1,98 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="font-display text-2xl text-charcoal">Tesorería</h1>
+    <p class="text-charcoal/45 text-sm">Resumen de ingresos y ocupación</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="card p-4">
+      <p
+        class="text-[10px] font-mono text-charcoal/40 uppercase tracking-wider mb-1"
+      >
+        Ingresos totales
+      </p>
+      <p class="font-display text-2xl text-forest">
+        {{ totalRevenue | currency: "CLP" : "$" : "1.0-0" }}
+      </p>
+    </div>
+    <div class="card p-4">
+      <p
+        class="text-[10px] font-mono text-charcoal/40 uppercase tracking-wider mb-1"
+      >
+        Reservas confirmadas
+      </p>
+      <p class="font-display text-2xl text-charcoal">{{ confirmedCount }}</p>
+    </div>
+    <div class="card p-4">
+      <p
+        class="text-[10px] font-mono text-charcoal/40 uppercase tracking-wider mb-1"
+      >
+        Por aprobar
+      </p>
+      <p class="font-display text-2xl text-yellow-600">{{ pendingCount }}</p>
+    </div>
+    <div class="card p-4">
+      <p
+        class="text-[10px] font-mono text-charcoal/40 uppercase tracking-wider mb-1"
+      >
+        Promedio por reserva
+      </p>
+      <p class="font-display text-2xl text-charcoal">
+        {{ avgRevenue | currency: "CLP" : "$" : "1.0-0" }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Tabla de reservas confirmadas -->
+  <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+    <div
+      class="p-4 border-b border-charcoal/5 flex justify-between items-center"
+    >
+      <h2 class="font-semibold text-charcoal">Reservas cobradas</h2>
+      <button
+        class="text-xs text-charcoal/40 hover:text-forest transition-colors font-mono"
+      >
+        Exportar Excel →
+      </button>
+    </div>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-charcoal/5 bg-mist/40">
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Código
+          </th>
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Titular
+          </th>
+          <th
+            class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Espacio
+          </th>
+          <th
+            class="text-right px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+          >
+            Total
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of confirmed" class="border-b border-charcoal/5">
+          <td class="px-5 py-3 font-mono text-xs text-charcoal/40">
+            {{ b.booking_code }}
+          </td>
+          <td class="px-5 py-3 text-charcoal/70">{{ b.user.full_name }}</td>
+          <td class="px-5 py-3 text-charcoal/60">{{ b.space.name }}</td>
+          <td class="px-5 py-3 text-right font-semibold text-forest">
+            {{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
