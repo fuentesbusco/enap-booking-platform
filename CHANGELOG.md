@@ -6,6 +6,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.6.0] - 2026-06-17
+### Añadido
+- **Plantilla HTML de Notificación al Administrador (Nueva Reserva):** Creación de una plantilla de correo electrónico HTML utilizando los colores corporativos del Sindicato, incluyendo un distintivo visual de estado "Nueva Solicitud" (`#E8F0FE` / `#1A73E8`) para alertar al administrador de nuevas reservas registradas.
+- **Detalles del Solicitante y de la Reserva:** Inclusión del perfil completo del usuario (nombre, rut, rol, nº de ficha, correo electrónico) y datos de la reserva (código, recinto, fechas, días totales y monto total).
+- **Enlace de Acción Directa:** Incorporación de un botón de acción directa en el correo para redirigir al panel de administración de reservas (`/admin/bookings`).
+- **Integración y Configuración:** Configuración de la variable de entorno `ADMIN_EMAIL` en `.env` e integración del envío asíncrono del correo en `createBooking` de `BookingsService`.
+- **Pruebas unitarias de notificación administrativa:** Actualización de las especificaciones en `bookings.service.spec.ts` para verificar la correcta emisión de la notificación administrativa con el asunto, código y destinatario configurados, manteniendo tolerancia a fallos SMTP.
+
 ## [1.5.0] - 2026-06-17
 ### Añadido
 - **Plantilla HTML de Rechazo de Comprobante (Observación de Pago):** Creación de una plantilla de correo electrónico HTML utilizando los colores corporativos del Sindicato con detalles de advertencia visual clara (`#C5221F` / `#FFF5F5`) para notificar al socio que su comprobante de pago fue rechazado.

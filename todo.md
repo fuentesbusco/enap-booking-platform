@@ -79,7 +79,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] Plantilla de correo 1: Confirmación de reserva realizada con datos de transferencia.
 - [x] Plantilla de correo 2: Confirmación de aprobación del pago (Reserva confirmada).
 - [x] Plantilla de correo 3: Notificación de rechazo de comprobante con motivo adjunto.
-- [ ] Notificación de correo al administrador: Nueva reserva realizada (aviso para revisión y aprobación).
+- [x] Notificación de correo al administrador: Nueva reserva realizada (aviso para revisión y aprobación).
 
 ### Infraestructura Cloud & Despliegue
 - [ ] Configuración de una instancia **AWS EC2** para el backend NestJS con PM2 o Docker.

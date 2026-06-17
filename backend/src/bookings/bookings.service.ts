@@ -11,6 +11,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { getBookingConfirmationEmailTemplate } from '../notifications/templates/booking-confirmation.template';
 import { getBookingPaymentConfirmedEmailTemplate } from '../notifications/templates/booking-payment-confirmed.template';
 import { getBookingPaymentRejectedEmailTemplate } from '../notifications/templates/booking-payment-rejected.template';
+import { getAdminNewBookingEmailTemplate } from '../notifications/templates/admin-new-booking.template';
 
 @Injectable()
 export class BookingsService {
@@ -131,6 +132,19 @@ export class BookingsService {
           this.logger.error(`Error al enviar correo de confirmación de reserva ${fullBooking.bookingCode}:`, error);
         });
     }
+
+    // Send admin notification in the background
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@sindicatoenap.cl';
+    const adminEmailHtml = getAdminNewBookingEmailTemplate(fullBooking);
+    this.notificationsService
+      .sendEmail(
+        adminEmail,
+        `[Nueva Reserva] Código: ${fullBooking.bookingCode} - Recinto: ${fullBooking.space.name}`,
+        adminEmailHtml,
+      )
+      .catch((error) => {
+        this.logger.error(`Error al enviar correo de notificación de nueva reserva al administrador:`, error);
+      });
 
     return fullBooking;
   }

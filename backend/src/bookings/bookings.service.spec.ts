@@ -153,6 +153,7 @@ describe('BookingsService', () => {
     });
 
     it('should create booking and guest entities if all validations pass', async () => {
+      process.env.ADMIN_EMAIL = 'admin@example.com';
       spacesService.getById.mockResolvedValue(mockSpace);
       bookingRepository.count.mockResolvedValue(0);
       bookingRepository.create.mockReturnValue(mockBooking);
@@ -172,11 +173,21 @@ describe('BookingsService', () => {
       expect(spacesService.getById).toHaveBeenCalledWith(mockSpace.id);
       expect(bookingRepository.save).toHaveBeenCalled();
       expect(guestRepository.save).toHaveBeenCalled();
+      
+      // Verify user confirmation email
       expect(notificationsService.sendEmail).toHaveBeenCalledWith(
         mockUser.email,
         expect.stringContaining(mockBooking.bookingCode),
         expect.any(String),
       );
+      
+      // Verify admin notification email
+      expect(notificationsService.sendEmail).toHaveBeenCalledWith(
+        'admin@example.com',
+        expect.stringContaining(`[Nueva Reserva] Código: ${mockBooking.bookingCode}`),
+        expect.any(String),
+      );
+
       expect(result).toEqual(mockBooking);
     });
 
