@@ -9,6 +9,7 @@ import { PriceBreakdown, BookingStatus, BLOCKED_DATES } from '../models';
 import { SpacesService } from '../spaces/spaces.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { getBookingConfirmationEmailTemplate } from '../notifications/templates/booking-confirmation.template';
+import { getBookingPaymentConfirmedEmailTemplate } from '../notifications/templates/booking-payment-confirmed.template';
 
 @Injectable()
 export class BookingsService {
@@ -136,7 +137,22 @@ export class BookingsService {
   async approveBooking(id: number): Promise<Booking> {
     const booking = await this.getById(id);
     booking.status = 'confirmed';
-    return this.bookingRepository.save(booking);
+    const savedBooking = await this.bookingRepository.save(booking);
+
+    if (savedBooking.user?.email) {
+      const emailHtml = getBookingPaymentConfirmedEmailTemplate(savedBooking);
+      this.notificationsService
+        .sendEmail(
+          savedBooking.user.email,
+          `Reserva Confirmada y Pago Aprobado - Código: ${savedBooking.bookingCode}`,
+          emailHtml,
+        )
+        .catch((error) => {
+          this.logger.error(`Error al enviar correo de aprobación de pago para reserva ${savedBooking.bookingCode}:`, error);
+        });
+    }
+
+    return savedBooking;
   }
 
   async rejectBooking(id: number, notes: string): Promise<Booking> {

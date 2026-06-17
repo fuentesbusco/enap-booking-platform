@@ -6,6 +6,13 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.4.0] - 2026-06-17
+### Añadido
+- **Plantilla HTML de Confirmación de Pago (Reserva Aprobada):** Creación de una plantilla de correo electrónico HTML utilizando los colores corporativos del Sindicato para informar al usuario de la aprobación de su pago y la confirmación oficial de su reserva.
+- **Instrucciones de Check-in en Correo:** Inclusión de información de acceso importante en el correo (horarios de check-in/check-out, requisitos de cédula de identidad y código de reserva, y normas del recinto).
+- **Integración en Aprobación de Reservas:** Integración del envío asíncrono en segundo plano del correo en el método `approveBooking` de `BookingsService`.
+- **Pruebas unitarias de aprobación:** Añadidas pruebas en `bookings.service.spec.ts` para validar que la aprobación de reservas desencadena el envío de correo de pago aprobado con el código y destinatario correctos, manejando con tolerancia de fallos cualquier error SMTP.
+
 ## [1.3.0] - 2026-06-17
 ### Añadido
 - **Plantilla HTML de Confirmación de Reserva:** Creación de una plantilla de correo electrónico HTML con estilos CSS inline utilizando los colores corporativos del Sindicato (Forest `#1B4332`, Sage `#52796F`, Mist `#F0F4F1`, Charcoal `#1A1A2E`).

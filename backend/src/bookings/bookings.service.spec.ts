@@ -204,12 +204,27 @@ describe('BookingsService', () => {
   });
 
   describe('admin actions', () => {
-    it('should approve a booking', async () => {
+    it('should approve a booking and send confirmation email', async () => {
       bookingRepository.findOne.mockResolvedValue(mockBooking);
       bookingRepository.save.mockImplementation(async (b: any) => b);
 
       const result = await service.approveBooking(1);
       expect(result.status).toBe('confirmed');
+      expect(notificationsService.sendEmail).toHaveBeenCalledWith(
+        mockUser.email,
+        expect.stringContaining(mockBooking.bookingCode),
+        expect.any(String),
+      );
+    });
+
+    it('should approve a booking even if email notification fails', async () => {
+      bookingRepository.findOne.mockResolvedValue(mockBooking);
+      bookingRepository.save.mockImplementation(async (b: any) => b);
+      notificationsService.sendEmail.mockRejectedValueOnce(new Error('SMTP error'));
+
+      const result = await service.approveBooking(1);
+      expect(result.status).toBe('confirmed');
+      expect(notificationsService.sendEmail).toHaveBeenCalled();
     });
 
     it('should reject a booking with notes', async () => {
