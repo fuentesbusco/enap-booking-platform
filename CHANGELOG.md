@@ -6,6 +6,12 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.12.0] - 2026-06-17
+### Añadido
+- **Carga de Comprobantes a S3:** Modificación del endpoint `POST /bookings/upload-receipt` en `BookingsController` integrando el interceptor `FileInterceptor('file')` de Multer para aceptar archivos físicos, subirlos a AWS S3 utilizando `AwsService` y guardar la URL resultante.
+- **Manejo de Fallback de Archivos:** Implementada compatibilidad hacia atrás mediante generación automática de URLs simuladas en S3 cuando no se adjunte un archivo físico.
+- **Pruebas Unitarias de Controlador:** Creado `bookings.controller.spec.ts` para cubrir todos los escenarios de subida de archivos binarios, fallbacks y validaciones de IDs en `BookingsController`.
+
 ## [1.11.0] - 2026-06-17
 ### Añadido
 - **Cargador de archivos (Multer):** Instalación de la dependencia de desarrollo `@types/multer` y configuración global del módulo `MulterModule` en `AppModule` con un límite de tamaño de archivo de 10 MB (coherente con las directivas físicas de API Gateway HTTP/REST Proxy).

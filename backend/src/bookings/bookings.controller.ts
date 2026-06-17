@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Headers, Param, UnauthorizedException, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Headers, Param, UnauthorizedException, HttpCode, HttpStatus, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { AuthService } from '../auth/auth.service';
 import { Guest } from '../models';
@@ -7,6 +7,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Throttle } from '@nestjs/throttler';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AwsService } from '../aws/aws.service';
 
 @Controller('bookings')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -14,6 +16,7 @@ export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
     private readonly authService: AuthService,
+    private readonly awsService: AwsService,
   ) {}
 
   @Get()
@@ -46,18 +49,37 @@ export class BookingsController {
   }
 
   @Post('upload-receipt')
+  @UseInterceptors(FileInterceptor('file'))
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   async uploadReceipt(
     @Headers() headers: Record<string, string>,
-    @Body() body: { bookingId: number },
+    @Body() body: { bookingId: any },
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     await this.getAuthenticatedUser(headers);
-    const mockReceiptUrl = `https://atelier-busco-s3.amazonaws.com/receipts/receipt-${body.bookingId}-${Date.now()}.pdf`;
-    const booking = await this.bookingsService.uploadReceipt(body.bookingId, mockReceiptUrl);
+    
+    const bookingId = Number(body.bookingId);
+    if (!body.bookingId || isNaN(bookingId)) {
+      throw new BadRequestException('El ID de la reserva debe ser un número válido.');
+    }
+
+    let receiptUrl = '';
+    if (file) {
+      receiptUrl = await this.awsService.uploadFile(
+        file.buffer,
+        'receipts',
+        file.originalname,
+        file.mimetype,
+      );
+    } else {
+      receiptUrl = `https://atelier-busco-s3.amazonaws.com/receipts/receipt-${bookingId}-${Date.now()}.pdf`;
+    }
+
+    const booking = await this.bookingsService.uploadReceipt(bookingId, receiptUrl);
     return {
       success: true,
-      receiptUrl: mockReceiptUrl,
+      receiptUrl,
       booking,
     };
   }
