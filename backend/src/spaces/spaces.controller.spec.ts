@@ -26,6 +26,19 @@ describe('SpacesController', () => {
     bookings: [],
   };
 
+  const mockSpaceDto = {
+    name: 'Cabaña Los Boldos',
+    type: 'cabin' as const,
+    description: 'Cabaña familiar',
+    max_capacity: 6,
+    base_price: 50000,
+    socio_price: 35000,
+    guest_price: 3500,
+    free_guests_for_socio: 0,
+    images: [],
+    amenities: [],
+  };
+
   const mockAdminUser: UserEntity = {
     id: 99,
     fullName: 'Admin',
@@ -76,20 +89,20 @@ describe('SpacesController', () => {
 
   describe('create', () => {
     it('should throw UnauthorizedException if authorization header is missing', async () => {
-      await expect(controller.create({}, mockSpace)).rejects.toThrow(
+      await expect(controller.create({}, mockSpaceDto)).rejects.toThrow(
         new UnauthorizedException('No authorization token provided'),
       );
     });
 
     it('should throw UnauthorizedException if token format is invalid', async () => {
-      await expect(controller.create({ authorization: 'invalid-format' }, mockSpace)).rejects.toThrow(
+      await expect(controller.create({ authorization: 'invalid-format' }, mockSpaceDto)).rejects.toThrow(
         new UnauthorizedException('Invalid token format'),
       );
     });
 
     it('should throw UnauthorizedException if token is invalid', async () => {
       authService.verifyToken.mockResolvedValue(null);
-      await expect(controller.create({ authorization: 'Bearer bad_token' }, mockSpace)).rejects.toThrow(
+      await expect(controller.create({ authorization: 'Bearer bad_token' }, mockSpaceDto)).rejects.toThrow(
         new UnauthorizedException('Invalid or expired authorization token'),
       );
     });
@@ -97,7 +110,7 @@ describe('SpacesController', () => {
     it('should throw UnauthorizedException if user is not an admin', async () => {
       const nonAdminUser = { ...mockAdminUser, role: 'socio' as const };
       authService.verifyToken.mockResolvedValue(nonAdminUser);
-      await expect(controller.create({ authorization: 'Bearer valid_token' }, mockSpace)).rejects.toThrow(
+      await expect(controller.create({ authorization: 'Bearer valid_token' }, mockSpaceDto)).rejects.toThrow(
         new UnauthorizedException('Restricted access for admins only'),
       );
     });
@@ -106,8 +119,8 @@ describe('SpacesController', () => {
       authService.verifyToken.mockResolvedValue(mockAdminUser);
       spacesService.create.mockResolvedValue(mockSpace);
 
-      const result = await controller.create({ authorization: 'Bearer valid_token' }, mockSpace);
-      expect(spacesService.create).toHaveBeenCalledWith(mockSpace);
+      const result = await controller.create({ authorization: 'Bearer valid_token' }, mockSpaceDto);
+      expect(spacesService.create).toHaveBeenCalledWith(mockSpaceDto);
       expect(result).toEqual(mockSpace);
     });
   });

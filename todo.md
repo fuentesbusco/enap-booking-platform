@@ -75,7 +75,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 ## 🚀 Fase 2: Pasarela de Pago & Producción (AWS)
 
 ### Notificaciones & Plantillas
-- [ ] Integración de **AWS SES** en NestJS para envío de correos automáticos.
+- [x] Integración de **AWS SES** (vía SMTP) en NestJS para envío de correos automáticos (creado módulo y servicio extensible de notificaciones).
 - [ ] Plantilla de correo 1: Confirmación de reserva realizada con datos de transferencia.
 - [ ] Plantilla de correo 2: Confirmación de aprobación del pago (Reserva confirmada).
 - [ ] Plantilla de correo 3: Notificación de rechazo de comprobante con motivo adjunto.

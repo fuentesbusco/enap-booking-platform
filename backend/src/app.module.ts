@@ -16,6 +16,7 @@ import { BookingsService } from './bookings/bookings.service';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { SeedService } from './seed.service';
+import { NotificationsModule } from './notifications/notifications.module';
 
 // Entities
 import { UserEntity } from './users/user.entity';
@@ -61,6 +62,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
         },
       }),
     }),
+    NotificationsModule,
   ],
   controllers: [
     AppController,

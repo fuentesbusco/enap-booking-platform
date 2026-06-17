@@ -31,6 +31,11 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 - **Interceptor JWT (Frontend):**
   - Creación del interceptor HTTP funcional `jwt.interceptor.ts` en Angular para adjuntar automáticamente el token Bearer (`Authorization`) en peticiones HTTP salientes desde el almacenamiento local o de sesión.
   - Registro del interceptor en la configuración global de la aplicación (`app.config.ts`) mediante `provideHttpClient(withInterceptors([jwtInterceptor]))`.
+- **Módulo y Servicio de Notificaciones (SMTP / AWS SES):**
+  - Creación de `NotificationsModule` y `NotificationsService` encapsulando la lógica para envíos de correo utilizando la librería estándar `nodemailer` a través de servidores SMTP.
+  - Definición de parámetros SMTP (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) en el archivo `.env`.
+  - Estructuración extensible preparada para incorporar otros canales de notificación (como SMS o notificaciones push) en etapas posteriores.
+  - Inclusión de pruebas unitarias (`notifications.service.spec.ts`) mockeando el transportador de `nodemailer` para asegurar el correcto flujo de envío y gestión de excepciones en aislamiento.
 
 ### Solucionado
 - **Errores de Compilación de Decoradores (TS1272):** Uso de `import type` para importar alias y tipos de modelos (`UserRole`, `SpaceType`, `BookingStatus`, `PriceBreakdown`) resolviendo errores de metadatos de decoradores bajo la configuración `"isolatedModules": true`.
@@ -38,6 +43,7 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 - **Parseo de Variables de Entorno Booleanas:** Corrección de la lectura de variables como `DB_SYNCHRONIZE` y `DB_MIGRATIONS_RUN` para parsear explícitamente los valores de cadena (`"true"`/`"false"`) a booleanos lógicos.
 - **Estabilidad de E2E Tests:** Configuración en `app.e2e-spec.ts` para cargar variables de entorno utilizando `dotenv/config`, incremento en el timeout de Jest a 20s para permitir conexiones a bases de datos remotas, y adición del hook `afterAll` para cerrar la aplicación y liberar los sockets de conexión de forma limpia.
 - **Correcciones en Compilación del Frontend (HTML):** Solución a errores de compilación del compilador de Angular (`NG5002`) en `AdminCalendarComponent` provocados por el uso de slashes (`/`) en las propiedades de enlace directo de clases (por ejemplo, `[class.bg-mist/15]`), reemplazándolos por enlaces correctos con `[ngClass]`.
+- **Tipos de Pruebas Unitarias de Espacios:** Corrección de advertencias de tipo en `spaces.controller.spec.ts` definiendo `mockSpaceDto` en snake_case para calzar con la firma del DTO esperada por el controlador.
 
 ---
 

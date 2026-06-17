@@ -13,7 +13,7 @@ graph LR
     A[Angular 18 Frontend] -- HTTP / JWT --> B[NestJS Backend API]
     B -- TypeORM --> C[(MySQL Database)]
     B -- SDK --> D[AWS S3 - Comprobantes/Fotos]
-    B -- SDK --> E[AWS SES - Emails]
+    B -- SMTP --> E[AWS SES - Emails]
 ```
 
 ### Frontend (Prototipo Actual - en `/frontend`)
