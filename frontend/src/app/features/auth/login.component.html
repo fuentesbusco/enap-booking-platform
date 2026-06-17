@@ -1,53 +1,42 @@
 <app-navbar />
 <div class="pt-16 min-h-screen bg-mist flex items-center justify-center px-4 py-12">
-  <div class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-charcoal5/10 border border-charcoal5 overflow-hidden transition-all duration-300">
-    
+  <div
+    class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-charcoal5/10 border border-charcoal5 overflow-hidden transition-all duration-300">
+
     <!-- Header -->
     <div class="pt-8 pb-6 px-6 text-center border-b border-charcoal/5 bg-sand/10">
-      <div class="w-14 h-14 bg-forest rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-forest/20">
-        <span class="text-sand font-bold text-xl font-mono">E</span>
-      </div>
+      <img src="/logos/logo-centro-vacacional-enap.png" alt="Centro Vacacional Sindicato ENAP"
+        class="h-16 w-auto mx-auto mb-3" />
       <h1 class="font-display text-2xl text-charcoal font-semibold">Sindicato ENAP</h1>
       <p class="text-charcoal/50 text-xs mt-1 font-mono uppercase tracking-wider">Centro Vacacional</p>
     </div>
 
     <!-- Tab Buttons -->
     <div class="flex border-b border-charcoal/5 bg-mist/50">
-      <button 
-        (click)="setTab('login')"
-        [class.border-b-2]="activeTab === 'login'"
-        [class.border-forest]="activeTab === 'login'"
-        [class.text-forest]="activeTab === 'login'"
+      <button (click)="setTab('login')" [class.border-b-2]="activeTab === 'login'"
+        [class.border-forest]="activeTab === 'login'" [class.text-forest]="activeTab === 'login'"
         [class.font-semibold]="activeTab === 'login'"
-        class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent"
-      >
+        class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent">
         Ingresar
       </button>
-      <button 
-        (click)="setTab('register')"
-        [class.border-b-2]="activeTab === 'register'"
-        [class.border-forest]="activeTab === 'register'"
-        [class.text-forest]="activeTab === 'register'"
+      <button (click)="setTab('register')" [class.border-b-2]="activeTab === 'register'"
+        [class.border-forest]="activeTab === 'register'" [class.text-forest]="activeTab === 'register'"
         [class.font-semibold]="activeTab === 'register'"
-        class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent"
-      >
+        class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent">
         Registrarse
       </button>
-      <button 
-        (click)="setTab('guest')"
-        [class.border-b-2]="activeTab === 'guest'"
-        [class.border-forest]="activeTab === 'guest'"
-        [class.text-forest]="activeTab === 'guest'"
+      <button (click)="setTab('guest')" [class.border-b-2]="activeTab === 'guest'"
+        [class.border-forest]="activeTab === 'guest'" [class.text-forest]="activeTab === 'guest'"
         [class.font-semibold]="activeTab === 'guest'"
-        class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent"
-      >
+        class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent">
         Invitado
       </button>
     </div>
 
     <div class="p-6">
       <!-- Error Message -->
-      <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-5 flex items-center gap-2">
+      <div *ngIf="errorMessage"
+        class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-5 flex items-center gap-2">
         <span class="text-lg">⚠️</span>
         <span>{{ errorMessage }}</span>
       </div>
@@ -55,33 +44,20 @@
       <!-- TAB 1: LOGIN -->
       <form *ngIf="activeTab === 'login'" (ngSubmit)="onLogin()" class="space-y-4">
         <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo Electrónico</label>
-          <input 
-            type="email" 
-            [(ngModel)]="loginEmail" 
-            name="loginEmail"
-            placeholder="correo@ejemplo.cl" 
-            class="input w-full"
-            required
-          />
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo
+            Electrónico</label>
+          <input type="email" [(ngModel)]="loginEmail" name="loginEmail" placeholder="correo@ejemplo.cl"
+            class="input w-full" required />
         </div>
         <div>
           <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Contraseña</label>
-          <input 
-            type="password" 
-            [(ngModel)]="loginPassword" 
-            name="loginPassword"
-            placeholder="••••••••" 
-            class="input w-full"
-            required
-          />
+          <input type="password" [(ngModel)]="loginPassword" name="loginPassword" placeholder="••••••••"
+            class="input w-full" required />
         </div>
-        <button 
-          type="submit" 
-          [disabled]="loading"
-          class="btn-primary w-full py-3.5 text-sm font-medium mt-2 flex justify-center items-center gap-2"
-        >
-          <span *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+        <button type="submit" [disabled]="loading"
+          class="btn-primary w-full py-3.5 text-sm font-medium mt-2 flex justify-center items-center gap-2">
+          <span *ngIf="loading"
+            class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
           Iniciar Sesión
         </button>
       </form>
@@ -89,130 +65,80 @@
       <!-- TAB 2: REGISTER -->
       <form *ngIf="activeTab === 'register'" (ngSubmit)="onRegister()" class="space-y-4">
         <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre Completo</label>
-          <input 
-            type="text" 
-            [(ngModel)]="regFullName" 
-            name="regFullName"
-            placeholder="Juan Pérez Silva" 
-            class="input w-full"
-            required
-          />
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre
+            Completo</label>
+          <input type="text" [(ngModel)]="regFullName" name="regFullName" placeholder="Juan Pérez Silva"
+            class="input w-full" required />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">RUT</label>
-            <input 
-              type="text" 
-              [(ngModel)]="regRut" 
-              name="regRut"
-              placeholder="12.345.678-9" 
-              class="input w-full"
-              required
-            />
+            <input type="text" [(ngModel)]="regRut" name="regRut" placeholder="12.345.678-9" class="input w-full"
+              required />
           </div>
           <div>
-            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de Socio</label>
-            <input 
-              type="text" 
-              [(ngModel)]="regFichaNumber" 
-              name="regFichaNumber"
-              placeholder="ENP-XXXX" 
-              class="input w-full"
-              required
-            />
+            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de
+              Socio</label>
+            <input type="text" [(ngModel)]="regFichaNumber" name="regFichaNumber" placeholder="ENP-XXXX"
+              class="input w-full" required />
           </div>
         </div>
         <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo Electrónico</label>
-          <input 
-            type="email" 
-            [(ngModel)]="regEmail" 
-            name="regEmail"
-            placeholder="juan.perez@enap.cl" 
-            class="input w-full"
-            required
-          />
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo
+            Electrónico</label>
+          <input type="email" [(ngModel)]="regEmail" name="regEmail" placeholder="juan.perez@enap.cl"
+            class="input w-full" required />
         </div>
         <div>
           <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Contraseña</label>
-          <input 
-            type="password" 
-            [(ngModel)]="regPassword" 
-            name="regPassword"
-            placeholder="Mínimo 6 caracteres" 
-            class="input w-full"
-            required
-          />
+          <input type="password" [(ngModel)]="regPassword" name="regPassword" placeholder="Mínimo 6 caracteres"
+            class="input w-full" required />
         </div>
-        <button 
-          type="submit" 
-          [disabled]="loading"
-          class="btn-primary w-full py-3.5 text-sm font-medium mt-2 flex justify-center items-center gap-2"
-        >
-          <span *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+        <button type="submit" [disabled]="loading"
+          class="btn-primary w-full py-3.5 text-sm font-medium mt-2 flex justify-center items-center gap-2">
+          <span *ngIf="loading"
+            class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
           Crear Cuenta de Socio
         </button>
       </form>
 
       <!-- TAB 3: GUEST BOOKING -->
       <form *ngIf="activeTab === 'guest'" (ngSubmit)="onGuestSubmit()" class="space-y-4">
-        <div class="bg-forest/5 border border-forest/10 rounded-2xl p-4 text-xs text-forest font-medium flex items-start gap-2 mb-2">
+        <div
+          class="bg-forest/5 border border-forest/10 rounded-2xl p-4 text-xs text-forest font-medium flex items-start gap-2 mb-2">
           <span class="text-base">ℹ️</span>
-          <span>Puedes reservar sin crear una cuenta. Para validar tu reserva como socio y aplicar tarifas preferenciales, es obligatorio ingresar tu código de socio.</span>
+          <span>Puedes reservar sin crear una cuenta. Para validar tu reserva como socio y aplicar tarifas
+            preferenciales, es obligatorio ingresar tu código de socio.</span>
         </div>
         <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre Completo</label>
-          <input 
-            type="text" 
-            [(ngModel)]="guestFullName" 
-            name="guestFullName"
-            placeholder="Juan Pérez Silva" 
-            class="input w-full"
-            required
-          />
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre
+            Completo</label>
+          <input type="text" [(ngModel)]="guestFullName" name="guestFullName" placeholder="Juan Pérez Silva"
+            class="input w-full" required />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">RUT</label>
-            <input 
-              type="text" 
-              [(ngModel)]="guestRut" 
-              name="guestRut"
-              placeholder="12.345.678-9" 
-              class="input w-full"
-              required
-            />
+            <input type="text" [(ngModel)]="guestRut" name="guestRut" placeholder="12.345.678-9" class="input w-full"
+              required />
           </div>
           <div>
-            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de Socio</label>
-            <input 
-              type="text" 
-              [(ngModel)]="guestFichaNumber" 
-              name="guestFichaNumber"
-              placeholder="ENP-XXXX" 
-              class="input w-full"
-              required
-            />
+            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de
+              Socio</label>
+            <input type="text" [(ngModel)]="guestFichaNumber" name="guestFichaNumber" placeholder="ENP-XXXX"
+              class="input w-full" required />
           </div>
         </div>
         <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo Electrónico</label>
-          <input 
-            type="email" 
-            [(ngModel)]="guestEmail" 
-            name="guestEmail"
-            placeholder="juan.perez@ejemplo.cl" 
-            class="input w-full"
-            required
-          />
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo
+            Electrónico</label>
+          <input type="email" [(ngModel)]="guestEmail" name="guestEmail" placeholder="juan.perez@ejemplo.cl"
+            class="input w-full" required />
         </div>
-        <button 
-          type="submit" 
-          [disabled]="loading"
-          class="btn-sand w-full py-3.5 text-sm font-semibold mt-2 flex justify-center items-center gap-2"
-        >
-          <span *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-2 border-charcoal border-t-transparent"></span>
+        <button type="submit" [disabled]="loading"
+          class="btn-sand w-full py-3.5 text-sm font-semibold mt-2 flex justify-center items-center gap-2">
+          <span *ngIf="loading"
+            class="animate-spin rounded-full h-4 w-4 border-2 border-charcoal border-t-transparent"></span>
           Continuar Reserva como Invitado
         </button>
       </form>
@@ -221,18 +147,12 @@
       <div class="mt-8 border-t border-charcoal/5 pt-6 text-center">
         <p class="text-xs text-charcoal/40 font-mono uppercase tracking-wider mb-3">Accesos rápidos (Demo / Test)</p>
         <div class="grid grid-cols-2 gap-3">
-          <button 
-            type="button" 
-            (click)="quickLoginSocio()"
-            class="bg-mist text-charcoal/80 border border-charcoal15 hover:border-forest/30 hover:bg-forest/5 rounded-2xl py-2 px-3 text-xs font-medium transition-all"
-          >
+          <button type="button" (click)="quickLoginSocio()"
+            class="bg-mist text-charcoal/80 border border-charcoal15 hover:border-forest/30 hover:bg-forest/5 rounded-2xl py-2 px-3 text-xs font-medium transition-all">
             👤 Socio Demo
           </button>
-          <button 
-            type="button" 
-            (click)="quickLoginAdmin()"
-            class="bg-charcoal text-white hover:bg-charcoal/90 rounded-2xl py-2 px-3 text-xs font-medium transition-all"
-          >
+          <button type="button" (click)="quickLoginAdmin()"
+            class="bg-charcoal text-white hover:bg-charcoal/90 rounded-2xl py-2 px-3 text-xs font-medium transition-all">
             🔐 Admin Demo
           </button>
         </div>

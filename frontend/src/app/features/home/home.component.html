@@ -3,27 +3,19 @@
 <!-- HERO -->
 <section class="relative min-h-screen flex items-end pb-20 pt-16">
   <div class="absolute inset-0">
-    <img
-      src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1600&q=80"
-      alt="Centro Vacacional"
-      class="w-full h-full object-cover"
-    />
-    <div
-      class="absolute inset-0 bg-gradient-to-b from-forest/70 via-forest/50 to-charcoal/90"
-    ></div>
+    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1600&q=80" alt="Centro Vacacional"
+      class="w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-gradient-to-b from-forest/70 via-forest/50 to-charcoal/90"></div>
   </div>
 
   <div class="relative z-10 max-w-6xl mx-auto px-4 w-full">
     <div class="max-w-lg mb-10">
       <span
-        class="inline-flex items-center gap-1.5 bg-sand/20 border border-sand/30 text-sand text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full mb-5"
-      >
+        class="inline-flex items-center gap-1.5 bg-sand/20 border border-sand/30 text-sand text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full mb-5">
         <span class="w-1.5 h-1.5 bg-sand rounded-full"></span>
         Limache, Chile
       </span>
-      <h1
-        class="text-white font-display text-5xl md:text-6xl leading-tight mb-5"
-      >
+      <h1 class="text-white font-display text-5xl md:text-6xl leading-tight mb-5">
         Tu descanso<br />te está esperando
       </h1>
       <p class="text-white/65 text-lg leading-relaxed">
@@ -34,18 +26,12 @@
 
     <!-- Tarjeta búsqueda flotante -->
     <div class="bg-white rounded-2xl p-5 shadow-float max-w-2xl">
-      <p
-        class="text-[11px] font-mono text-charcoal/40 uppercase tracking-widest mb-4"
-      >
+      <p class="text-[11px] font-mono text-charcoal/40 uppercase tracking-widest mb-4">
         ¿Qué deseas reservar?
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <a
-          *ngFor="let tipo of tiposEspacio"
-          [routerLink]="['/espacios']"
-          [queryParams]="{ tipo: tipo.key }"
-          class="group flex items-center gap-3 p-3 rounded-xl border border-charcoal/10 hover:border-forest/30 hover:bg-mist transition-all cursor-pointer"
-        >
+        <a *ngFor="let tipo of tiposEspacio" [routerLink]="['/espacios']" [queryParams]="{ tipo: tipo.key }"
+          class="group flex items-center gap-3 p-3 rounded-xl border border-charcoal/10 hover:border-forest/30 hover:bg-mist transition-all cursor-pointer">
           <span class="text-2xl shrink-0">{{ tipo.emoji }}</span>
           <div>
             <p class="font-medium text-charcoal text-sm">
@@ -71,27 +57,17 @@
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <article
-        *ngFor="let a of announcements"
-        class="card overflow-hidden"
-        [class.ring-2]="a.is_pinned"
-        [class.ring-sand]="a.is_pinned"
-      >
+      <article *ngFor="let a of announcements" class="card overflow-hidden" [class.ring-2]="a.is_pinned"
+        [class.ring-sand]="a.is_pinned">
         <div *ngIf="a.image_url" class="h-40 overflow-hidden">
-          <img
-            [src]="a.image_url"
-            [alt]="a.title"
-            class="w-full h-full object-cover"
-          />
+          <img [src]="a.image_url" [alt]="a.title" class="w-full h-full object-cover" />
         </div>
         <div class="p-5">
           <div class="flex items-start justify-between gap-2 mb-2">
             <h3 class="font-semibold text-charcoal text-sm leading-snug flex-1">
               {{ a.title }}
             </h3>
-            <span *ngIf="a.is_pinned" class="shrink-0 badge badge-yellow"
-              >Destacado</span
-            >
+            <span *ngIf="a.is_pinned" class="shrink-0 badge badge-yellow">Destacado</span>
           </div>
           <p class="text-charcoal/55 text-sm leading-relaxed line-clamp-3">
             {{ a.body }}
@@ -117,20 +93,12 @@
       </h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <article
-        *ngFor="let s of spaces"
-        [routerLink]="['/reservar', s.id]"
-        class="card overflow-hidden group cursor-pointer hover:shadow-card-hover transition-shadow"
-      >
+      <article *ngFor="let s of spaces" [routerLink]="['/reservar', s.id]"
+        class="card overflow-hidden group cursor-pointer hover:shadow-card-hover transition-shadow">
         <div class="relative h-44 overflow-hidden bg-sage/10">
-          <img
-            [src]="s.images[0]"
-            [alt]="s.name"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <span
-            class="absolute top-3 left-3 badge bg-forest/80 text-white backdrop-blur-sm"
-          >
+          <img [src]="s.images[0]" [alt]="s.name"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <span class="absolute top-3 left-3 badge bg-forest/80 text-white backdrop-blur-sm">
             {{ spaceLabel(s.type) }}
           </span>
         </div>
@@ -146,26 +114,19 @@
               </p>
               <p class="font-semibold text-forest text-sm">
                 {{
-                  s.socio_price === 0
-                    ? "$0 (incluido)"
-                    : (s.socio_price | currency: "CLP" : "$" : "1.0-0")
+                s.socio_price === 0
+                ? "$0 (incluido)"
+                : (s.socio_price | currency: "CLP" : "$" : "1.0-0")
                 }}
-                <span
-                  *ngIf="s.socio_price > 0"
-                  class="text-xs font-normal text-charcoal/40"
-                  >/noche</span
-                >
+                <span *ngIf="s.socio_price > 0" class="text-xs font-normal text-charcoal/40">/noche</span>
               </p>
             </div>
-            <span class="text-xs text-charcoal/40"
-              >👥 Hasta {{ s.max_capacity }}</span
-            >
+            <span class="text-xs text-charcoal/40">👥 Hasta {{ s.max_capacity }}</span>
           </div>
         </div>
         <div class="px-4 pb-4">
           <div
-            class="btn-primary text-center text-sm py-2 opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0 transition-all duration-200"
-          >
+            class="btn-primary text-center text-sm py-2 opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0 transition-all duration-200">
             Ver disponibilidad
           </div>
         </div>
@@ -190,10 +151,7 @@
         </p>
       </div>
       <div class="space-y-3">
-        <div
-          *ngFor="let b of beneficios"
-          class="bg-white/10 rounded-xl p-4 flex items-start gap-4"
-        >
+        <div *ngFor="let b of beneficios" class="bg-white/10 rounded-xl p-4 flex items-start gap-4">
           <span class="text-2xl shrink-0">{{ b.icon }}</span>
           <div>
             <p class="font-semibold text-sm">{{ b.title }}</p>
@@ -206,18 +164,28 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="bg-charcoal py-10">
-  <div
-    class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-white/40 text-sm"
-  >
-    <p>Centro Vacacional Sindicato ENAP - Limache, Chile</p>
-    <p>
-      Contacto:
-      <a
-        href="mailto:admin@sindicatoenap.cl"
-        class="text-sand/70 hover:text-sand transition-colors"
-        >admin sindicatoenap.cl</a
-      >
-    </p>
+<footer class="bg-charcoal py-12 border-t border-charcoal/30">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-white/5">
+      <!-- Logos -->
+      <div class="flex items-center gap-6">
+        <img src="/logos/logo-centro-vacacional-enap.svg" alt="Centro Vacacional ENAP" class="h-[96px] w-auto  " />
+        <div class="h-8 w-px bg-white/10"></div>
+        <img src="/logos/logo-sindicato-enap.svg" alt="Sindicato Trabajadores ENAP" class="h-[96px] w-auto " />
+      </div>
+      <!-- Contacto -->
+      <div class="text-center md:text-right text-white/50 text-sm">
+        <p class="font-medium text-white/80">Centro Vacacional Sindicato ENAP</p>
+        <p class="text-xs mt-0.5">Limache, Chile</p>
+        <p class="text-xs mt-2">
+          Contacto:
+          <a href="mailto:admin@sindicatoenap.cl" class="text-sand/70 hover:text-sand transition-colors font-mono">admin
+            sindicatoenap.cl</a>
+        </p>
+      </div>
+    </div>
+    <div class="pt-6 text-center text-xs text-white/30 font-mono">
+      &copy; 2026 Centro Vacacional Sindicato ENAP. Todos los derechos reservados.
+    </div>
   </div>
 </footer>
