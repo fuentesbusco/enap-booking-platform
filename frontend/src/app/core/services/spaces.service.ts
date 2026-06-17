@@ -1,41 +1,47 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Space } from '../models';
-import { MOCK_SPACES, BLOCKED_DATES } from '../mock-data';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Space, mapSpaceToFrontend, mapSpaceToBackend } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SpacesService {
-  private spaces = signal<Space[]>([...MOCK_SPACES]);
+  private http = inject(HttpClient);
 
   getAll(): Observable<Space[]> {
-    return of(this.spaces());
+    return this.http.get<any[]>(`${environment.apiUrl}/spaces`).pipe(
+      map((list) => list.map(mapSpaceToFrontend))
+    );
   }
 
   getById(id: number): Observable<Space | undefined> {
-    return of(this.spaces().find((s) => s.id === id));
+    return this.http.get<any>(`${environment.apiUrl}/spaces/${id}`).pipe(
+      map(mapSpaceToFrontend)
+    );
   }
 
   getBlockedDates(spaceId: number): Observable<string[]> {
-    return of(BLOCKED_DATES[spaceId] ?? []);
+    return this.http.get<string[]>(`${environment.apiUrl}/bookings/blocked-dates/${spaceId}`);
   }
 
   create(space: Omit<Space, 'id'>): Observable<Space> {
-    const nextId = this.spaces().length > 0 ? Math.max(...this.spaces().map((s) => s.id)) + 1 : 1;
-    const newSpace: Space = { id: nextId, ...space };
-    this.spaces.update((list) => [...list, newSpace]);
-    return of(newSpace);
+    const backendData = mapSpaceToBackend(space);
+    return this.http.post<any>(`${environment.apiUrl}/spaces`, backendData).pipe(
+      map(mapSpaceToFrontend)
+    );
   }
 
   update(id: number, spaceData: Partial<Space>): Observable<Space | undefined> {
-    this.spaces.update((list) =>
-      list.map((s) => (s.id === id ? { ...s, ...spaceData } : s)),
+    const backendData = mapSpaceToBackend(spaceData);
+    return this.http.put<any>(`${environment.apiUrl}/spaces/${id}`, backendData).pipe(
+      map(mapSpaceToFrontend)
     );
-    return of(this.spaces().find((s) => s.id === id));
   }
 
   delete(id: number): Observable<boolean> {
-    const initial = this.spaces().length;
-    this.spaces.update((list) => list.filter((s) => s.id !== id));
-    return of(this.spaces().length !== initial);
+    return this.http.delete<{ success: boolean }>(`${environment.apiUrl}/spaces/${id}`).pipe(
+      map((res) => res.success)
+    );
   }
 }

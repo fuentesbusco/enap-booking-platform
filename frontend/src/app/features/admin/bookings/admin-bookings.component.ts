@@ -44,18 +44,21 @@ export class AdminBookingsComponent implements OnInit {
   }
 
   approve(b: Booking) {
-    this.bookingsService.approveBooking(b.id);
-    this.bookingsService.getAll().subscribe((d) => {
-      this.bookings = d;
-      this.applyFilter();
+    this.bookingsService.approveBooking(b.id).subscribe(() => {
+      this.bookingsService.getAll().subscribe((d) => {
+        this.bookings = d;
+        this.applyFilter();
+      });
     });
   }
 
   reject(b: Booking) {
-    this.bookingsService.rejectBooking(b.id);
-    this.bookingsService.getAll().subscribe((d) => {
-      this.bookings = d;
-      this.applyFilter();
+    const notes = prompt('Ingrese observaciones para el rechazo del comprobante (opcional):') || 'Comprobante no válido o ilegible.';
+    this.bookingsService.rejectBooking(b.id, notes).subscribe(() => {
+      this.bookingsService.getAll().subscribe((d) => {
+        this.bookings = d;
+        this.applyFilter();
+      });
     });
   }
 

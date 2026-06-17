@@ -68,3 +68,114 @@ export interface Announcement {
   published_at: string;
   is_pinned: boolean;
 }
+
+export function mapUserToFrontend(user: any): User {
+  if (!user) return user;
+  return {
+    id: user.id,
+    full_name: user.fullName || user.full_name,
+    rut: user.rut,
+    email: user.email,
+    role: user.role,
+    ficha_number: user.fichaNumber || user.ficha_number,
+    is_active: user.isActive !== undefined ? user.isActive : user.is_active,
+  };
+}
+
+export function mapUserToBackend(user: any): any {
+  if (!user) return user;
+  return {
+    id: user.id,
+    fullName: user.full_name,
+    rut: user.rut,
+    email: user.email,
+    role: user.role,
+    fichaNumber: user.ficha_number,
+    isActive: user.is_active,
+  };
+}
+
+export function mapSpaceToFrontend(space: any): Space {
+  if (!space) return space;
+  return {
+    id: space.id,
+    name: space.name,
+    type: space.type,
+    description: space.description,
+    max_capacity: space.maxCapacity !== undefined ? space.maxCapacity : space.max_capacity,
+    base_price: space.basePrice !== undefined ? space.basePrice : space.base_price,
+    socio_price: space.socioPrice !== undefined ? space.socioPrice : space.socio_price,
+    guest_price: space.guestPrice !== undefined ? space.guestPrice : space.guest_price,
+    free_guests_for_socio: space.freeGuestsForSocio !== undefined ? space.freeGuestsForSocio : space.free_guests_for_socio,
+    images: space.images || [],
+    amenities: space.amenities || [],
+  };
+}
+
+export function mapSpaceToBackend(space: any): any {
+  if (!space) return space;
+  return {
+    id: space.id,
+    name: space.name,
+    type: space.type,
+    description: space.description,
+    maxCapacity: space.max_capacity,
+    basePrice: space.base_price,
+    socioPrice: space.socio_price,
+    guestPrice: space.guest_price,
+    freeGuestsForSocio: space.free_guests_for_socio,
+    images: space.images,
+    amenities: space.amenities,
+  };
+}
+
+export function mapGuestToFrontend(guest: any): Guest {
+  if (!guest) return guest;
+  return {
+    id: guest.id,
+    full_name: guest.fullName || guest.full_name,
+    rut: guest.rut,
+    phone: guest.phone,
+  };
+}
+
+export function mapGuestToBackend(guest: any): any {
+  if (!guest) return guest;
+  return {
+    id: guest.id,
+    fullName: guest.full_name,
+    rut: guest.rut,
+    phone: guest.phone,
+  };
+}
+
+export function mapBookingToFrontend(booking: any): Booking {
+  if (!booking) return booking;
+  return {
+    id: booking.id,
+    booking_code: booking.bookingCode || booking.booking_code,
+    user: mapUserToFrontend(booking.user),
+    space: mapSpaceToFrontend(booking.space),
+    check_in: booking.checkIn || booking.check_in,
+    check_out: booking.checkOut || booking.check_out,
+    status: booking.status,
+    total_amount: booking.totalAmount !== undefined ? booking.totalAmount : booking.total_amount,
+    guests: (booking.guests || []).map(mapGuestToFrontend),
+    receipt_url: booking.receiptUrl || booking.receipt_url,
+    admin_notes: booking.adminNotes || booking.admin_notes,
+    created_at: booking.createdAt || booking.created_at,
+    price_breakdown: booking.priceBreakdown || booking.price_breakdown,
+  };
+}
+
+export function mapAnnouncementToFrontend(ann: any): Announcement {
+  if (!ann) return ann;
+  return {
+    id: ann.id,
+    title: ann.title,
+    body: ann.body,
+    image_url: ann.imageUrl || ann.image_url,
+    published_at: ann.publishedAt || ann.published_at,
+    is_pinned: ann.isPinned !== undefined ? ann.isPinned : ann.is_pinned,
+  };
+}

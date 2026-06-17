@@ -1,34 +1,82 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from '../models';
-import { MOCK_USER_SOCIO, MOCK_USER_ADMIN } from '../mock-data';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { User, mapUserToFrontend } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  
   currentUser = signal<User | null>(null);
 
-  constructor(private router: Router) {
-    // En el mock arrancamos como socio por defecto para facilitar la demo
-    const saved = sessionStorage.getItem('mock_user');
-    if (saved) this.currentUser.set(JSON.parse(saved));
+  constructor() {
+    const savedToken = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const savedUser = sessionStorage.getItem('user') || localStorage.getItem('user');
+    if (savedToken && savedUser) {
+      try {
+        this.currentUser.set(JSON.parse(savedUser));
+      } catch (e) {
+        this.logout();
+      }
+    }
   }
 
-  loginAsSocio() {
-    this.currentUser.set(MOCK_USER_SOCIO);
-    sessionStorage.setItem('mock_user', JSON.stringify(MOCK_USER_SOCIO));
-    this.router.navigate(['/']);
+  login(email: string, password?: string): Observable<{ token: string; user: User }> {
+    return this.http.post<{ token: string; user: any }>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
+      tap(({ token, user }) => {
+        const mappedUser = mapUserToFrontend(user);
+        this.currentUser.set(mappedUser);
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(mappedUser));
+      }),
+      map(({ token, user }) => ({ token, user: mapUserToFrontend(user) }))
+    );
   }
 
-  loginAsAdmin() {
-    this.currentUser.set(MOCK_USER_ADMIN);
-    sessionStorage.setItem('mock_user', JSON.stringify(MOCK_USER_ADMIN));
-    this.router.navigate(['/admin/reservas']);
+  register(data: {
+    fullName: string;
+    rut: string;
+    email: string;
+    password?: string;
+    role?: string;
+    fichaNumber?: string;
+  }): Observable<{ token: string; user: User }> {
+    return this.http.post<{ token: string; user: any }>(`${environment.apiUrl}/auth/register`, data).pipe(
+      tap(({ token, user }) => {
+        const mappedUser = mapUserToFrontend(user);
+        this.currentUser.set(mappedUser);
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(mappedUser));
+      }),
+      map(({ token, user }) => ({ token, user: mapUserToFrontend(user) }))
+    );
   }
 
   logout() {
     this.currentUser.set(null);
-    sessionStorage.removeItem('mock_user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.router.navigate(['/']);
+  }
+
+  loginAsSocio() {
+    this.login('carlos.munoz@enap.cl', 'password123').subscribe({
+      next: () => this.router.navigate(['/']),
+      error: (err) => console.error('Bypass login failed', err)
+    });
+  }
+
+  loginAsAdmin() {
+    this.login('admin@sindicatoenap.cl', 'password123').subscribe({
+      next: () => this.router.navigate(['/admin/reservas']),
+      error: (err) => console.error('Bypass login failed', err)
+    });
   }
 
   isLoggedIn(): boolean { return !!this.currentUser(); }

@@ -199,6 +199,24 @@ export class BookingsService {
     return this.bookingRepository.save(booking);
   }
 
+  async getBlockedDatesForSpace(spaceId: number): Promise<string[]> {
+    const bookings = await this.bookingRepository.createQueryBuilder('booking')
+      .where('booking.spaceId = :spaceId', { spaceId })
+      .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+      .getMany();
+
+    const dates = new Set<string>();
+    const staticBlocks = this.blockedDates[spaceId] || [];
+    staticBlocks.forEach((d) => dates.add(d));
+
+    for (const b of bookings) {
+      const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+      datesInRange.forEach((d) => dates.add(d));
+    }
+
+    return Array.from(dates).sort();
+  }
+
   private async isBlocked(spaceId: number, checkIn: string, checkOut: string): Promise<boolean> {
     const datesToCheck = this.getDatesInRange(checkIn, checkOut);
     

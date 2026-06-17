@@ -11,7 +11,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AwsService } from '../aws/aws.service';
 
 @Controller('bookings')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
@@ -20,6 +19,7 @@ export class BookingsController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async getAll(@Headers() headers: Record<string, string>) {
     await this.getAdminUser(headers);
@@ -27,12 +27,19 @@ export class BookingsController {
   }
 
   @Get('me')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async getMyBookings(@Headers() headers: Record<string, string>) {
     const user = await this.getAuthenticatedUser(headers);
     return this.bookingsService.getByUser(user.id);
   }
 
+  @Get('blocked-dates/:spaceId')
+  async getBlockedDates(@Param('spaceId') spaceId: string) {
+    return this.bookingsService.getBlockedDatesForSpace(Number(spaceId));
+  }
+
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async create(
     @Headers() headers: Record<string, string>,
@@ -49,6 +56,7 @@ export class BookingsController {
   }
 
   @Post('upload-receipt')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
@@ -85,6 +93,7 @@ export class BookingsController {
   }
 
   @Patch(':id/approve')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async approve(
     @Headers() headers: Record<string, string>,
@@ -95,6 +104,7 @@ export class BookingsController {
   }
 
   @Patch(':id/reject')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async reject(
     @Headers() headers: Record<string, string>,

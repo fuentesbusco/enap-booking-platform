@@ -1,17 +1,23 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Announcement } from '../models';
-import { MOCK_ANNOUNCEMENTS } from '../mock-data';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Announcement, mapAnnouncementToFrontend } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AnnouncementsService {
-  private items = [...MOCK_ANNOUNCEMENTS];
+  private http = inject(HttpClient);
 
   getPublic(): Observable<Announcement[]> {
-    return of([...this.items].sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)));
+    return this.http.get<any[]>(`${environment.apiUrl}/announcements`).pipe(
+      map((list) => list.map(mapAnnouncementToFrontend))
+    );
   }
 
   getAll(): Observable<Announcement[]> {
-    return of(this.items);
+    return this.http.get<any[]>(`${environment.apiUrl}/announcements`).pipe(
+      map((list) => list.map(mapAnnouncementToFrontend))
+    );
   }
 }

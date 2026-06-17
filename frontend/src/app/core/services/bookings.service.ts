@@ -1,26 +1,32 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Booking, Guest, Space, PriceBreakdown } from '../models';
-import { MOCK_BOOKINGS } from '../mock-data';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Booking, Guest, Space, PriceBreakdown, mapBookingToFrontend } from '../models';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class BookingsService {
-  private bookings = signal<Booking[]>([...MOCK_BOOKINGS]);
-
-  constructor(private auth: AuthService) {}
+  private http = inject(HttpClient);
+  private auth = inject(AuthService);
 
   getAll(): Observable<Booking[]> {
-    return of(this.bookings());
+    return this.http.get<any[]>(`${environment.apiUrl}/bookings`).pipe(
+      map((list) => list.map(mapBookingToFrontend))
+    );
   }
 
   getMyBookings(): Observable<Booking[]> {
-    const uid = this.auth.currentUser()?.id;
-    return of(this.bookings().filter((b) => b.user.id === uid));
+    return this.http.get<any[]>(`${environment.apiUrl}/bookings/me`).pipe(
+      map((list) => list.map(mapBookingToFrontend))
+    );
   }
 
   getById(id: number): Observable<Booking | undefined> {
-    return of(this.bookings().find((b) => b.id === id));
+    return this.http.get<any>(`${environment.apiUrl}/bookings/${id}`).pipe(
+      map(mapBookingToFrontend)
+    );
   }
 
   calculatePrice(space: Space, checkIn: string, checkOut: string, guestCount: number): PriceBreakdown {
@@ -48,39 +54,35 @@ export class BookingsService {
     check_in: string;
     check_out: string;
     guests: Guest[];
-    receipt_url?: string;
   }): Observable<Booking> {
-    const user = this.auth.currentUser()!;
-    const breakdown = this.calculatePrice(data.space, data.check_in, data.check_out, data.guests.length);
-    const next = this.bookings().length + 1;
-    const booking: Booking = {
-      id: next,
-      booking_code: `ENP-2025-${String(next).padStart(5, '0')}`,
-      user,
-      space: data.space,
-      check_in: data.check_in,
-      check_out: data.check_out,
-      status: data.receipt_url ? 'pending_approval' : 'pending_payment',
-      total_amount: breakdown.total,
+    const body = {
+      spaceId: data.space.id,
+      checkIn: data.check_in,
+      checkOut: data.check_out,
       guests: data.guests,
-      receipt_url: data.receipt_url,
-      created_at: new Date().toISOString(),
-      price_breakdown: breakdown,
     };
-    this.bookings.update((list) => [...list, booking]);
-    return of(booking);
-  }
-
-  approveBooking(id: number): void {
-    this.bookings.update((list) =>
-      list.map((b) => b.id === id ? { ...b, status: 'confirmed' as const } : b),
+    return this.http.post<any>(`${environment.apiUrl}/bookings`, body).pipe(
+      map(mapBookingToFrontend)
     );
   }
 
-  rejectBooking(id: number): void {
-    this.bookings.update((list) =>
-      list.map((b) => b.id === id ? { ...b, status: 'rejected' as const } : b),
+  approveBooking(id: number): Observable<Booking> {
+    return this.http.patch<any>(`${environment.apiUrl}/bookings/${id}/approve`, {}).pipe(
+      map(mapBookingToFrontend)
     );
+  }
+
+  rejectBooking(id: number, notes: string): Observable<Booking> {
+    return this.http.patch<any>(`${environment.apiUrl}/bookings/${id}/reject`, { notes }).pipe(
+      map(mapBookingToFrontend)
+    );
+  }
+
+  uploadReceipt(bookingId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('bookingId', bookingId.toString());
+    formData.append('file', file);
+    return this.http.post<any>(`${environment.apiUrl}/bookings/upload-receipt`, formData);
   }
 
   private daysDiff(a: string, b: string): number {

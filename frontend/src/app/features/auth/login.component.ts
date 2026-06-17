@@ -1,65 +1,167 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
-  template: `
-    <app-navbar />
-    <div
-      class="pt-16 min-h-screen bg-mist flex items-center justify-center px-4"
-    >
-      <div class="w-full max-w-sm">
-        <div class="text-center mb-8">
-          <div
-            class="w-14 h-14 bg-forest rounded-2xl flex items-center justify-center mx-auto mb-4"
-          >
-            <span class="text-sand font-bold text-xl font-mono">E</span>
-          </div>
-          <h1 class="font-display text-3xl text-charcoal">Ingresar</h1>
-          <p class="text-charcoal/50 text-sm mt-1">
-            Centro Vacacional Sindicato ENAP
-          </p>
-        </div>
-
-        <!-- Demo banner -->
-        <div
-          class="bg-sand/20 border border-sand/40 rounded-xl p-4 mb-6 text-center"
-        >
-          <p
-            class="text-xs text-charcoal/60 font-mono uppercase tracking-wider mb-3"
-          >
-            Modo demo - elige un perfil
-          </p>
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              (click)="auth.loginAsSocio()"
-              class="bg-forest text-white rounded-xl py-3 px-4 text-sm font-medium hover:bg-sage transition-colors"
-            >
-              <span class="block text-lg mb-0.5">👤</span>
-              Ingresar como Socio
-            </button>
-            <button
-              (click)="auth.loginAsAdmin()"
-              class="bg-charcoal text-white rounded-xl py-3 px-4 text-sm font-medium hover:bg-charcoal/80 transition-colors"
-            >
-              <span class="block text-lg mb-0.5">🔐</span>
-              Ingresar como Admin
-            </button>
-          </div>
-        </div>
-
-        <p class="text-center text-xs text-charcoal/35 font-mono">
-          En producción este formulario conectará con el backend JWT.
-        </p>
-      </div>
-    </div>
-  `,
+  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent],
+  templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   auth = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  activeTab: 'login' | 'register' | 'guest' = 'login';
+  errorMessage = '';
+  loading = false;
+  redirectTo = '';
+
+  // Form fields
+  loginEmail = '';
+  loginPassword = '';
+
+  // Register fields
+  regFullName = '';
+  regRut = '';
+  regEmail = '';
+  regPassword = '';
+  regFichaNumber = '';
+
+  // Guest fields
+  guestFullName = '';
+  guestRut = '';
+  guestEmail = '';
+  guestFichaNumber = '';
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      this.redirectTo = params['redirectTo'] || '';
+    });
+  }
+
+  setTab(tab: 'login' | 'register' | 'guest') {
+    this.activeTab = tab;
+    this.errorMessage = '';
+  }
+
+  onLogin() {
+    if (!this.loginEmail || !this.loginPassword) {
+      this.errorMessage = 'Por favor complete todos los campos.';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.auth.login(this.loginEmail, this.loginPassword).subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.navigateAfterAuth(res.user.role);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Credenciales incorrectas.';
+      },
+    });
+  }
+
+  onRegister() {
+    if (!this.regFullName || !this.regRut || !this.regEmail || !this.regPassword || !this.regFichaNumber) {
+      this.errorMessage = 'Todos los campos son obligatorios para el registro de socios.';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.auth.register({
+      fullName: this.regFullName,
+      rut: this.regRut,
+      email: this.regEmail,
+      password: this.regPassword,
+      role: 'socio',
+      fichaNumber: this.regFichaNumber,
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.navigateAfterAuth('socio');
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Error en el registro. Verifique sus datos.';
+      },
+    });
+  }
+
+  onGuestSubmit() {
+    if (!this.guestFullName || !this.guestRut || !this.guestEmail || !this.guestFichaNumber) {
+      this.errorMessage = 'Debe ingresar todos sus datos, incluido su código de socio, para reservar como invitado.';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.auth.register({
+      fullName: this.guestFullName,
+      rut: this.guestRut,
+      email: this.guestEmail,
+      role: 'socio', // Se registra con rol socio para gozar del precio preferencial validado por su código de socio
+      fichaNumber: this.guestFichaNumber,
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.navigateAfterAuth('socio');
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Error en la validación de invitado. Verifique sus datos.';
+      },
+    });
+  }
+
+  quickLoginSocio() {
+    this.loading = true;
+    this.errorMessage = '';
+    this.auth.login('carlos.munoz@enap.cl', 'password123').subscribe({
+      next: () => {
+        this.loading = false;
+        this.navigateAfterAuth('socio');
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = 'Fallo en quick login.';
+      }
+    });
+  }
+
+  quickLoginAdmin() {
+    this.loading = true;
+    this.errorMessage = '';
+    this.auth.login('admin@sindicatoenap.cl', 'password123').subscribe({
+      next: () => {
+        this.loading = false;
+        this.navigateAfterAuth('admin');
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = 'Fallo en quick login.';
+      }
+    });
+  }
+
+  private navigateAfterAuth(role: string) {
+    if (this.redirectTo) {
+      this.router.navigateByUrl(this.redirectTo);
+    } else if (role === 'admin') {
+      this.router.navigate(['/admin/reservas']);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
 }

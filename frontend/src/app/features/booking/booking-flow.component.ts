@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +7,6 @@ import { SpacesService } from '../../core/services/spaces.service';
 import { BookingsService } from '../../core/services/bookings.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Space, Guest, PriceBreakdown } from '../../core/models';
-import { BLOCKED_DATES } from '../../core/mock-data';
 
 @Component({
   selector: 'app-booking-flow',
@@ -31,13 +30,16 @@ export class BookingFlowComponent implements OnInit {
   guests: Guest[] = [];
   breakdown: PriceBreakdown | null = null;
   blockedDates: string[] = [];
-  receiptUploaded = false;
+  
+  selectedFile: File | null = null;
   createdBookingCode = '';
   today = new Date().toISOString().split('T')[0];
+  loading = false;
 
   get isSocio() {
     return this.auth.isSocio();
   }
+  
   get hasConflict(): boolean {
     if (!this.checkIn || !this.checkOut) return false;
     const start = new Date(this.checkIn);
@@ -49,18 +51,36 @@ export class BookingFlowComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.auth.isLoggedIn()) {
-      this.router.navigate(['/ingresar']);
-      return;
-    }
     const id = Number(this.route.snapshot.paramMap.get('spaceId'));
     this.spacesService.getById(id).subscribe((s) => {
       this.space = s;
-      if (!s) this.router.navigate(['/espacios']);
+      if (!s) {
+        this.router.navigate(['/espacios']);
+        return;
+      }
+      
+      // Load blocked dates from backend (public endpoint)
+      this.spacesService
+        .getBlockedDates(id)
+        .subscribe((d) => (this.blockedDates = d));
+
+      // Restore pending booking state if returning from authentication redirect
+      const pending = sessionStorage.getItem('pending_booking_flow');
+      if (pending) {
+        try {
+          const state = JSON.parse(pending);
+          this.checkIn = state.checkIn || '';
+          this.checkOut = state.checkOut || '';
+          this.guests = state.guests || [];
+          sessionStorage.removeItem('pending_booking_flow');
+          
+          this.currentStep = 3;
+          this.recalculate();
+        } catch (e) {
+          console.error('Error restoring pending booking flow state', e);
+        }
+      }
     });
-    this.spacesService
-      .getBlockedDates(id)
-      .subscribe((d) => (this.blockedDates = d));
   }
 
   recalculate() {
@@ -84,31 +104,83 @@ export class BookingFlowComponent implements OnInit {
     this.recalculate();
   }
 
-  simulateUpload() {
-    setTimeout(() => {
-      this.receiptUploaded = true;
-    }, 600);
+  onFileSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedFile = file;
+    }
   }
 
   nextStep() {
-    if (this.currentStep === 1) this.recalculate();
-    if (this.currentStep < 3) {
-      this.currentStep++;
+    if (this.currentStep === 1) {
+      this.recalculate();
+      this.currentStep = 2;
       return;
     }
-    // Paso 3 -> confirmar
-    this.bookingsService
-      .createBooking({
-        space: this.space!,
-        check_in: this.checkIn,
-        check_out: this.checkOut,
-        guests: this.guests,
-        receipt_url: 'mock://comprobante.pdf',
-      })
-      .subscribe((b) => {
-        this.createdBookingCode = b.booking_code;
-        this.currentStep = 4;
-      });
+    
+    if (this.currentStep === 2) {
+      // If going to Step 3 (Payment) and not logged in, save progress and authenticate
+      if (!this.auth.isLoggedIn()) {
+        sessionStorage.setItem(
+          'pending_booking_flow',
+          JSON.stringify({
+            checkIn: this.checkIn,
+            checkOut: this.checkOut,
+            guests: this.guests,
+          })
+        );
+        this.router.navigate(['/ingresar'], {
+          queryParams: { redirectTo: `/reservar/${this.space!.id}` },
+        });
+        return;
+      }
+      this.recalculate();
+      this.currentStep = 3;
+      return;
+    }
+
+    // Step 3 -> Confirm/Submit booking
+    if (this.currentStep === 3) {
+      if (!this.selectedFile) {
+        alert('Debe adjuntar el comprobante de transferencia.');
+        return;
+      }
+
+      this.loading = true;
+      this.bookingsService
+        .createBooking({
+          space: this.space!,
+          check_in: this.checkIn,
+          check_out: this.checkOut,
+          guests: this.guests,
+        })
+        .subscribe({
+          next: (b) => {
+            this.createdBookingCode = b.booking_code;
+            if (this.selectedFile) {
+              this.bookingsService.uploadReceipt(b.id, this.selectedFile).subscribe({
+                next: () => {
+                  this.loading = false;
+                  this.currentStep = 4;
+                },
+                error: (err) => {
+                  this.loading = false;
+                  alert('Error al subir el comprobante. Por favor intente nuevamente.');
+                  console.error(err);
+                },
+              });
+            } else {
+              this.loading = false;
+              this.currentStep = 4;
+            }
+          },
+          error: (err) => {
+            this.loading = false;
+            alert(err.error?.message || 'Error al crear la reserva. Intente con otras fechas.');
+            console.error(err);
+          },
+        });
+    }
   }
 
   prevStep() {
