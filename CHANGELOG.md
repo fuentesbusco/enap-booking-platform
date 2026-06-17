@@ -18,6 +18,11 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 - **Servicio Semillero (Seeder):** Implementación de `SeedService` (`OnApplicationBootstrap`) que pobla automáticamente la base de datos con registros por defecto de espacios, anuncios y usuarios con contraseñas encriptadas al iniciar la aplicación por primera vez.
 - **Configuración Dinámica:** Integración de `@nestjs/config` para cargar variables de conexión de base de datos desde un archivo `.env` local.
 - **Refactorización Asíncrona:** Conversión de todos los métodos de los servicios (`UsersService`, `SpacesService`, `BookingsService`, `AnnouncementsService`) y controladores a operaciones asíncronas basadas en `Promises`.
+- **Sistema de Migraciones con TypeORM:**
+  - Configuración del archivo de origen de datos (`src/data-source.ts`) cargando dinámicamente las credenciales desde el archivo `.env`.
+  - Creación de scripts automatizados en `package.json` para la CLI de TypeORM (`typeorm`, `migration:generate`, `migration:run`, `migration:revert`).
+  - Configuración en `AppModule` para ejecutar automáticamente las migraciones pendientes en el arranque de la aplicación (`migrationsRun`) y controlar de manera segura la sincronización mediante variables de entorno (`DB_SYNCHRONIZE` y `DB_MIGRATIONS_RUN`).
+  - Generación y ejecución de la migración inicial (`1781668353815-InitialSchema.ts`) con el esquema de tablas relacionales completo.
 
 ### Solucionado
 - **Errores de Compilación de Decoradores (TS1272):** Uso de `import type` para importar alias y tipos de modelos (`UserRole`, `SpaceType`, `BookingStatus`, `PriceBreakdown`) resolviendo errores de metadatos de decoradores bajo la configuración `"isolatedModules": true`.

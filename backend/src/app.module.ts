@@ -39,7 +39,9 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
         password: config.get<string>('DB_PASSWORD', ''),
         database: config.get<string>('DB_DATABASE', 'enap_booking'),
         entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity],
-        synchronize: true, // Auto-migrates database schemas locally
+        synchronize: config.get<boolean>('DB_SYNCHRONIZE', false), // False by default for safety
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        migrationsRun: config.get<boolean>('DB_MIGRATIONS_RUN', true), // Run migrations on startup
       }),
     }),
     TypeOrmModule.forFeature([
