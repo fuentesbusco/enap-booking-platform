@@ -91,6 +91,19 @@ El backend NestJS calcula dinámicamente el precio final en [bookings.service.ts
     *   Cualquier invitado adicional que supere el límite permitido se cobra diariamente al costo unitario de `guest_price`.
     *   Si el titular es `external`, no hay cupos gratuitos; se cobra `guest_price` para cada invitado del listado.
 
+> [!NOTE]
+> **Aclaración sobre la Fórmula de Tarifas del Manual del Cliente:**
+> El manual de usuario del cliente presenta el siguiente ejemplo de cálculo para un Socio:
+> `total = (TarifaEspacio * dias) + (cantidadInvitados * 3500) + ((InvitadosPiscina - 5) * 3500)`
+> Con el ejemplo numérico: `(10,000 * 6) + (6 * 3,500) + ((6 - 5) * 3,500) = $84,500`.
+>
+> **Interpretación en la Plataforma:**
+> En el sistema, las reservas se gestionan de forma individual por recinto (Cabaña, Quincho o Piscina). Por lo tanto, el ejemplo del manual representa la **suma de dos reservas independientes realizadas por el Socio**:
+> 1. **Reserva de Cabaña** (ej. $10,000 tarifa socio por 6 días, con 6 invitados): `(10,000 * 6) + (6 * 3,500) = $81,000`.
+> 2. **Reserva de Piscina General** (tarifa socio $0, para 6 invitados con beneficio de 5 gratis): `(0 * 1) + ((6 - 5) * 3,500) = $3,500`.
+>
+> El total combinado de ambas reservas es `$81,000 + $3,500 = $84,500`, lo cual coincide plenamente con la lógica de cálculo unitario del sistema.
+
 ### 3.2 Validación de Bloqueos de Disponibilidad
 Antes de registrar cualquier reserva, el backend valida si las fechas están libres:
 1.  **Bloqueos Estáticos:** Compara las fechas solicitadas contra el diccionario `blockedDates` cargado con fechas fuera de servicio programadas.
