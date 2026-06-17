@@ -33,29 +33,35 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**. Las tareas requeridas son:
 
 ### Configuración Inicial & Arquitectura
-- [ ] Configuración del proyecto NestJS con TypeScript y estructura modular.
+- [x] Configuración del proyecto NestJS con TypeScript y estructura modular.
 - [ ] Conexión a la base de datos **MySQL** local y preparación de las entidades con **TypeORM**.
 - [ ] Configuración del sistema de migraciones para la base de datos.
 
 ### Módulo de Autenticación & Usuarios
-- [ ] Implementación de seguridad con **JWT (JSON Web Tokens)**.
+- [x] Implementación de Login de prueba y emulación de tokens en Base64.
+- [x] Métodos de decodificación y validación de tokens en la cabecera `Authorization`.
+- [ ] Implementación de seguridad real con **JWT (JSON Web Tokens)**.
 - [ ] Registro de usuarios y encriptación de contraseñas.
 - [ ] Decoradores y Guards personalizados en NestJS para restringir endpoints según roles (`socio`, `external`, `admin`).
 - [ ] API de usuarios: Activación/desactivación de socios sindicales, consulta de perfiles.
 
 ### Gestión de Espacios y Reservas
-- [ ] API de Espacios: Endpoints CRUD (`GET`, `POST`, `PUT`, `DELETE`).
-- [ ] API de Reservas:
-  - [ ] Endpoint de creación de reservas.
-  - [ ] Validación automática de disponibilidad de fechas (evitar sobreventa).
-  - [ ] Validación de capacidad máxima de invitados.
-  - [ ] Cálculo matemático de tarifas en el backend según rol del usuario y cantidad de invitados.
-  - [ ] Listado de reservas personales (`/bookings/me`) y globales para administración (`/bookings`).
+- [x] API de Espacios: Endpoints GET para consultar espacios disponibles.
+- [x] API de Anuncios: Endpoints GET para consultar anuncios publicados.
+- [x] API de Reservas:
+  - [x] Endpoint de creación de reservas.
+  - [x] Validación de disponibilidad de fechas (evitando colisión de días bloqueados y solapamientos).
+  - [x] Validación de capacidad máxima de invitados.
+  - [x] Cálculo matemático de tarifas y desgloses de precios en el backend según rol de usuario.
+  - [x] Listado de reservas personales (`/bookings/me`) y globales para administración (`/bookings`).
+  - [x] Endpoints para simular la subida del comprobante bancario (`/bookings/upload-receipt`).
+  - [x] Endpoints para aprobación y rechazo de reservas por parte del administrador.
+- [ ] API de Espacios: Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
 
 ### Integración de Almacenamiento (AWS S3)
 - [ ] Configuración del SDK de AWS en NestJS.
 - [ ] Implementación de cargador de archivos (Multer) en el backend.
-- [ ] Endpoint para subir comprobante de pago bancario a un bucket de **AWS S3** y guardar la URL en la reserva.
+- [ ] Endpoint para subir comprobante de pago bancario real a un bucket de **AWS S3** y guardar la URL.
 - [ ] Endpoint para subir fotos de nuevos espacios.
 
 ### Integración del Frontend de Angular con la API
