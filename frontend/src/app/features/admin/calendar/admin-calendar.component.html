@@ -75,13 +75,12 @@
       <div *ngFor="let week of calendarWeeks" class="grid grid-cols-7 border-b border-charcoal/5 last:border-b-0">
         <div
           *ngFor="let day of week"
-          [class.bg-mist/15]="!day.isCurrentMonth"
+          [ngClass]="{ 'bg-mist/15': !day.isCurrentMonth }"
           class="p-2 border-r border-charcoal/5 last:border-r-0 flex flex-col justify-between overflow-hidden relative group hover:bg-mist/5 transition-colors"
         >
           <!-- Número de Día -->
           <span
-            [class.text-charcoal/20]="!day.isCurrentMonth"
-            [class.text-charcoal/80]="day.isCurrentMonth"
+            [ngClass]="{ 'text-charcoal/20': !day.isCurrentMonth, 'text-charcoal/80': day.isCurrentMonth }"
             class="text-xs font-mono font-bold select-none text-right block mb-1 shrink-0"
           >
             {{ day.dayNumber }}

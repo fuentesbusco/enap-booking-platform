@@ -67,7 +67,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 
 ### Integración del Frontend de Angular con la API
 - [ ] Configuración de la URL base del API en los entornos de Angular (`frontend/src/environments/environment.ts`).
-- [ ] Creación de un interceptor JWT para enviar automáticamente el token Bearer en el encabezado `Authorization` (`frontend/src/app/core/guards/jwt.interceptor.ts`).
+- [x] Creación de un interceptor JWT para enviar automáticamente el token Bearer en el encabezado `Authorization` (`frontend/src/app/core/guards/jwt.interceptor.ts`).
 - [ ] Conexión de todos los servicios (`frontend/src/app/core/services/`) a la API de NestJS con `HttpClient`.
 
 ---

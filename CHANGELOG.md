@@ -28,12 +28,16 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
   - Configuración dinámica de `JwtModule` inyectando `ConfigService` para leer `JWT_SECRET` y `JWT_EXPIRATION` desde las variables de entorno.
   - Refactorización de `AuthService` para inyectar `JwtService` y firmar/verificar tokens con autenticidad criptográfica real.
   - Mantenimiento de la firma y compatibilidad de métodos en el servicio, garantizando un impacto cero en los controladores existentes.
+- **Interceptor JWT (Frontend):**
+  - Creación del interceptor HTTP funcional `jwt.interceptor.ts` en Angular para adjuntar automáticamente el token Bearer (`Authorization`) en peticiones HTTP salientes desde el almacenamiento local o de sesión.
+  - Registro del interceptor en la configuración global de la aplicación (`app.config.ts`) mediante `provideHttpClient(withInterceptors([jwtInterceptor]))`.
 
 ### Solucionado
 - **Errores de Compilación de Decoradores (TS1272):** Uso de `import type` para importar alias y tipos de modelos (`UserRole`, `SpaceType`, `BookingStatus`, `PriceBreakdown`) resolviendo errores de metadatos de decoradores bajo la configuración `"isolatedModules": true`.
 - **Error de Importación de Supertest en Tests:** Cambio del estilo de importación a importación por defecto (`import request from 'supertest'`) para corregir errores de tipado e invocación en entornos NodeNext/ESM.
 - **Parseo de Variables de Entorno Booleanas:** Corrección de la lectura de variables como `DB_SYNCHRONIZE` y `DB_MIGRATIONS_RUN` para parsear explícitamente los valores de cadena (`"true"`/`"false"`) a booleanos lógicos.
 - **Estabilidad de E2E Tests:** Configuración en `app.e2e-spec.ts` para cargar variables de entorno utilizando `dotenv/config`, incremento en el timeout de Jest a 20s para permitir conexiones a bases de datos remotas, y adición del hook `afterAll` para cerrar la aplicación y liberar los sockets de conexión de forma limpia.
+- **Correcciones en Compilación del Frontend (HTML):** Solución a errores de compilación del compilador de Angular (`NG5002`) en `AdminCalendarComponent` provocados por el uso de slashes (`/`) en las propiedades de enlace directo de clases (por ejemplo, `[class.bg-mist/15]`), reemplazándolos por enlaces correctos con `[ngClass]`.
 
 ---
 
