@@ -17,6 +17,8 @@ import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { SeedService } from './seed.service';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 // Entities
 import { UserEntity } from './users/user.entity';
@@ -63,6 +65,10 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
       }),
     }),
     NotificationsModule,
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100,
+    }]),
   ],
   controllers: [
     AppController,
@@ -81,6 +87,10 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
     BookingsService,
     UsersService,
     SeedService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

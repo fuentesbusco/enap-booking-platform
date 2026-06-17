@@ -38,6 +38,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] Configuración del sistema de migraciones para la base de datos.
 - [x] Pruebas unitarias para el backend con al menos un 50% de cobertura (eliminando pruebas E2E).
 - [x] Integración de utilidades de seguridad (Helmet y CORS seguro).
+- [x] Integración de Throttler (Rate Limiting) en login y reservas.
 
 ### Módulo de Autenticación & Usuarios
 - [x] Implementación de Login de prueba y emulación de tokens en Base64.

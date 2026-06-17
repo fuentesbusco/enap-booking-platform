@@ -6,6 +6,7 @@ import { UserEntity } from '../users/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('bookings')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -29,6 +30,7 @@ export class BookingsController {
   }
 
   @Post()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async create(
     @Headers() headers: Record<string, string>,
     @Body() body: { spaceId: number; checkIn: string; checkOut: string; guests: Guest[] },
@@ -44,6 +46,7 @@ export class BookingsController {
   }
 
   @Post('upload-receipt')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   async uploadReceipt(
     @Headers() headers: Record<string, string>,

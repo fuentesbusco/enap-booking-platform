@@ -6,6 +6,12 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.9.0] - 2026-06-17
+### Añadido
+- **Limitación de Tasa Global (`ThrottlerModule`):** Configuración del módulo de rate limiting oficial de NestJS `@nestjs/throttler` de forma global con un límite de seguridad de 100 peticiones por minuto por IP.
+- **Protección Antiactividad en Autenticación:** Aplicado límite estricto de 5 intentos de inicio de sesión por minuto al endpoint `login` en `AuthController`.
+- **Protección en Reservas y Pagos:** Aplicado límite de 10 peticiones por minuto a la creación de reservas (`create`) y carga de comprobantes de pago (`uploadReceipt`) en `BookingsController`.
+
 ## [1.8.0] - 2026-06-17
 ### Añadido
 - **Middleware Helmet para Cabeceras de Seguridad:** Integración del paquete `helmet` en el backend para establecer de manera segura directivas HTTP críticas (Clickjacking, XSS Auditor, MIME Sniffing, Content Security Policy, etc.).

@@ -2,6 +2,7 @@ import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../models';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
@@ -11,6 +12,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: { email: string; password?: string }) {
     const user = await this.authService.validateUser(body.email, body.password);
