@@ -43,11 +43,15 @@ La API escucha por defecto en el puerto `3000` de tu localhost:
 *   `GET /announcements`: Mural de anuncios.
 
 ### Protegidos por Token (Socio / External / Admin)
+*   `GET /users/profile`: Obtención del perfil del usuario autenticado.
 *   `GET /bookings/me`: Reservas asociadas al usuario autenticado.
 *   `POST /bookings`: Registro de una reserva (valida disponibilidad de fechas y cupos).
 *   `POST /bookings/upload-receipt`: Simula la subida de un archivo y lo asocia a la reserva.
 
 ### Protegidos para Administradores (`admin`)
+*   `GET /users`: Listado de todos los usuarios registrados en el sistema.
+*   `POST /users`: Registro de un nuevo usuario.
+*   `PATCH /users/:id/toggle-status`: Activar o desactivar la cuenta de un socio o usuario.
 *   `POST /spaces`: Crear un nuevo recinto.
 *   `PUT /spaces/:id`: Modificar propiedades de un recinto.
 *   `DELETE /spaces/:id`: Eliminar un recinto.
