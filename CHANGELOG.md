@@ -6,6 +6,11 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.16.0] - 2026-06-17
+### Añadido
+- **Configuración de Entornos en Angular:** Ejecutado el generador de la CLI de Angular `ng g environments` para crear `environment.ts` (producción) y `environment.development.ts` (desarrollo local) bajo la carpeta `frontend/src/environments/`.
+- **URL Base de la API:** Definida la variable `apiUrl` apuntando al backend local de NestJS en `http://localhost:3000` en ambos archivos de entorno para centralizar las llamadas HTTP del frontend.
+
 ## [1.15.1] - 2026-06-17
 ### Solucionado
 - **Error de Dependencias de JwtAuthGuard (`UnknownDependenciesException`):** Reubicado el registro de `MercadoPagoController` desde `MercadoPagoModule` hacia `AppModule.controllers`. Esto permite que el controlador y sus guards de autenticación resuelvan adecuadamente la dependencia de `AuthService` (que está declarada localmente en `AppModule`), alineándose con la arquitectura de controladores globales del proyecto.
