@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Inject } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../models';
@@ -12,8 +12,8 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() body: { email: string; password?: string }) {
-    const user = this.authService.validateUser(body.email, body.password);
+  async login(@Body() body: { email: string; password?: string }) {
+    const user = await this.authService.validateUser(body.email, body.password);
     const token = this.authService.generateToken(user);
     return {
       token,
@@ -22,7 +22,7 @@ export class AuthController {
   }
 
   @Post('register')
-  register(
+  async register(
     @Body() body: {
       fullName: string;
       rut: string;
@@ -33,7 +33,7 @@ export class AuthController {
     },
   ) {
     const role = body.role ?? 'external';
-    const newUser = this.usersService.create({
+    const newUser = await this.usersService.create({
       full_name: body.fullName,
       rut: body.rut,
       email: body.email,

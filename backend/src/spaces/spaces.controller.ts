@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Headers, UnauthorizedException } from '@nestjs/common';
 import { SpacesService } from './spaces.service';
 import { AuthService } from '../auth/auth.service';
-import { Space, User } from '../models';
+import { Space } from '../models';
+import { UserEntity } from '../users/user.entity';
 
 @Controller('spaces')
 export class SpacesController {
@@ -11,39 +12,39 @@ export class SpacesController {
   ) {}
 
   @Get()
-  getAll() {
+  async getAll() {
     return this.spacesService.getAll();
   }
 
   @Post()
-  create(
+  async create(
     @Headers() headers: Record<string, string>,
     @Body() body: Omit<Space, 'id'>,
   ) {
-    this.getAdminUser(headers);
+    await this.getAdminUser(headers);
     return this.spacesService.create(body);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
     @Body() body: Partial<Space>,
   ) {
-    this.getAdminUser(headers);
+    await this.getAdminUser(headers);
     return this.spacesService.update(Number(id), body);
   }
 
   @Delete(':id')
-  delete(
+  async delete(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
   ) {
-    this.getAdminUser(headers);
-    return { success: this.spacesService.delete(Number(id)) };
+    await this.getAdminUser(headers);
+    return { success: await this.spacesService.delete(Number(id)) };
   }
 
-  private getAdminUser(headers: Record<string, string>): User {
+  private async getAdminUser(headers: Record<string, string>): Promise<UserEntity> {
     const authHeader = headers['authorization'] || headers['Authorization'];
     if (!authHeader) {
       throw new UnauthorizedException('No authorization token provided');
@@ -52,7 +53,7 @@ export class SpacesController {
     if (!token) {
       throw new UnauthorizedException('Invalid token format');
     }
-    const user = this.authService.verifyToken(token);
+    const user = await this.authService.verifyToken(token);
     if (!user) {
       throw new UnauthorizedException('Invalid or expired authorization token');
     }

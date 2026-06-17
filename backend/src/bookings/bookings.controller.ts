@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Patch, Body, Headers, Param, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { AuthService } from '../auth/auth.service';
-import { Guest, User } from '../models';
+import { Guest } from '../models';
+import { UserEntity } from '../users/user.entity';
 
 @Controller('bookings')
 export class BookingsController {
@@ -11,23 +12,23 @@ export class BookingsController {
   ) {}
 
   @Get()
-  getAll(@Headers() headers: Record<string, string>) {
-    this.getAdminUser(headers);
+  async getAll(@Headers() headers: Record<string, string>) {
+    await this.getAdminUser(headers);
     return this.bookingsService.getAll();
   }
 
   @Get('me')
-  getMyBookings(@Headers() headers: Record<string, string>) {
-    const user = this.getAuthenticatedUser(headers);
+  async getMyBookings(@Headers() headers: Record<string, string>) {
+    const user = await this.getAuthenticatedUser(headers);
     return this.bookingsService.getByUser(user.id);
   }
 
   @Post()
-  create(
+  async create(
     @Headers() headers: Record<string, string>,
     @Body() body: { spaceId: number; checkIn: string; checkOut: string; guests: Guest[] },
   ) {
-    const user = this.getAuthenticatedUser(headers);
+    const user = await this.getAuthenticatedUser(headers);
     return this.bookingsService.createBooking(
       user,
       body.spaceId,
@@ -39,14 +40,13 @@ export class BookingsController {
 
   @Post('upload-receipt')
   @HttpCode(HttpStatus.OK)
-  uploadReceipt(
+  async uploadReceipt(
     @Headers() headers: Record<string, string>,
     @Body() body: { bookingId: number },
   ) {
-    this.getAuthenticatedUser(headers);
-    // Simulate S3 upload by returning a mock URL and associating it with the booking
+    await this.getAuthenticatedUser(headers);
     const mockReceiptUrl = `https://atelier-busco-s3.amazonaws.com/receipts/receipt-${body.bookingId}-${Date.now()}.pdf`;
-    const booking = this.bookingsService.uploadReceipt(body.bookingId, mockReceiptUrl);
+    const booking = await this.bookingsService.uploadReceipt(body.bookingId, mockReceiptUrl);
     return {
       success: true,
       receiptUrl: mockReceiptUrl,
@@ -55,25 +55,25 @@ export class BookingsController {
   }
 
   @Patch(':id/approve')
-  approve(
+  async approve(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
   ) {
-    this.getAdminUser(headers);
+    await this.getAdminUser(headers);
     return this.bookingsService.approveBooking(Number(id));
   }
 
   @Patch(':id/reject')
-  reject(
+  async reject(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
     @Body() body: { notes: string },
   ) {
-    this.getAdminUser(headers);
+    await this.getAdminUser(headers);
     return this.bookingsService.rejectBooking(Number(id), body.notes);
   }
 
-  private getAuthenticatedUser(headers: Record<string, string>): User {
+  private async getAuthenticatedUser(headers: Record<string, string>): Promise<UserEntity> {
     const authHeader = headers['authorization'] || headers['Authorization'];
     if (!authHeader) {
       throw new UnauthorizedException('No authorization token provided');
@@ -82,15 +82,15 @@ export class BookingsController {
     if (!token) {
       throw new UnauthorizedException('Invalid token format');
     }
-    const user = this.authService.verifyToken(token);
+    const user = await this.authService.verifyToken(token);
     if (!user) {
       throw new UnauthorizedException('Invalid or expired authorization token');
     }
     return user;
   }
 
-  private getAdminUser(headers: Record<string, string>): User {
-    const user = this.getAuthenticatedUser(headers);
+  private async getAdminUser(headers: Record<string, string>): Promise<UserEntity> {
+    const user = await this.getAuthenticatedUser(headers);
     if (user.role !== 'admin') {
       throw new UnauthorizedException('Restricted access for admins only');
     }

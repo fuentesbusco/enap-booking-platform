@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Announcement, MOCK_ANNOUNCEMENTS } from '../models';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { AnnouncementEntity } from './announcement.entity';
 
 @Injectable()
 export class AnnouncementsService {
-  private readonly announcements: Announcement[] = MOCK_ANNOUNCEMENTS;
+  constructor(
+    @InjectRepository(AnnouncementEntity)
+    private readonly announcementRepository: Repository<AnnouncementEntity>,
+  ) {}
 
-  getAll(): Announcement[] {
-    return this.announcements;
+  async getAll(): Promise<AnnouncementEntity[]> {
+    return this.announcementRepository.find({
+      order: {
+        isPinned: 'DESC',
+        publishedAt: 'DESC',
+      },
+    });
   }
 }

@@ -1,0 +1,148 @@
+import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserEntity } from './users/user.entity';
+import { SpaceEntity } from './spaces/space.entity';
+import { AnnouncementEntity } from './announcements/announcement.entity';
+import { hashPassword } from './auth/hash.util';
+import { MOCK_SPACES, MOCK_ANNOUNCEMENTS, MOCK_USER_SOCIO, MOCK_USER_ADMIN, MOCK_USER_EXTERNAL } from './models';
+
+@Injectable()
+export class SeedService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(SeedService.name);
+
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(SpaceEntity)
+    private readonly spaceRepository: Repository<SpaceEntity>,
+    @InjectRepository(AnnouncementEntity)
+    private readonly announcementRepository: Repository<AnnouncementEntity>,
+  ) {}
+
+  async onApplicationBootstrap() {
+    this.logger.log('Checking database status to seed initial datasets...');
+    try {
+      await this.seedSpaces();
+      await this.seedUsers();
+      await this.seedAnnouncements();
+      this.logger.log('Database check and seeding complete.');
+    } catch (error) {
+      this.logger.error('Database seeding failed:', error);
+    }
+  }
+
+  private async seedSpaces() {
+    const count = await this.spaceRepository.count();
+    if (count > 0) {
+      this.logger.log('Spaces table is already seeded.');
+      return;
+    }
+
+    this.logger.log('Seeding spaces table...');
+    const spaces = MOCK_SPACES.map((s) =>
+      this.spaceRepository.create({
+        name: s.name,
+        type: s.type,
+        description: s.description,
+        maxCapacity: s.max_capacity,
+        basePrice: s.base_price,
+        socioPrice: s.socio_price,
+        guestPrice: s.guest_price,
+        freeGuestsForSocio: s.free_guests_for_socio,
+        images: s.images,
+        amenities: s.amenities,
+      }),
+    );
+    await this.spaceRepository.save(spaces);
+    this.logger.log(`Successfully seeded ${spaces.length} spaces.`);
+  }
+
+  private async seedUsers() {
+    const count = await this.userRepository.count();
+    if (count > 0) {
+      this.logger.log('Users table is already seeded.');
+      return;
+    }
+
+    this.logger.log('Seeding users table...');
+    const defaultUsers = [
+      {
+        fullName: MOCK_USER_SOCIO.full_name,
+        rut: MOCK_USER_SOCIO.rut,
+        email: MOCK_USER_SOCIO.email,
+        role: MOCK_USER_SOCIO.role,
+        fichaNumber: MOCK_USER_SOCIO.ficha_number,
+        passwordHash: hashPassword('password123'),
+        isActive: true,
+      },
+      {
+        fullName: MOCK_USER_ADMIN.full_name,
+        rut: MOCK_USER_ADMIN.rut,
+        email: MOCK_USER_ADMIN.email,
+        role: MOCK_USER_ADMIN.role,
+        passwordHash: hashPassword('password123'),
+        isActive: true,
+      },
+      {
+        fullName: MOCK_USER_EXTERNAL.full_name,
+        rut: MOCK_USER_EXTERNAL.rut,
+        email: MOCK_USER_EXTERNAL.email,
+        role: MOCK_USER_EXTERNAL.role,
+        passwordHash: hashPassword('password123'),
+        isActive: true,
+      },
+      {
+        fullName: 'Roberto Pérez',
+        rut: '16.789.012-3',
+        email: 'roberto@enap.cl',
+        role: 'socio' as const,
+        fichaNumber: 'ENP-0078',
+        passwordHash: hashPassword('password123'),
+        isActive: true,
+      },
+      {
+        fullName: 'Valentina Torres',
+        rut: '17.890.123-4',
+        email: 'vtorres@enap.cl',
+        role: 'socio' as const,
+        fichaNumber: 'ENP-0112',
+        passwordHash: hashPassword('password123'),
+        isActive: false,
+      },
+      {
+        fullName: 'Marcos Fuentes',
+        rut: '18.901.234-5',
+        email: 'marcos@hotmail.com',
+        role: 'external' as const,
+        passwordHash: hashPassword('password123'),
+        isActive: true,
+      },
+    ];
+
+    const users = defaultUsers.map((u) => this.userRepository.create(u));
+    await this.userRepository.save(users);
+    this.logger.log(`Successfully seeded ${users.length} default users.`);
+  }
+
+  private async seedAnnouncements() {
+    const count = await this.announcementRepository.count();
+    if (count > 0) {
+      this.logger.log('Announcements table is already seeded.');
+      return;
+    }
+
+    this.logger.log('Seeding announcements table...');
+    const announcements = MOCK_ANNOUNCEMENTS.map((a) =>
+      this.announcementRepository.create({
+        title: a.title,
+        body: a.body,
+        imageUrl: a.image_url,
+        publishedAt: a.published_at,
+        isPinned: a.is_pinned,
+      }),
+    );
+    await this.announcementRepository.save(announcements);
+    this.logger.log(`Successfully seeded ${announcements.length} announcements.`);
+  }
+}

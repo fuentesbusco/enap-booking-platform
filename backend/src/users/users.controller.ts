@@ -2,6 +2,7 @@ import { Controller, Get, Post, Patch, Param, Body, Headers, UnauthorizedExcepti
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../models';
+import { UserEntity } from '../users/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -11,36 +12,36 @@ export class UsersController {
   ) {}
 
   @Get()
-  getAll(@Headers() headers: Record<string, string>) {
-    this.getAdminUser(headers);
+  async getAll(@Headers() headers: Record<string, string>) {
+    await this.getAdminUser(headers);
     return this.usersService.getAll();
   }
 
   @Post()
-  create(
+  async create(
     @Headers() headers: Record<string, string>,
     @Body() body: Omit<User, 'id'>,
   ) {
-    this.getAdminUser(headers);
+    await this.getAdminUser(headers);
     return this.usersService.create(body);
   }
 
   @Patch(':id/toggle-status')
-  toggleStatus(
+  async toggleStatus(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
   ) {
-    this.getAdminUser(headers);
-    return { success: this.usersService.toggleStatus(Number(id)) };
+    await this.getAdminUser(headers);
+    return { success: await this.usersService.toggleStatus(Number(id)) };
   }
 
   @Get('profile')
-  getProfile(@Headers() headers: Record<string, string>) {
-    const user = this.getAuthenticatedUser(headers);
+  async getProfile(@Headers() headers: Record<string, string>) {
+    const user = await this.getAuthenticatedUser(headers);
     return user;
   }
 
-  private getAuthenticatedUser(headers: Record<string, string>): User {
+  private async getAuthenticatedUser(headers: Record<string, string>): Promise<UserEntity> {
     const authHeader = headers['authorization'] || headers['Authorization'];
     if (!authHeader) {
       throw new UnauthorizedException('No authorization token provided');
@@ -49,15 +50,15 @@ export class UsersController {
     if (!token) {
       throw new UnauthorizedException('Invalid token format');
     }
-    const user = this.authService.verifyToken(token);
+    const user = await this.authService.verifyToken(token);
     if (!user) {
       throw new UnauthorizedException('Invalid or expired authorization token');
     }
     return user;
   }
 
-  private getAdminUser(headers: Record<string, string>): User {
-    const user = this.getAuthenticatedUser(headers);
+  private async getAdminUser(headers: Record<string, string>): Promise<UserEntity> {
+    const user = await this.getAuthenticatedUser(headers);
     if (user.role !== 'admin') {
       throw new UnauthorizedException('Restricted access for admins only');
     }

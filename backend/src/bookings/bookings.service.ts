@@ -1,36 +1,54 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { Booking, Guest, Space, PriceBreakdown, MOCK_BOOKINGS, BLOCKED_DATES, MOCK_SPACES, User } from '../models';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Booking } from './booking.entity';
+import { GuestEntity } from './guest.entity';
+import { SpaceEntity } from '../spaces/space.entity';
+import { UserEntity } from '../users/user.entity';
+import { PriceBreakdown, BookingStatus, BLOCKED_DATES } from '../models';
+import { SpacesService } from '../spaces/spaces.service';
 
 @Injectable()
 export class BookingsService {
-  private bookings: Booking[] = [...MOCK_BOOKINGS];
   private blockedDates: Record<number, string[]> = { ...BLOCKED_DATES };
 
-  getAll(): Booking[] {
-    return this.bookings;
+  constructor(
+    @InjectRepository(Booking)
+    private readonly bookingRepository: Repository<Booking>,
+    @InjectRepository(GuestEntity)
+    private readonly guestRepository: Repository<GuestEntity>,
+    private readonly spacesService: SpacesService,
+  ) {}
+
+  async getAll(): Promise<Booking[]> {
+    return this.bookingRepository.find();
   }
 
-  getByUser(userId: number): Booking[] {
-    return this.bookings.filter((b) => b.user.id === userId);
+  async getByUser(userId: number): Promise<Booking[]> {
+    return this.bookingRepository.find({
+      where: { user: { id: userId } },
+    });
   }
 
-  getById(id: number): Booking {
-    const booking = this.bookings.find((b) => b.id === id);
+  async getById(id: number): Promise<Booking> {
+    const booking = await this.bookingRepository.findOne({
+      where: { id },
+    });
     if (!booking) {
       throw new NotFoundException('Booking not found');
     }
     return booking;
   }
 
-  calculatePriceBreakdown(space: Space, checkIn: string, checkOut: string, guestCount: number, role: string): PriceBreakdown {
+  calculatePriceBreakdown(space: SpaceEntity, checkIn: string, checkOut: string, guestCount: number, role: string): PriceBreakdown {
     const isSocio = role === 'socio';
     const days = this.daysDiff(checkIn, checkOut) || 1;
-    const unitPrice = isSocio ? space.socio_price : space.base_price;
+    const unitPrice = isSocio ? space.socioPrice : space.basePrice;
     const base = unitPrice * days;
-    const freeGuests = isSocio ? space.free_guests_for_socio : 0;
+    const freeGuests = isSocio ? space.freeGuestsForSocio : 0;
     const payable = Math.max(0, guestCount - freeGuests);
-    const guestsTotal = payable * space.guest_price;
-    const discount = (guestCount - payable) * space.guest_price;
+    const guestsTotal = payable * space.guestPrice;
+    const discount = (guestCount - payable) * space.guestPrice;
     return {
       base,
       days,
@@ -42,87 +60,96 @@ export class BookingsService {
     };
   }
 
-  createBooking(
-    user: User,
+  async createBooking(
+    user: UserEntity,
     spaceId: number,
     checkIn: string,
     checkOut: string,
-    guests: Guest[],
-  ): Booking {
-    const space = MOCK_SPACES.find((s) => s.id === spaceId);
-    if (!space) {
-      throw new NotFoundException('Space not found');
+    guests: { full_name: string; rut: string; phone?: string }[],
+  ): Promise<Booking> {
+    const space = await this.spacesService.getById(spaceId);
+
+    if (guests.length > space.maxCapacity) {
+      throw new BadRequestException(`El espacio supera la capacidad máxima permitida de ${space.maxCapacity} personas.`);
     }
 
-    if (guests.length > space.max_capacity) {
-      throw new BadRequestException(`El espacio supera la capacidad máxima permitida de ${space.max_capacity} personas.`);
-    }
-
-    if (this.isBlocked(spaceId, checkIn, checkOut)) {
+    const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut);
+    if (isBlocked) {
       throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
     }
 
     const breakdown = this.calculatePriceBreakdown(space, checkIn, checkOut, guests.length, user.role);
-    const nextId = this.bookings.length > 0 ? Math.max(...this.bookings.map((b) => b.id)) + 1 : 1;
+    
+    // Generate Booking Code based on database count
+    const totalCount = await this.bookingRepository.count();
+    const nextId = totalCount + 1;
+    const bookingCode = `ENP-2025-${String(nextId).padStart(5, '0')}`;
 
-    const booking: Booking = {
-      id: nextId,
-      booking_code: `ENP-2025-${String(nextId).padStart(5, '0')}`,
+    const newBooking = this.bookingRepository.create({
+      bookingCode,
       user,
       space,
-      check_in: checkIn,
-      check_out: checkOut,
+      checkIn,
+      checkOut,
       status: 'pending_payment',
-      total_amount: breakdown.total,
-      guests: guests.map((g, idx) => ({ ...g, id: idx + 1 })),
-      created_at: new Date().toISOString(),
-      price_breakdown: breakdown,
-    };
+      totalAmount: breakdown.total,
+      priceBreakdown: breakdown,
+    });
 
-    this.bookings.push(booking);
-    return booking;
+    const savedBooking = await this.bookingRepository.save(newBooking);
+
+    // Create guests referencing saved booking
+    const guestEntities = guests.map((g) =>
+      this.guestRepository.create({
+        fullName: g.full_name,
+        rut: g.rut,
+        phone: g.phone,
+        booking: savedBooking,
+      }),
+    );
+    await this.guestRepository.save(guestEntities);
+
+    // Return the full populated booking entity
+    return this.getById(savedBooking.id);
   }
 
-  approveBooking(id: number): Booking {
-    const booking = this.getById(id);
+  async approveBooking(id: number): Promise<Booking> {
+    const booking = await this.getById(id);
     booking.status = 'confirmed';
-    return booking;
+    return this.bookingRepository.save(booking);
   }
 
-  rejectBooking(id: number, notes: string): Booking {
-    const booking = this.getById(id);
+  async rejectBooking(id: number, notes: string): Promise<Booking> {
+    const booking = await this.getById(id);
     booking.status = 'rejected';
-    booking.admin_notes = notes;
-    return booking;
+    booking.adminNotes = notes;
+    return this.bookingRepository.save(booking);
   }
 
-  uploadReceipt(id: number, receiptUrl: string): Booking {
-    const booking = this.getById(id);
+  async uploadReceipt(id: number, receiptUrl: string): Promise<Booking> {
+    const booking = await this.getById(id);
     booking.status = 'pending_approval';
-    booking.receipt_url = receiptUrl;
-    return booking;
+    booking.receiptUrl = receiptUrl;
+    return this.bookingRepository.save(booking);
   }
 
-  private isBlocked(spaceId: number, checkIn: string, checkOut: string): boolean {
+  private async isBlocked(spaceId: number, checkIn: string, checkOut: string): Promise<boolean> {
     const datesToCheck = this.getDatesInRange(checkIn, checkOut);
     
-    // 1. Check static blocked dates
+    // 1. Static check
     const staticBlocks = this.blockedDates[spaceId] || [];
     const hasStaticBlock = datesToCheck.some((d) => staticBlocks.includes(d));
     if (hasStaticBlock) return true;
 
-    // 2. Check overlap with active bookings (confirmed / pending_approval)
-    const spaceBookings = this.bookings.filter(
-      (b) => b.space.id === spaceId && (b.status === 'confirmed' || b.status === 'pending_approval'),
-    );
+    // 2. Overlapping check in DB
+    const overlapping = await this.bookingRepository.createQueryBuilder('booking')
+      .where('booking.spaceId = :spaceId', { spaceId })
+      .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+      .andWhere('booking.check_in <= :checkOut', { checkOut })
+      .andWhere('booking.check_out >= :checkIn', { checkIn })
+      .getMany();
 
-    for (const b of spaceBookings) {
-      const existingDates = this.getDatesInRange(b.check_in, b.check_out);
-      const collision = datesToCheck.some((d) => existingDates.includes(d));
-      if (collision) return true;
-    }
-
-    return false;
+    return overlapping.length > 0;
   }
 
   private getDatesInRange(startStr: string, endStr: string): string[] {

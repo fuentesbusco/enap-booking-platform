@@ -6,7 +6,7 @@ export class AnnouncementsController {
   constructor(private readonly announcementsService: AnnouncementsService) {}
 
   @Get()
-  getAll() {
+  async getAll() {
     return this.announcementsService.getAll();
   }
 }

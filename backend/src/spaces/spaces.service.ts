@@ -1,42 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Space, MOCK_SPACES } from '../models';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { SpaceEntity } from './space.entity';
+import { Space } from '../models';
 
 @Injectable()
 export class SpacesService {
-  private spaces: Space[] = [...MOCK_SPACES];
+  constructor(
+    @InjectRepository(SpaceEntity)
+    private readonly spaceRepository: Repository<SpaceEntity>,
+  ) {}
 
-  getAll(): Space[] {
-    return this.spaces;
+  async getAll(): Promise<SpaceEntity[]> {
+    return this.spaceRepository.find();
   }
 
-  getById(id: number): Space {
-    const space = this.spaces.find((s) => s.id === id);
+  async getById(id: number): Promise<SpaceEntity> {
+    const space = await this.spaceRepository.findOne({ where: { id } });
     if (!space) {
       throw new NotFoundException('Space not found');
     }
     return space;
   }
 
-  create(spaceData: Omit<Space, 'id'>): Space {
-    const nextId = this.spaces.length > 0 ? Math.max(...this.spaces.map((s) => s.id)) + 1 : 1;
-    const newSpace: Space = {
-      id: nextId,
-      ...spaceData,
-    };
-    this.spaces.push(newSpace);
-    return newSpace;
+  async create(spaceData: Omit<Space, 'id'>): Promise<SpaceEntity> {
+    const newSpace = this.spaceRepository.create(spaceData);
+    return this.spaceRepository.save(newSpace);
   }
 
-  update(id: number, spaceData: Partial<Space>): Space {
-    const space = this.getById(id);
+  async update(id: number, spaceData: Partial<Space>): Promise<SpaceEntity> {
+    const space = await this.getById(id);
     Object.assign(space, spaceData);
-    return space;
+    return this.spaceRepository.save(space);
   }
 
-  delete(id: number): boolean {
-    const initialLength = this.spaces.length;
-    this.spaces = this.spaces.filter((s) => s.id !== id);
-    if (this.spaces.length === initialLength) {
+  async delete(id: number): Promise<boolean> {
+    const result = await this.spaceRepository.delete(id);
+    if (result.affected === 0) {
       throw new NotFoundException('Space not found');
     }
     return true;
