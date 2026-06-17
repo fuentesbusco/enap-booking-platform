@@ -6,6 +6,11 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.8.0] - 2026-06-17
+### Añadido
+- **Middleware Helmet para Cabeceras de Seguridad:** Integración del paquete `helmet` en el backend para establecer de manera segura directivas HTTP críticas (Clickjacking, XSS Auditor, MIME Sniffing, Content Security Policy, etc.).
+- **Políticas de CORS Seguras:** Restricción de CORS en `main.ts` configurando de manera dinámica orígenes basados en la variable `ALLOWED_ORIGINS` del entorno (con fallback al origen de desarrollo de Angular `http://localhost:4200`), y limitación explícita de métodos HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, etc.).
+
 ## [1.7.0] - 2026-06-17
 ### Añadido
 - **Guard de Autenticación JWT (`JwtAuthGuard`):** Implementación de guard personalizado en NestJS que extrae, parsea y valida tokens Bearer desde la cabecera `Authorization` utilizando `AuthService.verifyToken` e inyecta el usuario decodificado en la petición (`request.user`).
