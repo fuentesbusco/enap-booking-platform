@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SpacesController } from './spaces.controller';
 import { SpacesService } from './spaces.service';
 import { AuthService } from '../auth/auth.service';
+import { AwsService } from '../aws/aws.service';
 import { SpaceEntity } from './space.entity';
 import { UserEntity } from '../users/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
@@ -10,6 +11,7 @@ describe('SpacesController', () => {
   let controller: SpacesController;
   let spacesService: jest.Mocked<SpacesService>;
   let authService: jest.Mocked<AuthService>;
+  let awsService: jest.Mocked<AwsService>;
 
   const mockSpace: SpaceEntity = {
     id: 1,
@@ -61,17 +63,23 @@ describe('SpacesController', () => {
       verifyToken: jest.fn(),
     };
 
+    const mockAwsService = {
+      uploadFile: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SpacesController],
       providers: [
         { provide: SpacesService, useValue: mockSpacesService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: AwsService, useValue: mockAwsService },
       ],
     }).compile();
 
     controller = module.get<SpacesController>(SpacesController);
     spacesService = module.get(SpacesService);
     authService = module.get(AuthService);
+    awsService = module.get(AwsService) as any;
   });
 
   it('should be defined', () => {
@@ -144,6 +152,61 @@ describe('SpacesController', () => {
       const result = await controller.delete({ authorization: 'Bearer valid_token' }, '1');
       expect(spacesService.delete).toHaveBeenCalledWith(1);
       expect(result).toEqual({ success: true });
+    });
+  });
+
+  describe('uploadPhoto', () => {
+    const headers = { authorization: 'Bearer admin-token' };
+
+    it('should throw UnauthorizedException if non-admin tries to upload photo', async () => {
+      const nonAdminUser = { ...mockAdminUser, role: 'socio' as const };
+      authService.verifyToken.mockResolvedValue(nonAdminUser);
+
+      await expect(controller.uploadPhoto(headers)).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should upload photo to S3 and return the S3 URL if a file is provided', async () => {
+      authService.verifyToken.mockResolvedValue(mockAdminUser);
+      const photoUrl = 'https://test-bucket.s3.amazonaws.com/spaces/image.jpg';
+      awsService.uploadFile.mockResolvedValue(photoUrl);
+
+      const mockFile: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: 'cabin.jpg',
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        buffer: Buffer.from('dummy image content'),
+        size: 19,
+        stream: null as any,
+        destination: '',
+        filename: '',
+        path: '',
+      };
+
+      const result = await controller.uploadPhoto(headers, mockFile);
+
+      expect(authService.verifyToken).toHaveBeenCalledWith('admin-token');
+      expect(awsService.uploadFile).toHaveBeenCalledWith(
+        mockFile.buffer,
+        'spaces',
+        mockFile.originalname,
+        mockFile.mimetype,
+      );
+      expect(result).toEqual({
+        success: true,
+        photoUrl,
+      });
+    });
+
+    it('should return mock photo URL if no file is provided (fallback)', async () => {
+      authService.verifyToken.mockResolvedValue(mockAdminUser);
+
+      const result = await controller.uploadPhoto(headers);
+
+      expect(authService.verifyToken).toHaveBeenCalledWith('admin-token');
+      expect(awsService.uploadFile).not.toHaveBeenCalled();
+      expect(result.success).toBe(true);
+      expect(result.photoUrl).toContain('https://atelier-busco-s3.amazonaws.com/spaces/space-photo-');
     });
   });
 });

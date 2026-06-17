@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Headers, UnauthorizedException, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { SpacesService } from './spaces.service';
 import { AuthService } from '../auth/auth.service';
 import { Space } from '../models';
@@ -6,12 +6,15 @@ import { UserEntity } from '../users/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AwsService } from '../aws/aws.service';
 
 @Controller('spaces')
 export class SpacesController {
   constructor(
     private readonly spacesService: SpacesService,
     private readonly authService: AuthService,
+    private readonly awsService: AwsService,
   ) {}
 
   @Get()
@@ -51,6 +54,34 @@ export class SpacesController {
   ) {
     await this.getAdminUser(headers);
     return { success: await this.spacesService.delete(Number(id)) };
+  }
+
+  @Post('upload-photo')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPhoto(
+    @Headers() headers: Record<string, string>,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    await this.getAdminUser(headers);
+
+    let photoUrl = '';
+    if (file) {
+      photoUrl = await this.awsService.uploadFile(
+        file.buffer,
+        'spaces',
+        file.originalname,
+        file.mimetype,
+      );
+    } else {
+      photoUrl = `https://atelier-busco-s3.amazonaws.com/spaces/space-photo-${Date.now()}.jpg`;
+    }
+
+    return {
+      success: true,
+      photoUrl,
+    };
   }
 
   private async getAdminUser(headers: Record<string, string>): Promise<UserEntity> {

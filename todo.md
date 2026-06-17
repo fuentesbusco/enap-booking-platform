@@ -65,7 +65,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] Configuración del SDK de AWS en NestJS.
 - [x] Implementación de cargador de archivos (Multer) en el backend.
 - [x] Endpoint para subir comprobante de pago bancario real a un bucket de **AWS S3** y guardar la URL.
-- [ ] Endpoint para subir fotos de nuevos espacios.
+- [x] Endpoint para subir fotos de nuevos espacios.
 
 ### Integración del Frontend de Angular con la API
 - [ ] Configuración de la URL base del API en los entornos de Angular (`frontend/src/environments/environment.ts`).

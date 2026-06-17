@@ -6,6 +6,13 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.13.0] - 2026-06-17
+### Añadido
+- **Carga de Fotos de Espacios a S3:** Creado el endpoint `POST /spaces/upload-photo` en `SpacesController` para permitir a administradores subir imágenes (fotos) de espacios turísticos o deportivos directamente a AWS S3.
+- **Seguridad en Carga de Fotos:** Restringido el endpoint con `JwtAuthGuard`, `RolesGuard` y `@Roles('admin')`.
+- **Mapeo y Fallback de Fotos:** Integrado Multer `FileInterceptor('file')` con lógica de fallback dinámico para peticiones simuladas.
+- **Pruebas de Controlador de Espacios:** Actualizadas las pruebas en `spaces.controller.spec.ts` para proveer mocks del cliente S3/AwsService y validar la subida de imágenes, fallback y control de acceso por roles en `SpacesController`.
+
 ## [1.12.0] - 2026-06-17
 ### Añadido
 - **Carga de Comprobantes a S3:** Modificación del endpoint `POST /bookings/upload-receipt` en `BookingsController` integrando el interceptor `FileInterceptor('file')` de Multer para aceptar archivos físicos, subirlos a AWS S3 utilizando `AwsService` y guardar la URL resultante.
