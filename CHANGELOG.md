@@ -6,6 +6,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.17.0] - 2026-06-17
+### Añadido
+- **Conexión de Frontend a API de NestJS:** Refactorizados todos los servicios globales (`AuthService`, `SpacesService`, `BookingsService`, `AnnouncementsService`, `UsersService`) para realizar llamadas HTTP reales a los endpoints del backend en lugar de usar datos mocks locales.
+- **Formularios de Autenticación y Registro:** Rediseñado el componente `LoginComponent` con soporte para tres flujos (Ingresar con correo/contraseña, Registrar cuenta de socio, e ingresar como Invitado ingresando un código de socio).
+- **Endpoint de Fechas Bloqueadas:** Creado el endpoint público `GET /bookings/blocked-dates/:spaceId` en el backend que calcula dinámicamente todas las fechas bloqueadas estáticas y las reservas vigentes (`confirmed`, `pending_approval`) del recinto.
+- **Flujo de Reserva de Invitados:** Implementado mecanismo en `BookingFlowComponent` que almacena el progreso de la reserva en `sessionStorage` para usuarios anónimos al proceder al pago, dirigiéndolos a identificarse o registrarse, para luego restaurar la reserva y permitir su finalización con subida real del comprobante bancario a AWS S3.
+- **Mapeadores de Modelo:** Añadidas funciones de mapeo bidireccionales en el frontend (`models.ts`) para convertir de forma segura las respuestas del backend (`camelCase`) a la estructura consumida por la UI (`snake_case`).
+
 ## [1.16.0] - 2026-06-17
 ### Añadido
 - **Configuración de Entornos en Angular:** Ejecutado el generador de la CLI de Angular `ng g environments` para crear `environment.ts` (producción) y `environment.development.ts` (desarrollo local) bajo la carpeta `frontend/src/environments/`.
