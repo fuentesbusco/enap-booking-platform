@@ -27,7 +27,6 @@ export class MercadoPagoService {
         body: {
           items: [
             {
-              id: 'preference-item',
               title,
               quantity,
               unit_price: unitPrice,
