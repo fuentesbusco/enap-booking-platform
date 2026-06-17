@@ -34,7 +34,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 
 ### Configuración Inicial & Arquitectura
 - [x] Configuración del proyecto NestJS con TypeScript y estructura modular.
-- [ ] Conexión a la base de datos **MySQL** local y preparación de las entidades con **TypeORM**.
+- [x] Conexión a la base de datos **MySQL** local y preparación de las entidades con TypeORM.
 - [ ] Configuración del sistema de migraciones para la base de datos.
 
 ### Módulo de Autenticación & Usuarios
