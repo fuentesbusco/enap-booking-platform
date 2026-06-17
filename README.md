@@ -38,9 +38,14 @@ frontend/src/app/
 │   ├── guards/             # Protectores de rutas por rol (Auth / Admin)
 │   ├── mock-data.ts        # Base de datos en memoria para el prototipo
 │   ├── models.ts           # Interfaces y tipos globales
-│   └── services/           # Servicios inyectables (Auth, Reservas, Espacios, Anuncios)
+│   └── services/           # Servicios inyectables (Auth, Reservas, Espacios, Usuarios, Anuncios)
 ├── features/               # Componentes y páginas divididos por características
-│   ├── admin/              # Panel de administración (Reservas, aprobación/rechazo)
+│   ├── admin/              # Panel de administración
+│   │   ├── bookings/       # Aprobación y visualización de comprobantes
+│   │   ├── spaces/         # Formulario modal interactivo para CRUD de espacios
+│   │   ├── users/          # Listado y activación/desactivación de socios
+│   │   ├── calendar/       # Calendario visual mensual con filtros y detalles
+│   │   └── treasury/       # Reportes de caja
 │   ├── auth/               # Pantalla de Login con accesos de prueba
 │   ├── booking/            # Flujo de reserva interactivo en 4 pasos
 │   ├── home/               # Cartelera de anuncios y accesos rápidos
@@ -56,7 +61,7 @@ backend/src/
 ├── auth/                   # Lógica de login y generación/validación de mock tokens
 ├── bookings/               # Endpoints de reservas, cálculo de tarifas y validaciones de solapamiento
 ├── health/                 # Endpoint utilitario /health de verificación de salud
-├── spaces/                 # Controlador y servicio de recintos (cabañas, quinchos, piscinas)
+├── spaces/                 # CRUD completo de recintos (cabañas, quinchos, piscinas) para admin
 ├── models.ts               # Interfaces de dominio y semillas de datos compartidas
 ├── app.module.ts           # Registro de módulos, controladores y proveedores
 └── main.ts                 # Configuración del bootstrap y habilitación de CORS

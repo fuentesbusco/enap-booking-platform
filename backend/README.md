@@ -1,98 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend - API de Reservas Sindicato ENAP
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este directorio contiene el servidor API (Backend) para la **Plataforma de Reservas del Sindicato ENAP**, desarrollado con **NestJS** y **TypeScript**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+La API está diseñada de forma modular y simula el almacenamiento persistente en memoria a través de sus servicios correspondientes, validando reglas de negocio reales tales como capacidades, tarifas por rol y solapamiento de fechas reservadas.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠️ Características Técnicas
 
-## Project setup
+*   **Framework:** NestJS 11 (Express como motor subyacente).
+*   **CORS Habilitado:** Permitido para recibir peticiones cruzadas desde el cliente Angular en `http://localhost:4200`.
+*   **Autenticación Emulada:** Login rápido de prueba que genera y firma un token en Base64 que contiene la identidad y rol del usuario.
+*   **Validación de Permisos:** Filtros de validación para endpoints de lectura y escritura basados en cabeceras `Authorization: Bearer <token>`.
+*   **Cálculo de Tarifas y Solapamientos:** Lógica matemática idéntica a la del frontend, validando colisiones contra rangos de fechas reservadas previamente.
+
+---
+
+## 📂 Estructura de Carpetas
 
 ```bash
-$ npm install
+src/
+├── announcements/          # Endpoints para anuncios públicos
+├── auth/                   # Módulo de login y lógica del mock JWT
+├── bookings/               # Endpoints de creación, cálculo, aprobación y comprobantes de reservas
+├── health/                 # Endpoint público utilitario /health
+├── spaces/                 # CRUD de espacios reservables protegidos para administración
+├── app.module.ts           # Inicialización y registro de controladores/servicios
+├── main.ts                 # Bootstrap de la app (puerto 3000 y CORS)
+└── models.ts               # Semillas de datos e interfaces de TypeScript
 ```
 
-## Compile and run the project
+---
 
+## 🚀 Endpoints de la API
+
+La API escucha por defecto en el puerto `3000` de tu localhost:
+
+### Públicos
+*   `GET /health`: Estado utilitario de salud.
+*   `POST /auth/login`: Login enviando `{ "email": "carlos.munoz@enap.cl" }`.
+*   `GET /spaces`: Listado de todos los recintos.
+*   `GET /announcements`: Mural de anuncios.
+
+### Protegidos por Token (Socio / External / Admin)
+*   `GET /bookings/me`: Reservas asociadas al usuario autenticado.
+*   `POST /bookings`: Registro de una reserva (valida disponibilidad de fechas y cupos).
+*   `POST /bookings/upload-receipt`: Simula la subida de un archivo y lo asocia a la reserva.
+
+### Protegidos para Administradores (`admin`)
+*   `POST /spaces`: Crear un nuevo recinto.
+*   `PUT /spaces/:id`: Modificar propiedades de un recinto.
+*   `DELETE /spaces/:id`: Eliminar un recinto.
+*   `GET /bookings`: Historial total de reservas del sindicato.
+*   `PATCH /bookings/:id/approve`: Aprobación de reserva.
+*   `PATCH /bookings/:id/reject`: Rechazo de reserva agregando notas de administración.
+
+---
+
+## 💻 Comandos de Ejecución
+
+Sitúate en este directorio antes de correr los comandos:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cd backend
 ```
 
-## Run tests
-
+### Instalar dependencias
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### Arrancar en modo desarrollo (Watch Mode)
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Compilar el proyecto
+```bash
+npm run build
+```
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🧪 Ejemplos de Pruebas Rápidas (cURL)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Con el servidor corriendo en `http://localhost:3000`:
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1.  **Health Check:**
+    ```bash
+    curl http://localhost:3000/health
+    ```
+2.  **Autenticarse (Login de Socio):**
+    ```bash
+    curl -X POST -H "Content-Type: application/json" -d '{"email": "carlos.munoz@enap.cl"}' http://localhost:3000/auth/login
+    ```
+3.  **Listar Reservas Propias (Socio):**
+    *(Reemplaza `<token>` con el token Base64 recibido del login anterior)*
+    ```bash
+    curl -H "Authorization: Bearer <token>" http://localhost:3000/bookings/me
+    ```
