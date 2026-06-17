@@ -62,7 +62,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] API de Espacios: Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
 
 ### Integración de Almacenamiento (AWS S3)
-- [ ] Configuración del SDK de AWS en NestJS.
+- [x] Configuración del SDK de AWS en NestJS.
 - [ ] Implementación de cargador de archivos (Multer) en el backend.
 - [ ] Endpoint para subir comprobante de pago bancario real a un bucket de **AWS S3** y guardar la URL.
 - [ ] Endpoint para subir fotos de nuevos espacios.

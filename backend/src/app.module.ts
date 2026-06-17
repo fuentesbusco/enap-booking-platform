@@ -19,6 +19,7 @@ import { SeedService } from './seed.service';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { AwsModule } from './aws/aws.module';
 
 // Entities
 import { UserEntity } from './users/user.entity';
@@ -64,6 +65,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
         },
       }),
     }),
+    AwsModule,
     NotificationsModule,
     ThrottlerModule.forRoot([{
       ttl: 60000,

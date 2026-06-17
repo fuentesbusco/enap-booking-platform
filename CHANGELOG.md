@@ -6,6 +6,12 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.10.0] - 2026-06-17
+### Añadido
+- **Configuración de AWS SDK v3:** Instalación de la dependencia `@aws-sdk/client-s3` e implementación del servicio `AwsService` y módulo `AwsModule` para administrar de forma centralizada la conexión a Amazon S3 y realizar cargas de archivos binarios de forma parametrizada.
+- **Documentación de Límites de Payload en AWS S3/API Gateway:** Registro detallado en `design.md` sobre las restricciones físicas de tamaño de payload según la arquitectura serverless/proxy de AWS (10MB para API Gateway HTTP/REST, 6MB para Lambda Proxy y el impacto de reducción a ~7.5MB / ~4.5MB debido a la codificación de archivos binarios a texto Base64).
+- **Pruebas unitarias de AWS:** Pruebas en `aws.service.spec.ts` mockeando el comportamiento de `S3Client` para validar la correcta resolución de URLs de objetos S3 tras una carga.
+
 ## [1.9.0] - 2026-06-17
 ### Añadido
 - **Limitación de Tasa Global (`ThrottlerModule`):** Configuración del módulo de rate limiting oficial de NestJS `@nestjs/throttler` de forma global con un límite de seguridad de 100 peticiones por minuto por IP.

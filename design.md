@@ -136,3 +136,17 @@ Para comunicar la aplicación de Angular con la API de NestJS:
 1.  **Actualizar Entorno:** Definir la propiedad `apiUrl: 'http://localhost:3000'` en los archivos `environment.ts` de Angular.
 2.  **Interceptor JWT:** Crear un interceptor de Angular que intercepte todas las llamadas HTTP salientes y adjunte la cabecera `Authorization: Bearer <token>` cuando el token esté disponible.
 3.  **Actualizar Clientes HTTP:** Reemplazar los retornos mock en memoria (`of(MOCK_...)`) en los servicios del frontend (`AuthService`, `BookingsService`, `SpacesService`, `AnnouncementsService`) por peticiones REST reales utilizando `HttpClient`.
+
+---
+
+## 6. Consideraciones de Carga de Archivos en AWS
+
+Al planificar la arquitectura de producción y el despliegue del sistema en AWS (ej. serverless o proxies), se deben tener en cuenta las siguientes limitaciones de tamaño para las peticiones de subida de archivos (comprobantes de pago y fotos de recintos):
+
+### Limitaciones de Payload por Arquitectura
+- **API Gateway (HTTP/REST Proxy únicamente):** Límite máximo de payload de **10 MB**.
+- **API Gateway + AWS Lambda Proxy:** Límite máximo de payload de **6 MB** (restricción estricta de invocación síncrona en AWS Lambda).
+- **Archivos Codificados en Base64:** Al convertir archivos binarios a texto Base64, el tamaño del payload aumenta aproximadamente un **33%**. Esto reduce el tamaño real máximo de los archivos que se pueden subir de forma segura a **~7.5 MB** (usando API Gateway directo) y a **~4.5 MB** (usando Lambda Proxy).
+
+> [!TIP]
+> Para evitar estas limitaciones y el consumo excesivo de memoria del servidor, una arquitectura óptima a futuro contempla el uso de **URLs Presirmadas (Presigned URLs)** de S3. El backend genera la URL autorizada y el cliente sube el archivo directamente al bucket de S3 sin sobrecargar la API.
