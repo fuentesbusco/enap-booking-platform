@@ -9,6 +9,7 @@ export interface User {
   email: string;
   role: UserRole;
   ficha_number?: string;
+  is_active?: boolean;
 }
 
 export interface Space {

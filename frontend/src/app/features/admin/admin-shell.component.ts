@@ -13,6 +13,7 @@ export class AdminShellComponent {
   auth = inject(AuthService);
   nav = [
     { path: 'reservas', icon: '📋', label: 'Reservas' },
+    { path: 'calendario', icon: '📅', label: 'Calendario' },
     { path: 'espacios', icon: '🏡', label: 'Espacios' },
     { path: 'usuarios', icon: '👥', label: 'Usuarios' },
     { path: 'avisos', icon: '📢', label: 'Avisos' },

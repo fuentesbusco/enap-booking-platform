@@ -18,6 +18,10 @@ export const adminRoutes: Routes = [
         loadComponent: () => import('./users/admin-users.component').then(m => m.AdminUsersComponent),
       },
       {
+        path: 'calendario',
+        loadComponent: () => import('./calendar/admin-calendar.component').then(m => m.AdminCalendarComponent),
+      },
+      {
         path: 'avisos',
         loadComponent: () => import('./announcements/admin-announcements.component').then(m => m.AdminAnnouncementsComponent),
       },

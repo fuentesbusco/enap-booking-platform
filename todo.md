@@ -22,9 +22,9 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 ### Panel de Administración
 - [x] **Vista de Control de Reservas:** Tablas con filtros de estado y visualización rápida de comprobantes.
 - [x] **Aprobación / Rechazo:** Acciones administrativas para cambiar el estado de las reservas a `confirmed` o `rejected`.
-- [/] **CRUD de Espacios (Frontend):** Listado y diseño visual implementado. Falta crear los formularios/modales de creación e ingreso de nuevos espacios.
-- [/] **CRUD de Usuarios (Frontend):** Listado y visualización de socios activos. Falta el desarrollo de las pantallas para añadir usuarios y activar/desactivar socios sindicales.
-- [ ] **Calendario Visual de Ocupación:** Vista tipo calendario mensual para ver qué espacios están ocupados en qué fechas de manera gráfica.
+- [x] **CRUD de Espacios (Frontend):** Listado, creación, edición y eliminación (CRUD) totalmente funcionales mediante un formulario modal interactivo.
+- [x] **CRUD de Usuarios (Frontend):** Listado de usuarios, pantallas para registrar nuevos perfiles y controles administrativos interactivos para activar/desactivar socios del sindicato.
+- [x] **Calendario Visual de Ocupación:** Vista tipo calendario mensual interactivo para ver qué espacios están ocupados en qué fechas de manera gráfica (con filtros por recinto y detalles en hovers).
 
 ---
 
@@ -56,7 +56,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
   - [x] Listado de reservas personales (`/bookings/me`) y globales para administración (`/bookings`).
   - [x] Endpoints para simular la subida del comprobante bancario (`/bookings/upload-receipt`).
   - [x] Endpoints para aprobación y rechazo de reservas por parte del administrador.
-- [ ] API de Espacios: Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
+- [x] API de Espacios: Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
 
 ### Integración de Almacenamiento (AWS S3)
 - [ ] Configuración del SDK de AWS en NestJS.

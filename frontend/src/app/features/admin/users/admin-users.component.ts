@@ -1,43 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { UsersService } from '../../../core/services/users.service';
+import { User, UserRole } from '../../../core/models';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-users.component.html',
 })
-export class AdminUsersComponent {
-  users = [
-    {
-      name: 'Carlos Muñoz Rojas',
-      rut: '12.345.678-9',
-      email: 'carlos.munoz@enap.cl',
-      role: 'socio',
-    },
-    {
-      name: 'Ana González',
-      rut: '15.678.901-2',
-      email: 'ana@gmail.com',
-      role: 'external',
-    },
-    {
-      name: 'Roberto Pérez',
-      rut: '16.789.012-3',
-      email: 'roberto@enap.cl',
-      role: 'socio',
-    },
-    {
-      name: 'Valentina Torres',
-      rut: '17.890.123-4',
-      email: 'vtorres@enap.cl',
-      role: 'socio',
-    },
-    {
-      name: 'Marcos Fuentes',
-      rut: '18.901.234-5',
-      email: 'marcos@hotmail.com',
-      role: 'external',
-    },
-  ];
+export class AdminUsersComponent implements OnInit {
+  users: User[] = [];
+
+  // Modal State
+  showModal = false;
+
+  // Form Fields
+  formFullName = '';
+  formRut = '';
+  formEmail = '';
+  formRole: UserRole = 'socio';
+  formFichaNumber = '';
+
+  constructor(private usersService: UsersService) {}
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.usersService.getAll().subscribe((list) => {
+      this.users = list;
+    });
+  }
+
+  openCreateModal() {
+    this.formFullName = '';
+    this.formRut = '';
+    this.formEmail = '';
+    this.formRole = 'socio';
+    this.formFichaNumber = '';
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+
+  saveUser() {
+    if (!this.formFullName.trim() || !this.formRut.trim() || !this.formEmail.trim()) {
+      alert('Por favor complete todos los campos obligatorios.');
+      return;
+    }
+
+    const userData = {
+      full_name: this.formFullName,
+      rut: this.formRut,
+      email: this.formEmail,
+      role: this.formRole,
+      ficha_number: this.formRole === 'socio' ? this.formFichaNumber : undefined,
+      is_active: true,
+    };
+
+    this.usersService.create(userData).subscribe(() => {
+      this.loadUsers();
+      this.closeModal();
+    });
+  }
+
+  toggleStatus(id: number) {
+    this.usersService.toggleStatus(id).subscribe((success) => {
+      if (success) {
+        this.loadUsers();
+      }
+    });
+  }
 }

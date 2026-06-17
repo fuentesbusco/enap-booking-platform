@@ -106,6 +106,9 @@ La API del backend expone los siguientes endpoints (escuchando por defecto en el
 *   `GET /health`: Estado utilitario de salud del servicio.
 *   `POST /auth/login`: Validación de credenciales simulada; entrega el token Base64 y la información del usuario.
 *   `GET /spaces`: Obtención de todos los espacios reservables y sus tarifas.
+*   `POST /spaces`: (Admin) Creación de un nuevo espacio.
+*   `PUT /spaces/:id`: (Admin) Edición y actualización de las propiedades de un espacio.
+*   `DELETE /spaces/:id`: (Admin) Eliminación de un espacio.
 *   `GET /announcements`: Lista de comunicados informativos publicados.
 *   `GET /bookings`: (Admin) Listado de todas las reservas del sistema.
 *   `GET /bookings/me`: Historial de reservas asociadas al usuario autenticado actual.
