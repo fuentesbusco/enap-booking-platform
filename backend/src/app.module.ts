@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthController } from './health/health.controller';
@@ -34,14 +35,14 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
       useFactory: (config: ConfigService) => ({
         type: 'mysql',
         host: config.get<string>('DB_HOST', 'localhost'),
-        port: config.get<number>('DB_PORT', 3306),
+        port: Number(config.get<string | number>('DB_PORT', 3306)),
         username: config.get<string>('DB_USERNAME', 'root'),
         password: config.get<string>('DB_PASSWORD', ''),
         database: config.get<string>('DB_DATABASE', 'enap_booking'),
         entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity],
-        synchronize: config.get<boolean>('DB_SYNCHRONIZE', false), // False by default for safety
+        synchronize: String(config.get('DB_SYNCHRONIZE', 'false')) === 'true',
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
-        migrationsRun: config.get<boolean>('DB_MIGRATIONS_RUN', true), // Run migrations on startup
+        migrationsRun: String(config.get('DB_MIGRATIONS_RUN', 'true')) === 'true',
       }),
     }),
     TypeOrmModule.forFeature([
@@ -51,6 +52,15 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
       Booking,
       AnnouncementEntity,
     ]),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET', 'super_secret_key_12345'),
+        signOptions: {
+          expiresIn: config.get<any>('JWT_EXPIRATION', '24h'),
+        },
+      }),
+    }),
   ],
   controllers: [
     AppController,
