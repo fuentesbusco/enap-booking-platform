@@ -89,6 +89,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [ ] Configuración de reglas de seguridad (Security Groups) y DNS.
 
 ### Automatización de Pagos (Fase 2)
-- [ ] Integración de la API de **Transbank Webpay** o **MercadoPago** en el backend.
+- [x] Integración de la API de **MercadoPago** en el backend (SDK, inicialización y credenciales).
+- [ ] Integración de la API de **Transbank Webpay** en el backend.
 - [ ] Retorno automático tras la pasarela de pagos.
 - [ ] Endpoint de Webhook para recibir notificaciones asincrónicas de confirmación de pago y actualizar el estado de la reserva inmediatamente.

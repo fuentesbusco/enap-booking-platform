@@ -6,6 +6,15 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.15.0] - 2026-06-17
+### Añadido
+- **Creación de Preferencias de Pago en Mercado Pago:** Se implementó el método `createPreference` en `MercadoPagoService` y se expuso en `POST /mercadopago/preference` en el nuevo `MercadoPagoController` (protegido por `JwtAuthGuard`). Esto permite generar un identificador único de preferencia (`id`) e `init_point` redireccionando al usuario a Checkout Pro.
+- **Pruebas Unitarias de Preferencias:** Se crearon las especificaciones `mercadopago.controller.spec.ts` y se actualizaron las de `mercadopago.service.spec.ts` mockeando el comportamiento del SDK de Mercado Pago (`Preference.create`) para validar que las peticiones se realicen correctamente sin llamadas HTTP reales.
+
+## [1.14.0] - 2026-06-17
+### Añadido
+- **Integración de SDK de Mercado Pago:** Instalación del paquete `mercadopago` y creación de `MercadoPagoModule` y `MercadoPagoService` para encapsular la inicialización de `MercadoPagoConfig` usando `MP_ACCESS_TOKEN` desde el archivo `.env`.
+
 ## [1.13.0] - 2026-06-17
 ### Añadido
 - **Carga de Fotos de Espacios a S3:** Creado el endpoint `POST /spaces/upload-photo` en `SpacesController` para permitir a administradores subir imágenes (fotos) de espacios turísticos o deportivos directamente a AWS S3.

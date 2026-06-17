@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MercadoPagoConfig } from 'mercadopago';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 @Injectable()
 export class MercadoPagoService {
@@ -17,5 +17,28 @@ export class MercadoPagoService {
 
   getMpClient(): MercadoPagoConfig {
     return this.mpClient;
+  }
+
+  async createPreference(title: string, quantity: number, unitPrice: number): Promise<any> {
+    this.logger.log(`Creando preferencia de Mercado Pago: ${title} (Cant: ${quantity}, Precio: ${unitPrice})...`);
+    try {
+      const preference = new Preference(this.mpClient);
+      const response = await preference.create({
+        body: {
+          items: [
+            {
+              id: 'preference-item',
+              title,
+              quantity,
+              unit_price: unitPrice,
+            } as any,
+          ],
+        },
+      });
+      return response;
+    } catch (error) {
+      this.logger.error('Error al crear preferencia de Mercado Pago:', error);
+      throw error;
+    }
   }
 }
