@@ -38,7 +38,8 @@ La API escucha por defecto en el puerto `3000` de tu localhost:
 
 ### Públicos
 *   `GET /health`: Estado utilitario de salud.
-*   `POST /auth/login`: Login enviando `{ "email": "carlos.munoz@enap.cl" }`.
+*   `POST /auth/login`: Login enviando `{ "email": "carlos.munoz@enap.cl", "password": "password123" }`.
+*   `POST /auth/register`: Registro de un nuevo usuario.
 *   `GET /spaces`: Listado de todos los recintos.
 *   `GET /announcements`: Mural de anuncios.
 

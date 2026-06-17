@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { User, MOCK_USER_SOCIO, MOCK_USER_ADMIN, MOCK_USER_EXTERNAL } from '../models';
+import { hashPassword } from '../auth/hash.util';
 
 @Injectable()
 export class UsersService {
@@ -44,6 +45,15 @@ export class UsersService {
     },
   ];
 
+  constructor() {
+    // Automatically initialize default users with 'password123' hashed
+    this.users.forEach((u) => {
+      if (!u.passwordHash) {
+        u.passwordHash = hashPassword('password123');
+      }
+    });
+  }
+
   getAll(): User[] {
     return this.users;
   }
@@ -60,13 +70,32 @@ export class UsersService {
     return this.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
   }
 
-  create(userData: Omit<User, 'id'>): User {
+  create(userData: Omit<User, 'id'> & { password?: string }): User {
+    const existing = this.getByEmail(userData.email);
+    if (existing) {
+      throw new ConflictException('Email already registered');
+    }
+
     const nextId = this.users.length > 0 ? Math.max(...this.users.map((u) => u.id)) + 1 : 1;
+    
+    // Hash password if provided
+    let passwordHash: string | undefined;
+    if (userData.password) {
+      passwordHash = hashPassword(userData.password);
+    } else {
+      passwordHash = hashPassword('password123'); // Default fallback password
+    }
+
+    const cleanUserData = { ...userData };
+    delete cleanUserData.password;
+
     const newUser: User = {
       id: nextId,
       is_active: userData.is_active ?? true,
-      ...userData,
+      passwordHash,
+      ...cleanUserData,
     };
+    
     this.users.push(newUser);
     return newUser;
   }

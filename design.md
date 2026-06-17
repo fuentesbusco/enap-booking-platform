@@ -97,6 +97,12 @@ Antes de registrar cualquier reserva, el backend valida si las fechas están lib
 2.  **Solapamiento de Reservas:** Verifica que no exista ninguna reserva activa (en estado `confirmed` o `pending_approval`) en el mismo recinto que coincida con las fechas solicitadas.
 3.  **Límite de Capacidad:** Valida que el número de personas en `guests` no exceda el `max_capacity` del recinto.
 
+### 3.3 Encriptación de Contraseñas (PBKDF2)
+Para resguardar las credenciales en esta fase de mock y de cara a producción, implementamos un esquema de derivación de claves criptográficas PBKDF2:
+*   **Salting:** Cada contraseña se encripta de forma exclusiva generando una semilla aleatoria (salt) de 16 bytes.
+*   **Derivación:** Se ejecutan 1000 iteraciones utilizando la función hash SHA-512.
+*   **Almacenamiento:** El password final se guarda en formato `<salt>:<hash>` en el campo `passwordHash` para ser verificado en futuros inicios de sesión sin almacenar la clave en texto plano.
+
 ---
 
 ## 4. Endpoints Habilitados en la API
@@ -104,7 +110,8 @@ Antes de registrar cualquier reserva, el backend valida si las fechas están lib
 La API del backend expone los siguientes endpoints (escuchando por defecto en el puerto `3000`):
 
 *   `GET /health`: Estado utilitario de salud del servicio.
-*   `POST /auth/login`: Validación de credenciales simulada; entrega el token Base64 y la información del usuario.
+*   `POST /auth/login`: Validación de credenciales y contraseña; entrega el token Base64 y la información del usuario.
+*   `POST /auth/register`: Registro de un nuevo usuario en la plataforma (retorna el perfil y token correspondientes).
 *   `GET /users`: (Admin) Obtención de la lista de todos los usuarios registrados.
 *   `POST /users`: (Admin) Registro de un nuevo usuario.
 *   `PATCH /users/:id/toggle-status`: (Admin) Activar o desactivar a un usuario/socio sindical.

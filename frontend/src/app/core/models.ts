@@ -10,6 +10,7 @@ export interface User {
   role: UserRole;
   ficha_number?: string;
   is_active?: boolean;
+  passwordHash?: string;
 }
 
 export interface Space {

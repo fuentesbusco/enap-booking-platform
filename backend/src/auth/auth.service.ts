@@ -1,12 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '../models';
 import { UsersService } from '../users/users.service';
+import { verifyPassword } from './hash.util';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly usersService: UsersService) {}
 
-  validateUser(email: string): User {
+  validateUser(email: string, password?: string): User {
     const user = this.usersService.getByEmail(email);
     if (!user) {
       throw new UnauthorizedException('User not registered');
@@ -14,6 +15,17 @@ export class AuthService {
     if (user.is_active === false) {
       throw new UnauthorizedException('User account is deactivated');
     }
+    
+    // Verify password if one is provided
+    if (password && user.passwordHash) {
+      const isMatch = verifyPassword(password, user.passwordHash);
+      if (!isMatch) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+    } else if (password) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
     return user;
   }
 
