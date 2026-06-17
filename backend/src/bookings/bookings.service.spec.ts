@@ -8,12 +8,14 @@ import { SpaceEntity } from '../spaces/space.entity';
 import { UserEntity } from '../users/user.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('BookingsService', () => {
   let service: BookingsService;
   let bookingRepository: jest.Mocked<Repository<Booking>>;
   let guestRepository: jest.Mocked<Repository<GuestEntity>>;
   let spacesService: jest.Mocked<SpacesService>;
+  let notificationsService: jest.Mocked<NotificationsService>;
 
   const mockSpace: SpaceEntity = {
     id: 1,
@@ -74,12 +76,17 @@ describe('BookingsService', () => {
       getById: jest.fn(),
     };
 
+    const mockNotificationsService = {
+      sendEmail: jest.fn().mockResolvedValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BookingsService,
         { provide: getRepositoryToken(Booking), useValue: mockBookingRepository },
         { provide: getRepositoryToken(GuestEntity), useValue: mockGuestRepository },
         { provide: SpacesService, useValue: mockSpacesService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
@@ -87,6 +94,7 @@ describe('BookingsService', () => {
     bookingRepository = module.get(getRepositoryToken(Booking));
     guestRepository = module.get(getRepositoryToken(GuestEntity));
     spacesService = module.get(SpacesService);
+    notificationsService = module.get(NotificationsService);
   });
 
   it('should be defined', () => {
@@ -164,7 +172,34 @@ describe('BookingsService', () => {
       expect(spacesService.getById).toHaveBeenCalledWith(mockSpace.id);
       expect(bookingRepository.save).toHaveBeenCalled();
       expect(guestRepository.save).toHaveBeenCalled();
+      expect(notificationsService.sendEmail).toHaveBeenCalledWith(
+        mockUser.email,
+        expect.stringContaining(mockBooking.bookingCode),
+        expect.any(String),
+      );
       expect(result).toEqual(mockBooking);
+    });
+
+    it('should create booking even if email notification fails', async () => {
+      spacesService.getById.mockResolvedValue(mockSpace);
+      bookingRepository.count.mockResolvedValue(0);
+      bookingRepository.create.mockReturnValue(mockBooking);
+      bookingRepository.save.mockResolvedValue(mockBooking);
+      bookingRepository.findOne.mockResolvedValue(mockBooking);
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]),
+      };
+      bookingRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+      notificationsService.sendEmail.mockRejectedValue(new Error('SMTP error'));
+
+      const guests = [{ full_name: 'Juan Perez', rut: '18.888.888-8' }];
+      const result = await service.createBooking(mockUser, mockSpace.id, '2025-12-15', '2025-12-18', guests);
+
+      expect(result).toEqual(mockBooking);
+      expect(notificationsService.sendEmail).toHaveBeenCalled();
     });
   });
 

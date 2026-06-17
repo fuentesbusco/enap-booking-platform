@@ -6,6 +6,16 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.3.0] - 2026-06-17
+### Añadido
+- **Plantilla HTML de Confirmación de Reserva:** Creación de una plantilla de correo electrónico HTML con estilos CSS inline utilizando los colores corporativos del Sindicato (Forest `#1B4332`, Sage `#52796F`, Mist `#F0F4F1`, Charcoal `#1A1A2E`).
+- **Detalle Dinámico en Correo:** El correo incluye toda la información crítica para el usuario: código de reserva, nombre del espacio, fechas formateadas en `dd/MM/yyyy`, número de invitados con su lista de nombres y RUTs, y un desglose financiero completo.
+- **Datos de Transferencia Bancaria:** Inclusión de un recuadro destacado con los datos de cuenta del Banco Estado del Sindicato y las instrucciones para cargar el comprobante dentro de las 24 horas.
+- **Integración asíncrona:** Inyección de `NotificationsService` en `BookingsService` para disparar el correo de confirmación de reserva en segundo plano (fire-and-forget), previniendo cualquier retraso en la API por latencia SMTP.
+- **Pruebas y Cobertura:** Configuración de mocks y assertions en `bookings.service.spec.ts` para verificar la llamada al método de envío de correos y la tolerancia a fallos del servicio en caso de errores en el envío de notificaciones.
+
+---
+
 ## [1.2.0] - 2026-06-16
 ### Añadido (Backend - MySQL & TypeORM)
 - **Persistencia en Base de Datos Local:** Integración completa de **MySQL** utilizando **TypeORM** en reemplazo de los arreglos en memoria temporales.

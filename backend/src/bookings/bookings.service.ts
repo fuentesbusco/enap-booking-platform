@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Booking } from './booking.entity';
@@ -7,9 +7,12 @@ import { SpaceEntity } from '../spaces/space.entity';
 import { UserEntity } from '../users/user.entity';
 import { PriceBreakdown, BookingStatus, BLOCKED_DATES } from '../models';
 import { SpacesService } from '../spaces/spaces.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { getBookingConfirmationEmailTemplate } from '../notifications/templates/booking-confirmation.template';
 
 @Injectable()
 export class BookingsService {
+  private readonly logger = new Logger(BookingsService.name);
   private blockedDates: Record<number, string[]> = { ...BLOCKED_DATES };
 
   constructor(
@@ -18,6 +21,7 @@ export class BookingsService {
     @InjectRepository(GuestEntity)
     private readonly guestRepository: Repository<GuestEntity>,
     private readonly spacesService: SpacesService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async getAll(): Promise<Booking[]> {
@@ -110,7 +114,23 @@ export class BookingsService {
     await this.guestRepository.save(guestEntities);
 
     // Return the full populated booking entity
-    return this.getById(savedBooking.id);
+    const fullBooking = await this.getById(savedBooking.id);
+
+    // Send confirmation email in the background to prevent SMTP latency or failures from blocking the API response
+    if (fullBooking.user?.email) {
+      const emailHtml = getBookingConfirmationEmailTemplate(fullBooking);
+      this.notificationsService
+        .sendEmail(
+          fullBooking.user.email,
+          `Confirmación de reserva realizada - Código: ${fullBooking.bookingCode}`,
+          emailHtml,
+        )
+        .catch((error) => {
+          this.logger.error(`Error al enviar correo de confirmación de reserva ${fullBooking.bookingCode}:`, error);
+        });
+    }
+
+    return fullBooking;
   }
 
   async approveBooking(id: number): Promise<Booking> {
