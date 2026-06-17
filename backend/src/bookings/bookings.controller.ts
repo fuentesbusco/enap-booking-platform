@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Patch, Body, Headers, Param, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Headers, Param, UnauthorizedException, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { AuthService } from '../auth/auth.service';
 import { Guest } from '../models';
 import { UserEntity } from '../users/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('bookings')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
@@ -12,6 +16,7 @@ export class BookingsController {
   ) {}
 
   @Get()
+  @Roles('admin')
   async getAll(@Headers() headers: Record<string, string>) {
     await this.getAdminUser(headers);
     return this.bookingsService.getAll();
@@ -55,6 +60,7 @@ export class BookingsController {
   }
 
   @Patch(':id/approve')
+  @Roles('admin')
   async approve(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
@@ -64,6 +70,7 @@ export class BookingsController {
   }
 
   @Patch(':id/reject')
+  @Roles('admin')
   async reject(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,

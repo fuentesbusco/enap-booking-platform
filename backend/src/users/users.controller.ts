@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Patch, Param, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../models';
 import { UserEntity } from '../users/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -12,12 +16,14 @@ export class UsersController {
   ) {}
 
   @Get()
+  @Roles('admin')
   async getAll(@Headers() headers: Record<string, string>) {
     await this.getAdminUser(headers);
     return this.usersService.getAll();
   }
 
   @Post()
+  @Roles('admin')
   async create(
     @Headers() headers: Record<string, string>,
     @Body() body: Omit<User, 'id'>,
@@ -27,6 +33,7 @@ export class UsersController {
   }
 
   @Patch(':id/toggle-status')
+  @Roles('admin')
   async toggleStatus(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,

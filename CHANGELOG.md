@@ -6,6 +6,18 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.7.0] - 2026-06-17
+### Añadido
+- **Guard de Autenticación JWT (`JwtAuthGuard`):** Implementación de guard personalizado en NestJS que extrae, parsea y valida tokens Bearer desde la cabecera `Authorization` utilizando `AuthService.verifyToken` e inyecta el usuario decodificado en la petición (`request.user`).
+- **Guard de Autorización de Roles (`RolesGuard`):** Guard personalizado que lee metadatos de rutas para restringir endpoints de manera granular en base a roles.
+- **Decorador `@Roles()`:** Decorador de metadatos personalizado para asociar roles (`socio`, `external`, `admin`) a controladores o endpoints específicos.
+- **Decorador `@CurrentUser()`:** Decorador de parámetros para extraer limpiamente el objeto de usuario autenticado del request en los controladores.
+- **Protección de Controladores:**
+  - `BookingsController`: Protegido a nivel global con `JwtAuthGuard` y `RolesGuard`. Endpoints `getAll`, `approve` y `reject` restringidos a `admin`.
+  - `UsersController`: Protegido a nivel global. Endpoints `getAll`, `create` y `toggleStatus` restringidos a `admin`.
+  - `SpacesController`: Protegido de manera selectiva. Endpoints de escritura (`create`, `update`, `delete`) protegidos y restringidos a `admin`, manteniendo `getAll` público.
+- **Pruebas unitarias para Guards:** Creación de especificaciones completas para `jwt-auth.guard.spec.ts` y `roles.guard.spec.ts` que validan todas las ramificaciones y excepciones lanzadas, logrando un 100% de cobertura en los guards de seguridad.
+
 ## [1.6.0] - 2026-06-17
 ### Añadido
 - **Plantilla HTML de Notificación al Administrador (Nueva Reserva):** Creación de una plantilla de correo electrónico HTML utilizando los colores corporativos del Sindicato, incluyendo un distintivo visual de estado "Nueva Solicitud" (`#E8F0FE` / `#1A73E8`) para alertar al administrador de nuevas reservas registradas.

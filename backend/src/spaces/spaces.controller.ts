@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Headers, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { SpacesService } from './spaces.service';
 import { AuthService } from '../auth/auth.service';
 import { Space } from '../models';
 import { UserEntity } from '../users/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('spaces')
 export class SpacesController {
@@ -17,6 +20,8 @@ export class SpacesController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async create(
     @Headers() headers: Record<string, string>,
     @Body() body: Omit<Space, 'id'>,
@@ -26,6 +31,8 @@ export class SpacesController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async update(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
@@ -36,6 +43,8 @@ export class SpacesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   async delete(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
