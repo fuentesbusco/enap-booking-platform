@@ -6,6 +6,10 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.11.0] - 2026-06-17
+### Añadido
+- **Cargador de archivos (Multer):** Instalación de la dependencia de desarrollo `@types/multer` y configuración global del módulo `MulterModule` en `AppModule` con un límite de tamaño de archivo de 10 MB (coherente con las directivas físicas de API Gateway HTTP/REST Proxy).
+
 ## [1.10.0] - 2026-06-17
 ### Añadido
 - **Configuración de AWS SDK v3:** Instalación de la dependencia `@aws-sdk/client-s3` e implementación del servicio `AwsService` y módulo `AwsModule` para administrar de forma centralizada la conexión a Amazon S3 y realizar cargas de archivos binarios de forma parametrizada.

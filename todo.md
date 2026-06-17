@@ -63,7 +63,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 
 ### Integración de Almacenamiento (AWS S3)
 - [x] Configuración del SDK de AWS en NestJS.
-- [ ] Implementación de cargador de archivos (Multer) en el backend.
+- [x] Implementación de cargador de archivos (Multer) en el backend.
 - [ ] Endpoint para subir comprobante de pago bancario real a un bucket de **AWS S3** y guardar la URL.
 - [ ] Endpoint para subir fotos de nuevos espacios.
 

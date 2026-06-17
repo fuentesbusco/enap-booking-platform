@@ -20,6 +20,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AwsModule } from './aws/aws.module';
+import { MulterModule } from '@nestjs/platform-express';
+
 
 // Entities
 import { UserEntity } from './users/user.entity';
@@ -67,6 +69,11 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
     }),
     AwsModule,
     NotificationsModule,
+    MulterModule.register({
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB limit
+      },
+    }),
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 100,
