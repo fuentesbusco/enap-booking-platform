@@ -227,13 +227,29 @@ describe('BookingsService', () => {
       expect(notificationsService.sendEmail).toHaveBeenCalled();
     });
 
-    it('should reject a booking with notes', async () => {
+    it('should reject a booking with notes and send rejection email', async () => {
       bookingRepository.findOne.mockResolvedValue(mockBooking);
       bookingRepository.save.mockImplementation(async (b: any) => b);
 
-      const result = await service.rejectBooking(1, 'Reject reason');
+      const result = await service.rejectBooking(1, 'Comprobante no legible');
       expect(result.status).toBe('rejected');
-      expect(result.adminNotes).toBe('Reject reason');
+      expect(result.adminNotes).toBe('Comprobante no legible');
+      expect(notificationsService.sendEmail).toHaveBeenCalledWith(
+        mockUser.email,
+        expect.stringContaining(mockBooking.bookingCode),
+        expect.stringContaining('Comprobante no legible'),
+      );
+    });
+
+    it('should reject a booking even if email notification fails', async () => {
+      bookingRepository.findOne.mockResolvedValue(mockBooking);
+      bookingRepository.save.mockImplementation(async (b: any) => b);
+      notificationsService.sendEmail.mockRejectedValueOnce(new Error('SMTP error'));
+
+      const result = await service.rejectBooking(1, 'Comprobante no legible');
+      expect(result.status).toBe('rejected');
+      expect(result.adminNotes).toBe('Comprobante no legible');
+      expect(notificationsService.sendEmail).toHaveBeenCalled();
     });
 
     it('should upload a receipt URL', async () => {

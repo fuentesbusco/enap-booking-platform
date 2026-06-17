@@ -6,6 +6,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.5.0] - 2026-06-17
+### Añadido
+- **Plantilla HTML de Rechazo de Comprobante (Observación de Pago):** Creación de una plantilla de correo electrónico HTML utilizando los colores corporativos del Sindicato con detalles de advertencia visual clara (`#C5221F` / `#FFF5F5`) para notificar al socio que su comprobante de pago fue rechazado.
+- **Visualización de Motivo de Rechazo:** Inclusión dinámica del motivo (notas administrativas o `adminNotes` ingresadas por el administrador) de forma destacada en el correo.
+- **Instrucciones para Subir Nuevo Comprobante:** Explicación paso a paso de los pasos para volver a cargar un comprobante válido en la sección "Mis Reservas" de la plataforma, incluyendo una caja de referencia rápida con los datos de transferencia del sindicato.
+- **Integración en Rechazo de Reservas:** Integración del envío asíncrono en segundo plano del correo en el método `rejectBooking` de `BookingsService`.
+- **Pruebas unitarias de rechazo:** Añadidas pruebas en `bookings.service.spec.ts` para verificar el envío correcto del correo con el motivo de rechazo correspondiente, controlando con tolerancia de fallos cualquier problema SMTP.
+
 ## [1.4.0] - 2026-06-17
 ### Añadido
 - **Plantilla HTML de Confirmación de Pago (Reserva Aprobada):** Creación de una plantilla de correo electrónico HTML utilizando los colores corporativos del Sindicato para informar al usuario de la aprobación de su pago y la confirmación oficial de su reserva.

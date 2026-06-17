@@ -10,6 +10,7 @@ import { SpacesService } from '../spaces/spaces.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { getBookingConfirmationEmailTemplate } from '../notifications/templates/booking-confirmation.template';
 import { getBookingPaymentConfirmedEmailTemplate } from '../notifications/templates/booking-payment-confirmed.template';
+import { getBookingPaymentRejectedEmailTemplate } from '../notifications/templates/booking-payment-rejected.template';
 
 @Injectable()
 export class BookingsService {
@@ -159,7 +160,22 @@ export class BookingsService {
     const booking = await this.getById(id);
     booking.status = 'rejected';
     booking.adminNotes = notes;
-    return this.bookingRepository.save(booking);
+    const savedBooking = await this.bookingRepository.save(booking);
+
+    if (savedBooking.user?.email) {
+      const emailHtml = getBookingPaymentRejectedEmailTemplate(savedBooking);
+      this.notificationsService
+        .sendEmail(
+          savedBooking.user.email,
+          `Observaciones en comprobante de pago - Código: ${savedBooking.bookingCode}`,
+          emailHtml,
+        )
+        .catch((error) => {
+          this.logger.error(`Error al enviar correo de rechazo de pago para reserva ${savedBooking.bookingCode}:`, error);
+        });
+    }
+
+    return savedBooking;
   }
 
   async uploadReceipt(id: number, receiptUrl: string): Promise<Booking> {
