@@ -43,7 +43,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [ ] Implementación de seguridad real con **JWT (JSON Web Tokens)**.
 - [ ] Registro de usuarios y encriptación de contraseñas.
 - [ ] Decoradores y Guards personalizados en NestJS para restringir endpoints según roles (`socio`, `external`, `admin`).
-- [ ] API de usuarios: Activación/desactivación de socios sindicales, consulta de perfiles.
+- [x] API de usuarios: Activación/desactivación de socios sindicales, consulta de perfiles y registro de nuevos usuarios.
 
 ### Gestión de Espacios y Reservas
 - [x] API de Espacios: Endpoints GET para consultar espacios disponibles.

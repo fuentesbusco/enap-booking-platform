@@ -10,6 +10,8 @@ import { AnnouncementsController } from './announcements/announcements.controlle
 import { AnnouncementsService } from './announcements/announcements.service';
 import { BookingsController } from './bookings/bookings.controller';
 import { BookingsService } from './bookings/bookings.service';
+import { UsersController } from './users/users.controller';
+import { UsersService } from './users/users.service';
 
 @Module({
   imports: [],
@@ -20,6 +22,7 @@ import { BookingsService } from './bookings/bookings.service';
     SpacesController,
     AnnouncementsController,
     BookingsController,
+    UsersController,
   ],
   providers: [
     AppService,
@@ -27,6 +30,7 @@ import { BookingsService } from './bookings/bookings.service';
     SpacesService,
     AnnouncementsService,
     BookingsService,
+    UsersService,
   ],
 })
 export class AppModule {}

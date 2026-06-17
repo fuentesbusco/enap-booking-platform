@@ -105,6 +105,10 @@ La API del backend expone los siguientes endpoints (escuchando por defecto en el
 
 *   `GET /health`: Estado utilitario de salud del servicio.
 *   `POST /auth/login`: Validación de credenciales simulada; entrega el token Base64 y la información del usuario.
+*   `GET /users`: (Admin) Obtención de la lista de todos los usuarios registrados.
+*   `POST /users`: (Admin) Registro de un nuevo usuario.
+*   `PATCH /users/:id/toggle-status`: (Admin) Activar o desactivar a un usuario/socio sindical.
+*   `GET /users/profile`: Obtención del perfil del usuario autenticado actual.
 *   `GET /spaces`: Obtención de todos los espacios reservables y sus tarifas.
 *   `POST /spaces`: (Admin) Creación de un nuevo espacio.
 *   `PUT /spaces/:id`: (Admin) Edición y actualización de las propiedades de un espacio.

@@ -1,18 +1,18 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { User, MOCK_USER_SOCIO, MOCK_USER_ADMIN, MOCK_USER_EXTERNAL } from '../models';
+import { User } from '../models';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {
-  private readonly mockUsers: Record<string, User> = {
-    'carlos.munoz@enap.cl': MOCK_USER_SOCIO,
-    'admin@sindicatoenap.cl': MOCK_USER_ADMIN,
-    'ana@gmail.com': MOCK_USER_EXTERNAL,
-  };
+  constructor(private readonly usersService: UsersService) {}
 
   validateUser(email: string): User {
-    const user = this.mockUsers[email.toLowerCase()];
+    const user = this.usersService.getByEmail(email);
     if (!user) {
       throw new UnauthorizedException('User not registered');
+    }
+    if (user.is_active === false) {
+      throw new UnauthorizedException('User account is deactivated');
     }
     return user;
   }
@@ -27,7 +27,11 @@ export class AuthService {
     try {
       const decodedStr = Buffer.from(token, 'base64').toString('utf8');
       const payload = JSON.parse(decodedStr);
-      return this.mockUsers[payload.email.toLowerCase()] || null;
+      const user = this.usersService.getByEmail(payload.email);
+      if (!user || user.is_active === false) {
+        return null;
+      }
+      return user;
     } catch {
       return null;
     }
