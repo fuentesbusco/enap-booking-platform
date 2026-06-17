@@ -21,6 +21,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AwsModule } from './aws/aws.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { MercadoPagoModule } from './mercadopago/mercadopago.module';
 
 
 // Entities
@@ -74,6 +75,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
         fileSize: 10 * 1024 * 1024, // 10MB limit
       },
     }),
+    MercadoPagoModule,
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 100,
