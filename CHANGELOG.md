@@ -6,6 +6,10 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.15.1] - 2026-06-17
+### Solucionado
+- **Error de Dependencias de JwtAuthGuard (`UnknownDependenciesException`):** Reubicado el registro de `MercadoPagoController` desde `MercadoPagoModule` hacia `AppModule.controllers`. Esto permite que el controlador y sus guards de autenticación resuelvan adecuadamente la dependencia de `AuthService` (que está declarada localmente en `AppModule`), alineándose con la arquitectura de controladores globales del proyecto.
+
 ## [1.15.0] - 2026-06-17
 ### Añadido
 - **Creación de Preferencias de Pago en Mercado Pago:** Se implementó el método `createPreference` en `MercadoPagoService` y se expuso en `POST /mercadopago/preference` en el nuevo `MercadoPagoController` (protegido por `JwtAuthGuard`). Esto permite generar un identificador único de preferencia (`id`) e `init_point` redireccionando al usuario a Checkout Pro.

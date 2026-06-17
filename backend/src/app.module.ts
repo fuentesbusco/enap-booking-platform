@@ -22,6 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AwsModule } from './aws/aws.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MercadoPagoModule } from './mercadopago/mercadopago.module';
+import { MercadoPagoController } from './mercadopago/mercadopago.controller';
 
 
 // Entities
@@ -89,6 +90,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
     AnnouncementsController,
     BookingsController,
     UsersController,
+    MercadoPagoController,
   ],
   providers: [
     AppService,

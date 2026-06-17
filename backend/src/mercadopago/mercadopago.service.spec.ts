@@ -65,7 +65,6 @@ describe('MercadoPagoService', () => {
       body: {
         items: [
           {
-            id: 'preference-item',
             title: 'Test cabin',
             quantity: 1,
             unit_price: 50000,
