@@ -46,7 +46,7 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Persistencia en sessionStorage**
   - *Acción:* Sin loguearse, seleccionar espacio, fechas y acompañantes. Avanzar al paso de pago.
   - *Resultado esperado:* Redirección automática a la vista de login, guardando el objeto de reserva en la sesión del navegador.
-- [ ] **Identificación como Invitado**
+- [x] **Identificación como Invitado**
   - *Acción:* En la pestaña *Invitado*, rellenar los datos personales e introducir una Ficha de Socio Patrocinador (ej: `ENP-0078`).
   - *Resultado esperado:* Inicio de sesión temporal exitoso, redirección directa de vuelta al Paso 3 de la reserva con los datos del Paso 1 y 2 restaurados.
 
@@ -61,8 +61,8 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - [x] Crear un nuevo espacio (ej: *Cabaña El Roble*) completando todos los campos de precios.
   - [x] Editar precios de un espacio existente y verificar cambios en el flujo de reserva.
   - [x] Eliminar un espacio sin reservas activas.
-- [ ] **Administración de Usuarios (`/admin/usuarios`)**
-  - [ ] Crear un usuario con contraseña por defecto (`password123`) desde el panel.
+- [x] **Administración de Usuarios (`/admin/usuarios`)**
+  - [x] Crear un usuario con contraseña por defecto (`password123`) desde el panel.
   - [x] Cambiar el estado de un usuario a **Inactivo** y verificar que no puede iniciar sesión en la app.
 - [ ] **Administración de Avisos (`/admin/avisos`)**
   - [x] Crear un aviso destacando la publicación (Pinned).
@@ -71,9 +71,9 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [ ] **Aprobación de Comprobantes (`/admin/reservas`)**
   - [ ] Visualizar el enlace `📄 Comprobante` del depósito y abrirlo en pestaña nueva.
   - [x] Aprobar una reserva y verificar que pasa a estado **Confirmada** (tanto para admin como para el cliente).
-- [ ] **Rechazo de Comprobantes con Observaciones**
+- [x] **Rechazo de Comprobantes con Observaciones**
   - [x] Rechazar una reserva ingresando un comentario de retroalimentación.
-  - [ ] Verificar que el cliente ve la reserva en estado **"Sin pago"** y visualiza las notas del admin.
+  - [x] Verificar que el cliente ve la reserva en estado **"Sin pago"** y visualiza las notas del admin.
 
 ---
 
@@ -92,6 +92,8 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 
 ## 6. Comentarios revision
 
+# Primera revision
+
 - El usuario invitado puede no tener codigo de socio
 - En la pagina no existe como concepto el usuario externo, causa confusión con el usuario invitado.
 - Para piscina, los 5 invitados gratis sale como -$17.500, pero el total sale $0. Puede causar confusion si el usuario tiene menos de 5 inivitados, o no invitados.
@@ -105,3 +107,11 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - En la adminsitracion, al cambiar de seccion, o realizar una accion no hay indicadores visuales de que el sistema esta procesando, pareciera que está haciendo nada y puede confundir al usuario y hacer que haga click de nuevo generando posibles doble click y mala experiencia.
 - Al registrar un usuario nuevo existosamente, el sistema redirecciona al home con el login ya activo, pero no se le muestra ningun indicador de exito al usuario, lo que puede generar confusión.
 - Al hacer logout el usuario no ve ningun feedback visual, solo cambiar rápidamente la visibilidad de las opciones del menu, pero no es claro para el usuario.
+
+# Segunda revision
+
+- En el panel de adminsitacion de reservas, podria haber una columna indicando si es o no socio para mayor claridad.
+- Al crear un aviso destacado, al parecer no toma el checkbox de la administracion ya que no queda destacado.
+- Al crear un usuario por la administracion, se crea y se puede loguear, pero no queda claro que el password inicial es password123, desde este lugar, crear contraseña alfanumerica aleatoria de 6 caracteres y enviar por correo.
+- En la pagina, perfil socio, al entrar a "mis Reservas" se ve sin reservas y luego aparecen las reservas de otro usuario, falta loading.
+- Falta una seccion adminitrable de galeria de imagenes, que podemos ponerle "galeria", "fotos" o "conoce el centro".
