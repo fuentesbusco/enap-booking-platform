@@ -38,6 +38,7 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 - [x] **Contraseñas Temporales:** Generación de clave aleatoria de 6 caracteres al crear un usuario, visible en el toast de éxito.
 - [x] **Galería de Imágenes (CRUD):** Panel CRUD interactivo en `/admin/galeria` para agregar y eliminar fotos de la galería.
 - [x] **Checkbox de Avisos Destacados:** Corrección en el checkbox de avisos en la administración para persistir y ordenar correctamente los avisos fijos.
+- [x] **Imágenes en Avisos (CRUD):** Campo de URL de imagen en el formulario de creación de avisos, visualización de miniatura en la lista y almacenamiento en base de datos.
 - [x] **Calendario Visual de Ocupación:** Vista tipo calendario mensual interactivo para ver qué espacios están ocupados en qué fechas de manera gráfica (con filtros por recinto y detalles en hovers).
 
 ---

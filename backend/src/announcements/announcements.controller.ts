@@ -17,9 +17,22 @@ export class AnnouncementsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async create(
-    @Body() body: { title: string; body: string; imageUrl?: string; isPinned?: boolean; is_pinned?: boolean },
+    @Body() body: { 
+      title: string; 
+      body: string; 
+      imageUrl?: string; 
+      image_url?: string; 
+      isPinned?: boolean; 
+      is_pinned?: boolean 
+    },
   ) {
-    return this.announcementsService.create(body);
+    const payload = {
+      title: body.title,
+      body: body.body,
+      imageUrl: body.imageUrl ?? body.image_url,
+      isPinned: body.isPinned ?? body.is_pinned ?? false,
+    };
+    return this.announcementsService.create(payload);
   }
 
   @Delete(':id')

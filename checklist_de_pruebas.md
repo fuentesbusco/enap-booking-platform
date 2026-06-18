@@ -74,8 +74,8 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - [x] Crear un usuario verificando la generación automática de la contraseña temporal de 6 caracteres, su exposición en el mensaje de éxito (toast) y envío ficticio por correo.
   - [x] Cambiar el estado de un usuario a **Inactivo** y verificar que no puede iniciar sesión en la app.
 - [x] **Administración de Avisos (`/admin/avisos`)**
-  - [x] Crear un aviso destacando la publicación (Pinned).
-  - [x] Confirmar que aparece al inicio del muro de noticias en la Home (ordenado correctamente si hay más de un aviso fijo).
+  - [x] Crear un aviso destacando la publicación (Pinned) e ingresando una URL de imagen opcional (ej: `/images/quincho.jpeg`).
+  - [x] Confirmar que aparece al inicio del muro de noticias en la Home mostrando su respectiva imagen, y que se previsualiza la miniatura en la lista de administración.
   - [x] Eliminar un aviso y confirmar que desaparece de la Home y del listado de admin.
 - [x] **Aprobación de Comprobantes (`/admin/reservas`)**
   - [x] Visualizar el enlace `📄 Comprobante` del depósito y abrirlo en pestaña nueva.

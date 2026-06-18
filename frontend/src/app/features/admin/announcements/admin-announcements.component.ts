@@ -24,6 +24,7 @@ export class AdminAnnouncementsComponent implements OnInit {
   // Form Fields
   formTitle = '';
   formBody = '';
+  formImageUrl = '';
   formIsPinned = false;
 
   ngOnInit() {
@@ -37,6 +38,7 @@ export class AdminAnnouncementsComponent implements OnInit {
   openCreateModal() {
     this.formTitle = '';
     this.formBody = '';
+    this.formImageUrl = '';
     this.formIsPinned = false;
     this.showModal = true;
   }
@@ -56,6 +58,7 @@ export class AdminAnnouncementsComponent implements OnInit {
     const annData = {
       title: this.formTitle,
       body: this.formBody,
+      image_url: this.formImageUrl.trim() || undefined,
       is_pinned: this.formIsPinned,
     };
 
