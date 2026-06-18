@@ -106,3 +106,23 @@ backend/src/
 Para más detalles acerca del diseño del sistema, modelos de datos, reglas de negocio y hoja de ruta de desarrollo, consulta los siguientes archivos en la raíz:
 *   📄 **[design.md](file:///home/daniel/projects/enap-mock-frontend/design.md):** Arquitectura detallada, modelos de datos, reglas de precios y plan de migración al backend.
 *   📄 **[todo.md](file:///home/daniel/projects/enap-mock-frontend/todo.md):** Listado de módulos por implementar y progreso actual del frontend y backend.
+
+---
+
+## 🔑 Credenciales de Prueba (Testing Local)
+
+El backend inicializa automáticamente la base de datos con las siguientes cuentas de prueba (contraseña común para todas: `password123`):
+
+*   **Socio (Cliente):** `carlos.munoz@enap.cl`
+*   **Administrador:** `admin@sindicatoenap.cl` (Habilita la pestaña **"Administración"** en la barra de navegación)
+*   **Usuario Externo:** `ana@gmail.com`
+
+*Nota: La pantalla de ingreso (`/ingresar`) incluye botones de acceso rápido (**"Socio Demo"** y **"Admin Demo"**) que inician sesión automáticamente con las credenciales de prueba con un solo clic.*
+
+### 🏕️ Flujo de Reserva como Invitado
+Para realizar una reserva sin tener una cuenta registrada en la plataforma:
+1. Navega por el catálogo de **Espacios**, selecciona uno y haz clic en **"Reservar"**.
+2. Rellena los datos de fechas e invitados.
+3. Al avanzar al paso de Pago, el sistema detectará que no estás logueado y te llevará a la pantalla de ingreso, conservando tu reserva en segundo plano (`sessionStorage`).
+4. Selecciona la pestaña **"Invitado"**, completa tus datos personales (nombre, RUT, correo), introduce tu **Código de Socio** de pruebas (ej: `ENP-0078`) y presiona **"Continuar como Invitado"**.
+5. Se te autenticará de forma temporal y regresarás directamente al paso de pago para cargar el comprobante bancario real y confirmar tu reserva.
