@@ -5,11 +5,13 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { User, mapUserToFrontend } from '../models';
 import { environment } from '../../../environments/environment';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private toastService = inject(ToastService);
   
   currentUser = signal<User | null>(null);
 
@@ -32,6 +34,7 @@ export class AuthService {
         this.currentUser.set(mappedUser);
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('user', JSON.stringify(mappedUser));
+        this.toastService.success(`¡Bienvenido, ${mappedUser.full_name}!`);
       }),
       map(({ token, user }) => ({ token, user: mapUserToFrontend(user) }))
     );
@@ -51,6 +54,7 @@ export class AuthService {
         this.currentUser.set(mappedUser);
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('user', JSON.stringify(mappedUser));
+        this.toastService.success(`¡Registro exitoso! Bienvenido, ${mappedUser.full_name}.`);
       }),
       map(({ token, user }) => ({ token, user: mapUserToFrontend(user) }))
     );
@@ -62,6 +66,7 @@ export class AuthService {
     sessionStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    this.toastService.info('Sesión cerrada correctamente.');
     this.router.navigate(['/']);
   }
 

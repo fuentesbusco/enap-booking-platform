@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../core/services/users.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { User, UserRole } from '../../../core/models';
 
 @Component({
@@ -11,7 +12,11 @@ import { User, UserRole } from '../../../core/models';
   templateUrl: './admin-users.component.html',
 })
 export class AdminUsersComponent implements OnInit {
+  private usersService = inject(UsersService);
+  private toastService = inject(ToastService);
+
   users: User[] = [];
+  loading = false;
 
   // Modal State
   showModal = false;
@@ -22,8 +27,6 @@ export class AdminUsersComponent implements OnInit {
   formEmail = '';
   formRole: UserRole = 'socio';
   formFichaNumber = '';
-
-  constructor(private usersService: UsersService) {}
 
   ngOnInit() {
     this.loadUsers();
@@ -50,9 +53,11 @@ export class AdminUsersComponent implements OnInit {
 
   saveUser() {
     if (!this.formFullName.trim() || !this.formRut.trim() || !this.formEmail.trim()) {
-      alert('Por favor complete todos los campos obligatorios.');
+      this.toastService.warning('Por favor complete todos los campos obligatorios.');
       return;
     }
+    if (this.loading) return;
+    this.loading = true;
 
     const userData = {
       full_name: this.formFullName,
@@ -63,16 +68,34 @@ export class AdminUsersComponent implements OnInit {
       is_active: true,
     };
 
-    this.usersService.create(userData).subscribe(() => {
-      this.loadUsers();
-      this.closeModal();
+    this.usersService.create(userData).subscribe({
+      next: () => {
+        this.toastService.success('Usuario registrado exitosamente.');
+        this.loadUsers();
+        this.closeModal();
+        this.loading = false;
+      },
+      error: (err) => {
+        this.toastService.error(err.error?.message || 'Error al registrar el usuario.');
+        this.loading = false;
+      }
     });
   }
 
   toggleStatus(id: number) {
-    this.usersService.toggleStatus(id).subscribe((success) => {
-      if (success) {
-        this.loadUsers();
+    if (this.loading) return;
+    this.loading = true;
+    this.usersService.toggleStatus(id).subscribe({
+      next: (success) => {
+        this.loading = false;
+        if (success) {
+          this.toastService.success('Estado del usuario actualizado con éxito.');
+          this.loadUsers();
+        }
+      },
+      error: () => {
+        this.toastService.error('Error al actualizar el estado del usuario.');
+        this.loading = false;
       }
     });
   }

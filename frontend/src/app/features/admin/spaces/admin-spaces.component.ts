@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpacesService } from '../../../core/services/spaces.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Space, SpaceType } from '../../../core/models';
 
 @Component({
@@ -11,7 +12,11 @@ import { Space, SpaceType } from '../../../core/models';
   templateUrl: './admin-spaces.component.html',
 })
 export class AdminSpacesComponent implements OnInit {
+  private spacesService = inject(SpacesService);
+  private toastService = inject(ToastService);
+
   spaces: Space[] = [];
+  loading = false;
   
   // Modal State
   showModal = false;
@@ -29,8 +34,6 @@ export class AdminSpacesComponent implements OnInit {
   formFreeGuestsForSocio = 0;
   formImage = '';
   formAmenities = '';
-
-  constructor(private spacesService: SpacesService) {}
 
   ngOnInit() {
     this.loadSpaces();
@@ -84,9 +87,11 @@ export class AdminSpacesComponent implements OnInit {
 
   saveSpace() {
     if (!this.formName.trim() || !this.formDescription.trim()) {
-      alert('Por favor complete los campos obligatorios.');
+      this.toastService.warning('Por favor complete los campos obligatorios.');
       return;
     }
+    if (this.loading) return;
+    this.loading = true;
 
     const amenitiesList = this.formAmenities
       .split(',')
@@ -107,23 +112,51 @@ export class AdminSpacesComponent implements OnInit {
     };
 
     if (this.isEditMode && this.editingId !== null) {
-      this.spacesService.update(this.editingId, spaceData).subscribe(() => {
-        this.loadSpaces();
-        this.closeModal();
+      this.spacesService.update(this.editingId, spaceData).subscribe({
+        next: () => {
+          this.toastService.success('Espacio actualizado con éxito.');
+          this.loadSpaces();
+          this.closeModal();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.toastService.error(err.error?.message || 'Error al actualizar el espacio.');
+          this.loading = false;
+        }
       });
     } else {
-      this.spacesService.create(spaceData).subscribe(() => {
-        this.loadSpaces();
-        this.closeModal();
+      this.spacesService.create(spaceData).subscribe({
+        next: () => {
+          this.toastService.success('Espacio creado con éxito.');
+          this.loadSpaces();
+          this.closeModal();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.toastService.error(err.error?.message || 'Error al crear el espacio.');
+          this.loading = false;
+        }
       });
     }
   }
 
   deleteSpace(id: number) {
     if (confirm('¿Estás seguro de que deseas eliminar este espacio? Esta acción no se puede deshacer.')) {
-      this.spacesService.delete(id).subscribe((success) => {
-        if (success) {
-          this.loadSpaces();
+      if (this.loading) return;
+      this.loading = true;
+      this.spacesService.delete(id).subscribe({
+        next: (success) => {
+          this.loading = false;
+          if (success) {
+            this.toastService.success('Espacio eliminado correctamente.');
+            this.loadSpaces();
+          } else {
+            this.toastService.error('No se pudo eliminar el espacio.');
+          }
+        },
+        error: (err) => {
+          this.toastService.error(err.error?.message || 'Error al eliminar el espacio. Verifique que no tenga reservas asociadas.');
+          this.loading = false;
         }
       });
     }

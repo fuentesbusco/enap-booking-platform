@@ -99,28 +99,30 @@ export class LoginComponent implements OnInit {
   }
 
   onGuestSubmit() {
-    if (!this.guestFullName || !this.guestRut || !this.guestEmail || !this.guestFichaNumber) {
-      this.errorMessage = 'Debe ingresar todos sus datos, incluido su código de socio, para reservar como invitado.';
+    if (!this.guestFullName || !this.guestRut || !this.guestEmail) {
+      this.errorMessage = 'Por favor complete todos sus datos personales (Nombre, RUT y Correo).';
       return;
     }
 
     this.loading = true;
     this.errorMessage = '';
 
+    const role = this.guestFichaNumber ? 'socio' : 'external';
+
     this.auth.register({
       fullName: this.guestFullName,
       rut: this.guestRut,
       email: this.guestEmail,
-      role: 'socio', // Se registra con rol socio para gozar del precio preferencial validado por su código de socio
-      fichaNumber: this.guestFichaNumber,
+      role,
+      fichaNumber: this.guestFichaNumber || undefined,
     }).subscribe({
       next: () => {
         this.loading = false;
-        this.navigateAfterAuth('socio');
+        this.navigateAfterAuth(role);
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Error en la validación de invitado. Verifique sus datos.';
+        this.errorMessage = err.error?.message || 'Error al registrar invitado. Verifique sus datos.';
       },
     });
   }

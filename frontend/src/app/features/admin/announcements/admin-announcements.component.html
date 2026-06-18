@@ -33,7 +33,9 @@
         <div class="flex gap-2 shrink-0">
           <button
             (click)="deleteAnnouncement(a.id)"
-            class="text-xs text-red-500 hover:bg-red-50 border border-red-100 hover:border-red-200 px-3 py-1.5 rounded-lg active:scale-95 transition-all font-medium"
+            [disabled]="loading"
+            [class.opacity-50]="loading"
+            class="text-xs text-red-500 hover:bg-red-50 border border-red-100 hover:border-red-200 px-3 py-1.5 rounded-lg active:scale-95 transition-all font-medium cursor-pointer"
           >
             Eliminar
           </button>
@@ -87,10 +89,11 @@
 
         <!-- Botones de Acción -->
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-charcoal/5">
-          <button type="button" (click)="closeModal()" class="btn-secondary text-sm">
+          <button type="button" (click)="closeModal()" [disabled]="loading" class="btn-secondary text-sm cursor-pointer">
             Cancelar
           </button>
-          <button type="submit" class="btn-primary text-sm">
+          <button type="submit" [disabled]="loading" class="btn-primary text-sm flex items-center gap-1.5 cursor-pointer">
+            <span *ngIf="loading" class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></span>
             Guardar Aviso
           </button>
         </div>

@@ -15,6 +15,7 @@ export class AnnouncementsService {
       order: {
         isPinned: 'DESC',
         publishedAt: 'DESC',
+        id: 'DESC',
       },
     });
   }

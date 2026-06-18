@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnnouncementsService } from '../../../core/services/announcements.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Announcement } from '../../../core/models';
 
 @Component({
@@ -12,7 +13,10 @@ import { Announcement } from '../../../core/models';
 })
 export class AdminAnnouncementsComponent implements OnInit {
   private service = inject(AnnouncementsService);
+  private toastService = inject(ToastService);
+  
   announcements: Announcement[] = [];
+  loading = false;
 
   // Modal State
   showModal = false;
@@ -43,9 +47,11 @@ export class AdminAnnouncementsComponent implements OnInit {
 
   saveAnnouncement() {
     if (!this.formTitle.trim() || !this.formBody.trim()) {
-      alert('Por favor complete todos los campos obligatorios.');
+      this.toastService.warning('Por favor complete todos los campos obligatorios.');
       return;
     }
+    if (this.loading) return;
+    this.loading = true;
 
     const annData = {
       title: this.formTitle,
@@ -53,17 +59,37 @@ export class AdminAnnouncementsComponent implements OnInit {
       is_pinned: this.formIsPinned,
     };
 
-    this.service.create(annData).subscribe(() => {
-      this.loadAnnouncements();
-      this.closeModal();
+    this.service.create(annData).subscribe({
+      next: () => {
+        this.toastService.success('Aviso publicado con éxito.');
+        this.loadAnnouncements();
+        this.closeModal();
+        this.loading = false;
+      },
+      error: () => {
+        this.toastService.error('Error al publicar el aviso.');
+        this.loading = false;
+      }
     });
   }
 
   deleteAnnouncement(id: number) {
     if (confirm('¿Está seguro de que desea eliminar este aviso?')) {
-      this.service.delete(id).subscribe((success) => {
-        if (success) {
-          this.loadAnnouncements();
+      if (this.loading) return;
+      this.loading = true;
+      this.service.delete(id).subscribe({
+        next: (success) => {
+          this.loading = false;
+          if (success) {
+            this.toastService.success('Aviso eliminado correctamente.');
+            this.loadAnnouncements();
+          } else {
+            this.toastService.error('No se pudo eliminar el aviso.');
+          }
+        },
+        error: () => {
+          this.toastService.error('Error al eliminar el aviso.');
+          this.loading = false;
         }
       });
     }

@@ -38,12 +38,13 @@ export class BookingsService {
     const freeGuests = isSocio ? space.free_guests_for_socio : 0;
     const payable = Math.max(0, guestCount - freeGuests);
     const guestsTotal = payable * space.guest_price;
-    const discount = (guestCount - payable) * space.guest_price;
+    const freeGuestsApplied = Math.min(guestCount, freeGuests);
+    const discount = freeGuestsApplied * space.guest_price;
     return {
       base, days,
       guests_count: guestCount,
       guests_total: guestsTotal,
-      free_guests_applied: guestCount - payable,
+      free_guests_applied: freeGuestsApplied,
       discount,
       total: base + guestsTotal,
     };

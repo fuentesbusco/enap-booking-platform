@@ -29,12 +29,15 @@ export class UsersService {
   }
 
   async create(userData: {
-    full_name: string;
+    full_name?: string;
+    fullName?: string;
     rut: string;
     email: string;
     role: UserRole;
     ficha_number?: string;
+    fichaNumber?: string;
     is_active?: boolean;
+    isActive?: boolean;
     password?: string;
   }): Promise<UserEntity> {
     const existing = await this.getByEmail(userData.email);
@@ -50,12 +53,12 @@ export class UsersService {
     }
 
     const newUser = this.userRepository.create({
-      fullName: userData.full_name,
+      fullName: userData.full_name ?? userData.fullName,
       rut: userData.rut,
       email: userData.email,
       role: userData.role,
-      fichaNumber: userData.ficha_number,
-      isActive: userData.is_active ?? true,
+      fichaNumber: userData.ficha_number ?? userData.fichaNumber,
+      isActive: userData.is_active ?? userData.isActive ?? true,
       passwordHash,
     });
     

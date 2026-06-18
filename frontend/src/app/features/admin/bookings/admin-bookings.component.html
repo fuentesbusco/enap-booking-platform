@@ -77,7 +77,10 @@
               </p>
               <div class="flex gap-2 text-xs text-charcoal/35">
                 <span>RUT: {{ b.user.rut }}</span>
-                <span *ngIf="b.user.ficha_number">| Ficha: {{ b.user.ficha_number }}</span>
+                <span *ngIf="b.user.ficha_number">| Socio: {{ b.user.ficha_number }}</span>
+              </div>
+              <div *ngIf="b.admin_notes" class="text-xs text-red-600 mt-1 font-medium bg-red-50 border border-red-100/50 rounded-lg px-2 py-1 inline-block">
+                Motivo: {{ b.admin_notes }}
               </div>
             </td>
             <td class="px-5 py-3.5 text-charcoal/65">{{ b.space.name }}</td>
@@ -102,13 +105,17 @@
               <div *ngIf="b.status === 'pending_approval'" class="flex gap-2">
                 <button
                   (click)="approve(b)"
-                  class="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors font-medium"
+                  [disabled]="loading"
+                  [class.opacity-50]="loading"
+                  class="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors font-medium cursor-pointer"
                 >
                   Aprobar
                 </button>
                 <button
                   (click)="reject(b)"
-                  class="text-xs bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors font-medium"
+                  [disabled]="loading"
+                  [class.opacity-50]="loading"
+                  class="text-xs bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors font-medium cursor-pointer"
                 >
                   Rechazar
                 </button>

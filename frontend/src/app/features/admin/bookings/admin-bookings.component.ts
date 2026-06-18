@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { BookingsService } from '../../../core/services/bookings.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Booking, BookingStatus } from '../../../core/models';
 
 @Component({
@@ -12,10 +13,12 @@ import { Booking, BookingStatus } from '../../../core/models';
 })
 export class AdminBookingsComponent implements OnInit {
   private bookingsService = inject(BookingsService);
+  private toastService = inject(ToastService);
 
   bookings: Booking[] = [];
   filtered: Booking[] = [];
   activeFilter = 'all';
+  loading = false;
 
   filters = [
     { label: 'Todas', value: 'all' },
@@ -44,21 +47,41 @@ export class AdminBookingsComponent implements OnInit {
   }
 
   approve(b: Booking) {
-    this.bookingsService.approveBooking(b.id).subscribe(() => {
-      this.bookingsService.getAll().subscribe((d) => {
-        this.bookings = d;
-        this.applyFilter();
-      });
+    if (this.loading) return;
+    this.loading = true;
+    this.bookingsService.approveBooking(b.id).subscribe({
+      next: () => {
+        this.toastService.success(`Reserva ${b.booking_code} aprobada con éxito.`);
+        this.bookingsService.getAll().subscribe((d) => {
+          this.bookings = d;
+          this.applyFilter();
+          this.loading = false;
+        });
+      },
+      error: () => {
+        this.toastService.error('Ocurrió un error al aprobar la reserva.');
+        this.loading = false;
+      }
     });
   }
 
   reject(b: Booking) {
+    if (this.loading) return;
     const notes = prompt('Ingrese observaciones para el rechazo del comprobante (opcional):') || 'Comprobante no válido o ilegible.';
-    this.bookingsService.rejectBooking(b.id, notes).subscribe(() => {
-      this.bookingsService.getAll().subscribe((d) => {
-        this.bookings = d;
-        this.applyFilter();
-      });
+    this.loading = true;
+    this.bookingsService.rejectBooking(b.id, notes).subscribe({
+      next: () => {
+        this.toastService.success(`Reserva ${b.booking_code} rechazada.`);
+        this.bookingsService.getAll().subscribe((d) => {
+          this.bookings = d;
+          this.applyFilter();
+          this.loading = false;
+        });
+      },
+      error: () => {
+        this.toastService.error('Ocurrió un error al rechazar la reserva.');
+        this.loading = false;
+      }
     });
   }
 

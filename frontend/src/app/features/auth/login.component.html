@@ -107,8 +107,7 @@
         <div
           class="bg-forest/5 border border-forest/10 rounded-2xl p-4 text-xs text-forest font-medium flex items-start gap-2 mb-2">
           <span class="text-base">ℹ️</span>
-          <span>Puedes reservar sin crear una cuenta. Para validar tu reserva como socio y aplicar tarifas
-            preferenciales, es obligatorio ingresar tu código de socio.</span>
+          <span>Puedes realizar tu reserva ingresando tus datos personales. Si cuentas con el patrocinio de un socio del sindicato, ingresa su código para acceder a tarifas preferenciales.</span>
         </div>
         <div>
           <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre
@@ -123,10 +122,9 @@
               required />
           </div>
           <div>
-            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de
-              Socio</label>
-            <input type="text" [(ngModel)]="guestFichaNumber" name="guestFichaNumber" placeholder="ENP-XXXX"
-              class="input w-full" required />
+            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de Socio Patrocinador</label>
+            <input type="text" [(ngModel)]="guestFichaNumber" name="guestFichaNumber" placeholder="ENP-XXXX (Opcional)"
+              class="input w-full" />
           </div>
         </div>
         <div>
