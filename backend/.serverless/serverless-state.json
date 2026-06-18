@@ -1,0 +1,429 @@
+{
+  "service": {
+    "service": "enap-booking-backend",
+    "serviceObject": {
+      "name": "enap-booking-backend"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "stage": "prod",
+      "region": "us-east-1",
+      "profile": "new-account",
+      "environment": {
+        "NODE_ENV": "production",
+        "DB_HOST": "ab-cl-prod.c05eu0eyenew.us-east-1.rds.amazonaws.com",
+        "DB_PORT": "3306",
+        "DB_USERNAME": "enap_booking_user",
+        "DB_PASSWORD": "t?0bknl!Z4~9A;a6c8",
+        "DB_DATABASE": "enap_booking",
+        "DB_SYNCHRONIZE": "false",
+        "DB_MIGRATIONS_RUN": "true",
+        "DB_CONNECTION_LIMIT": "2",
+        "JWT_SECRET": "enap_sindicato_secret_key_2026_!@",
+        "JWT_EXPIRATION": "24h",
+        "ALLOWED_ORIGINS": "http://localhost:4200,http://127.0.0.1:4200",
+        "AWS_S3_BUCKET": "enap-booking-files",
+        "SMTP_HOST": "email-smtp.us-east-1.amazonaws.com",
+        "SMTP_PORT": "587",
+        "SMTP_USER": "AKIAWG565XIT2W63UOVE",
+        "SMTP_PASS": "BL1K3GGIV7Jk2ZJbM9f9DFOJIXFdfIDS2vw4+cvsujTE",
+        "SMTP_FROM": "Sindicato ENAP <daniel@atelierbusco.com>",
+        "ADMIN_EMAIL": "admin@sindicatoenap.cl",
+        "MP_PUBLIC_KEY": "APP_USR-d91739ad-d9e0-47c7-8d30-0a303a3b2f11",
+        "MP_ACCESS_TOKEN": "APP_USR-4654059966159458-061711-0ac3908d65b709784de0c8ab5d381c57-3480422068",
+        "MP_ID_APP": "4654059966159458",
+        "MP_USER_ID": "3480422068"
+      },
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ApiLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/enap-booking-backend-prod-api"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "enap-booking-backend",
+                        "prod",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/enap-booking-backend-prod*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/enap-booking-backend-prod*:*:*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "enap-booking-backend",
+                    "prod",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "ApiLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-13eba35b-3c49",
+                "S3Key": "serverless/enap-booking-backend/prod/1781816849731-2026-06-18T21:07:29.731Z/enap-booking-backend.zip"
+              },
+              "Handler": "dist/lambda.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "enap-booking-backend-prod-api",
+              "MemorySize": 1024,
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "NODE_ENV": "production",
+                  "DB_HOST": "ab-cl-prod.c05eu0eyenew.us-east-1.rds.amazonaws.com",
+                  "DB_PORT": "3306",
+                  "DB_USERNAME": "enap_booking_user",
+                  "DB_PASSWORD": "t?0bknl!Z4~9A;a6c8",
+                  "DB_DATABASE": "enap_booking",
+                  "DB_SYNCHRONIZE": "false",
+                  "DB_MIGRATIONS_RUN": "true",
+                  "DB_CONNECTION_LIMIT": "2",
+                  "JWT_SECRET": "enap_sindicato_secret_key_2026_!@",
+                  "JWT_EXPIRATION": "24h",
+                  "ALLOWED_ORIGINS": "http://localhost:4200,http://127.0.0.1:4200",
+                  "AWS_S3_BUCKET": "enap-booking-files",
+                  "SMTP_HOST": "email-smtp.us-east-1.amazonaws.com",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "AKIAWG565XIT2W63UOVE",
+                  "SMTP_PASS": "BL1K3GGIV7Jk2ZJbM9f9DFOJIXFdfIDS2vw4+cvsujTE",
+                  "SMTP_FROM": "Sindicato ENAP <daniel@atelierbusco.com>",
+                  "ADMIN_EMAIL": "admin@sindicatoenap.cl",
+                  "MP_PUBLIC_KEY": "APP_USR-d91739ad-d9e0-47c7-8d30-0a303a3b2f11",
+                  "MP_ACCESS_TOKEN": "APP_USR-4654059966159458-061711-0ac3908d65b709784de0c8ab5d381c57-3480422068",
+                  "MP_ID_APP": "4654059966159458",
+                  "MP_USER_ID": "3480422068"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "ApiLogGroup"
+            ]
+          },
+          "ApiLambdaVersionbm0hWWr6h1SoZO2nQWFrltyWzUXESbBY72XR4M8NE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ApiLambdaFunction"
+              },
+              "CodeSha256": "MQT15wi2yFn8qdbZaFR0tFSs5xks03Dxc8ZP53niiqU="
+            }
+          },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "prod-enap-booking-backend",
+              "ProtocolType": "HTTP"
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "ApiLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ApiLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationApi": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteAny": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationApi"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationApi"
+          },
+          "HttpApiRouteAnyProxyVar": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "ANY /{proxy+}",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationApi"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationApi"
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-us-east-1-13eba35b-3c49",
+            "Export": {
+              "Name": "sls-enap-booking-backend-prod-ServerlessDeploymentBucketName"
+            }
+          },
+          "ApiLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ApiLambdaVersionbm0hWWr6h1SoZO2nQWFrltyWzUXESbBY72XR4M8NE"
+            },
+            "Export": {
+              "Name": "sls-enap-booking-backend-prod-ApiLambdaFunctionQualifiedArn"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-enap-booking-backend-prod-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-enap-booking-backend-prod-HttpApiUrl"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "pluginsData": {},
+    "functions": {
+      "api": {
+        "handler": "dist/lambda.handler",
+        "timeout": 30,
+        "memorySize": 1024,
+        "events": [
+          {
+            "httpApi": {
+              "path": "/",
+              "method": "any"
+            },
+            "resolvedMethod": "ANY",
+            "resolvedPath": "/"
+          },
+          {
+            "httpApi": {
+              "path": "/{proxy+}",
+              "method": "any"
+            },
+            "resolvedMethod": "ANY",
+            "resolvedPath": "/{proxy+}"
+          }
+        ],
+        "name": "enap-booking-backend-prod-api",
+        "package": {},
+        "memory": 1024,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "ApiLambdaVersionbm0hWWr6h1SoZO2nQWFrltyWzUXESbBY72XR4M8NE"
+      }
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless",
+    "initialServerlessConfig": {
+      "service": "enap-booking-backend",
+      "useDotenv": true,
+      "dashboard": false,
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "package": {
+        "patterns": [
+          "!src/**",
+          "!test/**",
+          "!tsconfig.build.json",
+          "!tsconfig.json",
+          "!eslint.config.mjs",
+          "!nest-cli.json",
+          "!README.md",
+          "!package-lock.json",
+          "!src/data-source.ts",
+          "dist/**",
+          "node_modules/**",
+          ".env"
+        ],
+        "artifactsS3KeyDirname": "serverless/enap-booking-backend/prod/code-artifacts",
+        "deploymentBucket": "serverless-framework-deployments-us-east-1-13eba35b-3c49",
+        "artifact": "/home/daniel/projects/enap-mock-frontend/backend/.serverless/enap-booking-backend.zip",
+        "artifactDirectoryName": "serverless/enap-booking-backend/prod/1781816849731-2026-06-18T21:07:29.731Z"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      }
+    },
+    "appId": null,
+    "orgId": null,
+    "layers": {},
+    "artifact": "/home/daniel/projects/enap-mock-frontend/backend/.serverless/enap-booking-backend.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/enap-booking-backend/prod/1781816849731-2026-06-18T21:07:29.731Z",
+    "artifact": "enap-booking-backend.zip"
+  }
+}

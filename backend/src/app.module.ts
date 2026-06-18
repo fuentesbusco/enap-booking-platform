@@ -54,6 +54,9 @@ import { GalleryEntity } from './gallery/gallery.entity';
         synchronize: String(config.get('DB_SYNCHRONIZE', 'false')) === 'true',
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
         migrationsRun: String(config.get('DB_MIGRATIONS_RUN', 'true')) === 'true',
+        extra: {
+          connectionLimit: Number(config.get<string | number>('DB_CONNECTION_LIMIT', 2)),
+        },
       }),
     }),
     TypeOrmModule.forFeature([

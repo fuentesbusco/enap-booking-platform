@@ -1,0 +1,74 @@
+service: enap-booking-backend
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'prod'}
+  region: ${opt:region, 'us-east-1'}
+  profile: new-account # Perfil de AWS CLI para los despliegues
+  
+  environment:
+    NODE_ENV: production
+    DB_HOST: ${env:DB_HOST, 'ab-cl-prod.c05eu0eyenew.us-east-1.rds.amazonaws.com'}
+    DB_PORT: ${env:DB_PORT, '3306'}
+    DB_USERNAME: ${env:DB_USERNAME, 'enap_booking_user'}
+    DB_PASSWORD: ${env:DB_PASSWORD}
+    DB_DATABASE: ${env:DB_DATABASE, 'enap_booking'}
+    DB_SYNCHRONIZE: ${env:DB_SYNCHRONIZE, 'false'}
+    DB_MIGRATIONS_RUN: ${env:DB_MIGRATIONS_RUN, 'true'}
+    DB_CONNECTION_LIMIT: ${env:DB_CONNECTION_LIMIT, '2'} # Optimizado para entornos serverless
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_EXPIRATION: ${env:JWT_EXPIRATION, '24h'}
+    ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS}
+    # AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
+    # AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+    # AWS_REGION: ${env:AWS_REGION, 'us-east-1'}
+    AWS_S3_BUCKET: ${env:AWS_S3_BUCKET, 'enap-booking-bucket'}
+    SMTP_HOST: ${env:SMTP_HOST, 'email-smtp.us-east-1.amazonaws.com'}
+    SMTP_PORT: ${env:SMTP_PORT, '587'}
+    SMTP_USER: ${env:SMTP_USER}
+    SMTP_PASS: ${env:SMTP_PASS}
+    SMTP_FROM: ${env:SMTP_FROM}
+    ADMIN_EMAIL: ${env:ADMIN_EMAIL}
+    MP_PUBLIC_KEY: ${env:MP_PUBLIC_KEY}
+    MP_ACCESS_TOKEN: ${env:MP_ACCESS_TOKEN}
+    MP_ID_APP: ${env:MP_ID_APP}
+    MP_USER_ID: ${env:MP_USER_ID}
+
+  # Configuración de VPC (Descomentar si la RDS está en una VPC privada y no tiene acceso público)
+  # vpc:
+  #   securityGroupIds:
+  #     - sg-XXXXXXXXXXXXXXXXX # ID del Security Group que permite acceso a la base de datos
+  #   subnetIds:
+  #     - subnet-XXXXXXXXXXXXXXXXX # Subnets privadas con salida a internet (NAT Gateway) para la Lambda
+  #     - subnet-YYYYYYYYYYYYYYYYY
+
+package:
+  patterns:
+    - '!src/**'
+    - '!test/**'
+    - '!tsconfig.build.json'
+    - '!tsconfig.json'
+    - '!eslint.config.mjs'
+    - '!nest-cli.json'
+    - '!README.md'
+    - '!package-lock.json'
+    - '!src/data-source.ts'
+    - 'dist/**'
+    - 'node_modules/**'
+    - '.env'
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    timeout: 28 # Segundos (límite máximo recomendado para API Gateway; máximo 29s en HTTP APIs)
+    memorySize: 1024 # MB (se puede ajustar según las necesidades de performance/costo)
+    events:
+      - httpApi:
+          path: '/'
+          method: any
+      - httpApi:
+          path: '/{proxy+}'
+          method: any
