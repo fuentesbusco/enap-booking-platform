@@ -27,7 +27,8 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
-.serverless/
+.serverless/*
+.serverless
 
 # IDE - VSCode
 .vscode/*
