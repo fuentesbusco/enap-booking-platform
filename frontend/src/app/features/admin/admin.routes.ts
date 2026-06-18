@@ -29,6 +29,10 @@ export const adminRoutes: Routes = [
         path: 'tesoreria',
         loadComponent: () => import('./treasury/admin-treasury.component').then(m => m.AdminTreasuryComponent),
       },
+      {
+        path: 'mercadopago',
+        loadComponent: () => import('./mercadopago/admin-mercadopago.component').then(m => m.AdminMercadoPagoComponent),
+      },
     ],
   },
 ];

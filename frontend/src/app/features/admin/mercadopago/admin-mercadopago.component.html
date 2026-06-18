@@ -1,0 +1,105 @@
+<div class="p-6 max-w-4xl mx-auto">
+  <div class="mb-6">
+    <h1 class="font-display text-2xl text-charcoal mb-1">Prueba de Mercado Pago (Sandbox)</h1>
+    <p class="text-charcoal/50 text-sm">
+      Utiliza esta herramienta administrativa para certificar que tu token de Mercado Pago está funcionando correctamente y generar preferencias de checkout al instante.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Formulario de preferencia -->
+    <div class="card p-6 md:col-span-2 flex flex-col justify-between">
+      <div>
+        <h2 class="font-display text-lg text-charcoal mb-4">Generar Preferencia de Pago</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Concepto / Título</label>
+            <input type="text" [(ngModel)]="title" class="input" placeholder="Nombre del producto o servicio" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Cantidad</label>
+              <input type="number" [(ngModel)]="quantity" min="1" class="input" />
+            </div>
+            <div>
+              <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Precio Unitario (CLP)</label>
+              <input type="number" [(ngModel)]="unitPrice" min="1" class="input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerta de Error -->
+        <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl p-3 mt-4">
+          ⚠️ {{ errorMessage }}
+        </div>
+
+        <!-- Alerta de éxito -->
+        <div *ngIf="preferenceId" class="bg-green-50 border border-green-200 text-green-800 text-xs rounded-xl p-4 mt-4 space-y-2">
+          <p class="font-semibold text-green-900">✓ Preferencia Generada Exitosamente</p>
+          <p class="font-mono">ID: <span class="bg-white px-1.5 py-0.5 rounded border">{{ preferenceId }}</span></p>
+          <div class="flex gap-2 pt-1.5">
+            <button (click)="paySandbox()" class="btn-primary py-1.5 text-xs">
+              Abrir Pasarela de Pago (Sandbox) ↗
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-charcoal/5 flex justify-end">
+        <button (click)="generatePreference()" [disabled]="loading" class="btn-primary px-6 flex items-center gap-2">
+          <span *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+          Generar Preferencia
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel de credenciales de prueba -->
+    <div class="space-y-6">
+      <!-- Cuenta Comprador -->
+      <div class="bg-forest/5 border border-forest/15 rounded-2xl p-5">
+        <h3 class="font-display text-sm text-forest font-semibold mb-3 flex items-center gap-1.5">
+          👤 Comprador de Prueba (Sandbox)
+        </h3>
+        <p class="text-xs text-charcoal/60 mb-4">
+          Inicia sesión en Mercado Pago con esta cuenta en modo incógnito o en la pasarela para simular el pago:
+        </p>
+        <div class="space-y-2.5 text-xs font-mono">
+          <div class="bg-white/60 p-2 rounded-lg border border-forest/10">
+            <span class="text-[10px] uppercase text-charcoal/40 block">Usuario</span>
+            <span class="text-charcoal font-medium select-all block">TESTUSER8015616000490342967</span>
+          </div>
+          <div class="bg-white/60 p-2 rounded-lg border border-forest/10">
+            <span class="text-[10px] uppercase text-charcoal/40 block">Contraseña</span>
+            <span class="text-charcoal font-medium select-all block">tBdnrZDT0m</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas de prueba -->
+      <div class="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-5">
+        <h3 class="font-display text-sm text-amber-800 font-semibold mb-3 flex items-center gap-1.5">
+          💳 Tarjetas de Prueba
+        </h3>
+        <p class="text-xs text-charcoal/60 mb-3">
+          Utiliza los siguientes números de tarjeta para pagar en Sandbox:
+        </p>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between border-b border-charcoal/5 pb-1">
+            <span class="text-charcoal/60">Visa (Aprobado)</span>
+            <span class="font-mono font-semibold">4012 1212 1212 1212</span>
+          </div>
+          <div class="flex justify-between border-b border-charcoal/5 pb-1">
+            <span class="text-charcoal/60">Mastercard (Aprobado)</span>
+            <span class="font-mono font-semibold">5031 4312 1212 1212</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-charcoal/60">Vencimiento / CVV</span>
+            <span class="font-mono font-semibold">Cualquiera futuro / 123</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,12 +9,18 @@ export class MercadoPagoController {
 
   @Post('preference')
   async createPreference(
-    @Body() body: { title: string; quantity: number; unitPrice: number },
+    @Body() body: { 
+      title: string; 
+      quantity: number; 
+      unitPrice: number; 
+      backUrls?: { success: string; failure: string; pending: string } 
+    },
   ) {
     const preference = await this.mpService.createPreference(
       body.title,
       body.quantity,
       body.unitPrice,
+      body.backUrls,
     );
 
     return {

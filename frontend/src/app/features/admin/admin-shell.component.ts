@@ -18,5 +18,6 @@ export class AdminShellComponent {
     { path: 'usuarios', icon: '👥', label: 'Usuarios' },
     { path: 'avisos', icon: '📢', label: 'Avisos' },
     { path: 'tesoreria', icon: '💰', label: 'Tesorería' },
+    { path: 'mercadopago', icon: '💳', label: 'Test Mercado Pago' },
   ];
 }

@@ -6,6 +6,7 @@ import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { BookingsService } from '../../core/services/bookings.service';
 import { AuthService } from '../../core/services/auth.service';
+import { MercadoPagoService } from '../../core/services/mercadopago.service';
 import { Space, Guest, PriceBreakdown } from '../../core/models';
 
 @Component({
@@ -19,6 +20,7 @@ export class BookingFlowComponent implements OnInit {
   private router = inject(Router);
   private spacesService = inject(SpacesService);
   private bookingsService = inject(BookingsService);
+  private mpService = inject(MercadoPagoService);
   auth = inject(AuthService);
 
   space: Space | undefined;
@@ -30,6 +32,7 @@ export class BookingFlowComponent implements OnInit {
   guests: Guest[] = [];
   breakdown: PriceBreakdown | null = null;
   blockedDates: string[] = [];
+  paymentMethod = 'transfer';
   
   selectedFile: File | null = null;
   createdBookingCode = '';
@@ -141,7 +144,7 @@ export class BookingFlowComponent implements OnInit {
 
     // Step 3 -> Confirm/Submit booking
     if (this.currentStep === 3) {
-      if (!this.selectedFile) {
+      if (this.paymentMethod === 'transfer' && !this.selectedFile) {
         alert('Debe adjuntar el comprobante de transferencia.');
         return;
       }
@@ -157,21 +160,56 @@ export class BookingFlowComponent implements OnInit {
         .subscribe({
           next: (b) => {
             this.createdBookingCode = b.booking_code;
-            if (this.selectedFile) {
-              this.bookingsService.uploadReceipt(b.id, this.selectedFile).subscribe({
-                next: () => {
-                  this.loading = false;
-                  this.currentStep = 4;
-                },
-                error: (err) => {
-                  this.loading = false;
-                  alert('Error al subir el comprobante. Por favor intente nuevamente.');
-                  console.error(err);
-                },
-              });
+            
+            if (this.paymentMethod === 'transfer') {
+              if (this.selectedFile) {
+                this.bookingsService.uploadReceipt(b.id, this.selectedFile).subscribe({
+                  next: () => {
+                    this.loading = false;
+                    this.currentStep = 4;
+                  },
+                  error: (err) => {
+                    this.loading = false;
+                    alert('Error al subir el comprobante. Por favor intente nuevamente.');
+                    console.error(err);
+                  },
+                });
+              } else {
+                this.loading = false;
+                this.currentStep = 4;
+              }
             } else {
-              this.loading = false;
-              this.currentStep = 4;
+              // Mercado Pago payment flow
+              const backUrls = {
+                success: `${window.location.origin}/mis-reservas?payment=success&code=${b.booking_code}`,
+                failure: `${window.location.origin}/mis-reservas?payment=failure&code=${b.booking_code}`,
+                pending: `${window.location.origin}/mis-reservas?payment=pending&code=${b.booking_code}`
+              };
+
+              this.mpService
+                .createPreference(
+                  `Reserva ${this.space!.name} - Código ${b.booking_code}`,
+                  1,
+                  b.total_amount,
+                  backUrls
+                )
+                .subscribe({
+                  next: (res) => {
+                    this.loading = false;
+                    if (res.success) {
+                      window.location.href = res.sandbox_init_point || res.init_point;
+                    } else {
+                      alert('Error al inicializar la pasarela de pago. Su reserva quedó registrada, pero deberá pagarla en la sección Mis Reservas.');
+                      this.router.navigate(['/mis-reservas']);
+                    }
+                  },
+                  error: (err) => {
+                    this.loading = false;
+                    alert('Error al conectar con la pasarela de pago de Mercado Pago. Su reserva quedó registrada en estado pendiente de pago.');
+                    console.error(err);
+                    this.router.navigate(['/mis-reservas']);
+                  }
+                });
             }
           },
           error: (err) => {

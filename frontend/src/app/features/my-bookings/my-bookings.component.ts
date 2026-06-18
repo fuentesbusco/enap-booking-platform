@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { BookingsService } from '../../core/services/bookings.service';
 import { Booking, BookingStatus } from '../../core/models';
@@ -13,10 +13,18 @@ import { Booking, BookingStatus } from '../../core/models';
 })
 export class MyBookingsComponent implements OnInit {
   private bookingsService = inject(BookingsService);
+  private route = inject(ActivatedRoute);
+  
   bookings: Booking[] = [];
+  paymentStatus: string | null = null;
+  paymentCode: string | null = null;
 
   ngOnInit() {
     this.bookingsService.getMyBookings().subscribe((d) => (this.bookings = d));
+    this.route.queryParams.subscribe((params) => {
+      this.paymentStatus = params['payment'] || null;
+      this.paymentCode = params['code'] || null;
+    });
   }
 
   statusLabel(s: BookingStatus) {

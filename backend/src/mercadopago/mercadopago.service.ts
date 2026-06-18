@@ -19,21 +19,31 @@ export class MercadoPagoService {
     return this.mpClient;
   }
 
-  async createPreference(title: string, quantity: number, unitPrice: number): Promise<any> {
+  async createPreference(
+    title: string,
+    quantity: number,
+    unitPrice: number,
+    backUrls?: { success: string; failure: string; pending: string }
+  ): Promise<any> {
     this.logger.log(`Creando preferencia de Mercado Pago: ${title} (Cant: ${quantity}, Precio: ${unitPrice})...`);
     try {
       const preference = new Preference(this.mpClient);
-      const response = await preference.create({
-        body: {
-          items: [
-            {
-              title,
-              quantity,
-              unit_price: unitPrice,
-            } as any,
-          ],
-        },
-      });
+      const body: any = {
+        items: [
+          {
+            title,
+            quantity,
+            unit_price: unitPrice,
+          } as any,
+        ],
+      };
+
+      if (backUrls) {
+        body.back_urls = backUrls;
+        body.auto_return = 'approved';
+      }
+
+      const response = await preference.create({ body });
       return response;
     } catch (error) {
       this.logger.error('Error al crear preferencia de Mercado Pago:', error);
