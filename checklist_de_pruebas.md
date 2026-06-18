@@ -116,8 +116,29 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - *Acción:* Usar las flechas direccionales izquierda y derecha para pasar de foto, y la tecla `ESC` para cerrar el visor.
   - *Resultado esperado:* Comportamiento interactivo de navegación por fotos y cierre de visor correcto.
 
+---
 
-## 6. Comentarios revision
+## 🧼 7. Nuevas Características (Ajustes de Negocio y Mejoras de Usabilidad)
+
+- [x] **Estandarización de Cabañas (1 a 6)**
+  - *Acción:* Navegar por el catálogo de espacios y examinar Cabaña 1 a Cabaña 6.
+  - *Resultado esperado:* Cada cabaña indica capacidad para 6 personas, muestra el equipamiento detallado y despliega la advertencia sobre traer sábanas, fundas y toallas en el formulario de reserva.
+- [x] **Reserva por Jornada Única (Quinchos y Piscina)**
+  - *Acción:* Iniciar reserva de un Quincho o Piscina y seleccionar una fecha en el Paso 2.
+  - *Resultado esperado:* El sistema presenta un único control "Día de la Jornada", asigna automáticamente entrada e iguala salida para el mismo día, y restringe colisiones bloqueando la fecha de forma inclusiva si ya hay una reserva activa.
+- [x] **Reserva de Socio para un Tercero Ocupante (Patrocinio)**
+  - *Acción:* Iniciar sesión como socio y realizar una reserva de cabaña. En el Paso 2, seleccionar "Para un Tercero Externo (Tarifa General)" e introducir el Nombre, RUT y Teléfono del tercero.
+  - *Resultado esperado:* La tarifa se calcula con el valor base general y la reserva se completa, quedando vinculada al socio.
+- [x] **Visualización Administrativa de Terceros**
+  - *Acción:* Ingresar como Administrador, ir a **Administración ➔ Reservas** y ver la reserva creada por el socio para el tercero.
+  - *Resultado esperado:* Se muestra la insignia destacada "Para Tercero" y se detalla el nombre, RUT y teléfono del tercero ocupante en la columna Titular.
+- [x] **Badges de Precios en Catálogo**
+  - *Acción:* Ver el catálogo de espacios en el sitio público.
+  - *Resultado esperado:* Cada tarjeta muestra dos badges claros ("Socio Sindicato" y "Público / Externo") con sus respectivos valores y la indicación de cobro por día o por jornada.
+
+---
+
+## 8. Comentarios revision
 
 ### Primera revision
 

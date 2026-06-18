@@ -10,10 +10,14 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 
 ### Flujo de Clientes / Socios
 - [x] **Selector de Espacios:** Catálogo interactivo de Cabañas, Quinchos y Piscinas con filtros y desglose de tarifas.
+- [x] **Estandarización de Cabañas (1 a 6):** Configuración de exactamente 6 cabañas con capacidad máxima de 6 personas y amenities actualizados (descripción y advertencia de sábanas/toallas).
+- [x] **Arriendo por Jornada Única (Quinchos/Piscina):** Selector de fecha único ("Día de la Jornada") que iguala check-in y check-out y bloquea colisiones de forma inclusiva.
+- [x] **Flujo de Patrocinio a Tercero:** Selector para socio para arriendos a terceros externos con registro de sus datos (Nombre, RUT, Teléfono) y cálculo dinámico de tarifa base general.
+- [x] **Refinamiento de Tarifas en Catálogo:** Badges "Socio Sindicato" (verde) y "Público / Externo" (gris) para cada espacio y aclaraciones de tipo de cobro (por día o jornada).
 - [x] **Flujo de Reserva Completo (4 pasos):**
   - [x] **Paso 1 (Espacio):** Detalle, fotos, descripción y tarifas.
-  - [x] **Paso 2 (Fechas):** Selección de check-in / check-out con validación visual de fechas ocupadas/bloqueadas.
-  - [x] **Paso 3 (Invitados):** Registro de acompañantes (Nombre, RUT, Teléfono) con validación de capacidad máxima del recinto.
+  - [x] **Paso 2 (Fechas):** Selección de check-in / check-out (rango para cabañas, día único para quinchos/piscina) con validación visual de fechas ocupadas/bloqueadas.
+  - [x] **Paso 3 (Invitados):** Registro de acompañantes (Nombre, RUT, Teléfono) con validación de capacidad máxima del recinto y opción de tercero para socios.
   - [x] **Paso 4 (Pago):** Detalle de desglose financiero, datos de transferencia y zona de carga de comprobante bancario.
 - [x] **Panel "Mis Reservas":** Consulta del listado histórico de reservas del usuario logueado con estados y desgloses.
 - [x] **Spinner de Carga en Mis Reservas:** Bloqueo visual durante la obtención de las reservas para evitar la visualización de listas vacías temporales.
@@ -25,6 +29,7 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 ### Panel de Administración
 - [x] **Vista de Control de Reservas:** Tablas con filtros de estado y visualización rápida de comprobantes.
 - [x] **Columna Socio/No Socio en Reservas:** Columna "Tipo" en la administración de reservas que discrimina con badges de colores.
+- [x] **Visualización de Reserva para Tercero:** Badge "Para Tercero" y desglose de datos del ocupante patrocinado en la tabla de control de reservas.
 - [x] **Aprobación / Rechazo:** Acciones administrativas para cambiar el estado de las reservas a `confirmed` o `rejected`.
 - [x] **CRUD de Espacios (Frontend):** Listado, creación, edición y eliminación (CRUD) totalmente funcionales mediante un formulario modal interactivo.
 - [x] **CRUD de Usuarios (Frontend):** Listado de usuarios, pantallas para registrar nuevos perfiles y controles administrativos interactivos para activar/desactivar socios del sindicato.

@@ -15,8 +15,31 @@ Para simplificar el proceso de pruebas locales, el sistema cuenta con botones de
 
 ## 🏕️ 2. Flujos de Pruebas de Reservas (Usuario)
 
+A continuación se detallan los flujos de pruebas punta a punta con diagramas visuales para un mejor entendimiento de los caminos del usuario.
+
 ### Flujo A: Reserva con Transferencia y Aprobación
 Este flujo valida el registro de una reserva con pago fuera de línea y la aprobación manual por parte del administrador.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as Socio (Carlos Muñoz)
+    actor Admin as Administrador
+    participant Srv as Servidor NestJS
+    participant DB as Base de Datos MySQL
+    
+    Cliente->>Srv: Inicia sesión (carlos.munoz@enap.cl)
+    Cliente->>Srv: Selecciona Espacio (Cabaña Boldos) y Fechas
+    Cliente->>Srv: Registra acompañantes (Paso 2)
+    Cliente->>Srv: Sube comprobante de transferencia y envía (Paso 3)
+    Srv->>DB: Guarda reserva con estado "pending_approval"
+    Srv-->>Cliente: Redirecciona a Paso 4 (Código ENP-2025-XXXXX)
+    Admin->>Srv: Inicia sesión y va a Reservas -> Por Aprobar
+    Admin->>Srv: Revisa comprobante y hace clic en "Aprobar"
+    Srv->>DB: Actualiza estado a "confirmed" y envía email de confirmación
+    Cliente->>Srv: Ingresa a "Mis Reservas"
+    Srv-->>Cliente: Muestra reserva con estado "Confirmada" (badge verde)
+```
 
 1.  **Iniciar Reserva:** Ingresa con el usuario de Socio (`carlos.munoz@enap.cl`).
 2.  **Seleccionar Espacio y Fechas:** Ve a **Espacios**, elige un recinto (ej: *Cabaña Los Boldos*) e introduce fechas válidas (ej. del `19/06` al `25/06`).
@@ -32,6 +55,24 @@ Este flujo valida el registro de una reserva con pago fuera de línea y la aprob
 ### Flujo B: Reserva con Transferencia y Rechazo Administrativo
 Valida el rechazo de una reserva cuando el comprobante no es legible o es erróneo.
 
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as Socio (Carlos Muñoz)
+    actor Admin as Administrador
+    participant Srv as Servidor NestJS
+    participant DB as Base de Datos MySQL
+    
+    Cliente->>Srv: Envía reserva con comprobante erróneo
+    Srv->>DB: Guarda reserva con estado "pending_approval"
+    Admin->>Srv: Revisa comprobante y hace clic en "Rechazar" con motivo
+    Srv->>DB: Actualiza estado a "pending_payment" (Sin Pago), registra adminNotes
+    Srv-->>Cliente: Envía correo electrónico con el motivo de rechazo
+    Cliente->>Srv: Entra a "Mis Reservas", ve motivo y pulsa "Completar Pago"
+    Cliente->>Srv: Sube nuevo comprobante en el Paso 3
+    Srv->>DB: Actualiza reserva a "pending_approval" y vuelve al ciclo de aprobación
+```
+
 1.  **Crear Reserva:** Sigue los pasos 1 a 5 del Flujo A con cualquier usuario.
 2.  **Rechazo (Admin):** Entra como Administrador, ve a **Reservas** ➔ **Por aprobar**.
 3.  **Acción de Rechazo:** Haz clic en **"Rechazar"**. Se abrirá una ventana solicitando observaciones. Escribe la causa (ej: *"El monto del comprobante no coincide"* o *"Archivo corrupto"*) y acepta.
@@ -46,11 +87,66 @@ Valida el rechazo de una reserva cuando el comprobante no es legible o es errón
 ### Flujo D: Reserva como Invitado (Usuario Anónimo)
 Permite a personas realizar reservas sin tener una cuenta registrada previamente en el portal.
 
+```mermaid
+graph TD
+    A[Usuario Anónimo] --> B[Selecciona fechas e invitados]
+    B --> C[Paso 2: Pulsar Continuar]
+    C --> D[Detecta que no está logueado]
+    D --> E[Guarda progreso en sessionStorage y redirige a /ingresar]
+    E --> F[Selecciona pestaña Invitado y rellena datos personales]
+    F --> G[Ingresa Código de Socio Patrocinador ENP-XXXX]
+    G --> H[Recupera reserva de sessionStorage y restaura checkout en Paso 3]
+    H --> I[Completa pago con transferencia como Invitado]
+```
+
 1.  **Navegación Anónima:** Sin iniciar sesión, ve a **Espacios**, selecciona fechas y añade acompañantes.
 2.  **Redirección de Autenticación:** Al pulsar "Continuar" en el Paso 2, el sistema detecta que no estás autenticado. Guarda el progreso en el `sessionStorage` local y te redirige a `/ingresar`.
 3.  **Identificarse como Invitado:** En la pantalla de ingreso, selecciona la pestaña **"Invitado"**.
 4.  **Socio Patrocinador:** Rellena tus datos (RUT, Nombre, Correo) e ingresa un **Código de Ficha de Socio de ENAP** que patrocine tu visita (ej. de prueba: `ENP-0078`). Haz clic en **"Continuar como Invitado"**.
 5.  **Restauración del Checkout:** La plataforma te autentica de forma temporal con un token de invitado y te devuelve de inmediato al Paso 3 del checkout conservando todos los datos que habías seleccionado. Carga el comprobante y finaliza tu reserva.
+
+### Flujo E: Reserva de Quinchos y Piscina (Jornada Única)
+Valida la restricción para que los recintos de uso diario solo puedan ser reservados por jornada simple.
+
+```mermaid
+graph TD
+    A[Socio o Invitado en Espacios] --> B[Selecciona Quincho o Piscina]
+    B --> C[Paso 2: Fechas]
+    C --> D[Se despliega control único: Día de la Jornada]
+    D --> E[Selecciona una fecha]
+    E --> F{¿Fecha en conflicto con reserva activa?}
+    F -- Sí --> G[Muestra alerta de conflicto y bloquea continuar]
+    F -- No --> H[Setea checkIn = checkOut e incrementa invitados gratis si aplica]
+    H --> I[Avanza al Paso 3 de Pago]
+```
+
+1.  **Iniciar Reserva:** Ve a **Espacios**, selecciona un Quincho (ej. *Quincho Central*) o la *Piscina General*.
+2.  **Selector de Fecha de Jornada:** Verás que no hay campos de Check-in y Check-out. En su lugar, se presenta el selector **"Día de la Jornada"**.
+3.  **Selección de Fecha:** Selecciona una fecha válida. El sistema setea internamente la misma fecha de entrada y salida (`check_in = check_out`), contando la reserva como 1 día.
+4.  **Verificación de Conflictos:** Si intentas seleccionar una fecha que ya está bloqueada (ej: `28/12` para Quincho Central), aparecerá una alerta de conflicto en color rojo impidiendo continuar.
+5.  **Completar checkout:** Añade acompañantes y completa el flujo.
+
+### Flujo F: Socio reserva para un Tercero Ocupante (Patrocinio de Beneficio)
+Permite a un socio sindical arrendar un espacio para un tercero (familiar o conocido), cobrándose la tarifa base general pero quedando la reserva vinculada y controlada por el socio.
+
+```mermaid
+graph TD
+    A[Socio Carlos Muñoz Autenticado] --> B[Selecciona Cabaña 1 y Fechas]
+    B --> C[Paso 2: Acompañantes]
+    C --> D[Opción: ¿Para quién es esta reserva?]
+    D --> E[Selecciona: Para un Tercero Externo]
+    E --> F[Rellena Nombre, RUT y Teléfono del Tercero Ocupante]
+    F --> G[Sistema descarta tarifa Socio y aplica Tarifa Base/General]
+    G --> H[Finaliza reserva con comprobante de pago]
+    H --> I[Administrador ve la reserva con insignia Para Tercero y datos del ocupante]
+```
+
+1.  **Autenticación de Socio:** Ingresa con el usuario de Socio (`carlos.munoz@enap.cl`).
+2.  **Selección de Espacio (Cabaña):** Ve a **Espacios**, selecciona una cabaña (ej: *Cabaña 1*) e introduce fechas (ej. del `25/06` al `27/06`).
+3.  **Declaración de Tercero (Paso 2):** En la sección de acompañantes, verás la casilla **"¿Para quién es esta reserva?"**. Selecciona la opción **"Para un Tercero Externo (Tarifa General)"**.
+4.  **Datos del Tercero:** Al seleccionar esta opción, se desplegarán campos para ingresar el Nombre Completo, RUT y Teléfono del ocupante tercero. Complétalos (ej: *Juan Pérez*, *18.123.456-7*).
+5.  **Verificación del Precio:** Observa el resumen de precios al final de la pantalla: la tarifa base habrá cambiado automáticamente de la de Socio ($35.000/día) a la Tarifa General ($50.000/día).
+6.  **Finalización y Control de Admin:** Completa el pago. Luego, ingresa como Administrador (`admin@sindicatoenap.cl`) y ve a **Administración ➔ Reservas**. Verás la reserva de Carlos Muñoz con la insignia **"Para Tercero"** y la caja con los datos de Juan Pérez en la columna Titular.
 
 ---
 

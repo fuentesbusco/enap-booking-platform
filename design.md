@@ -77,6 +77,11 @@ Los modelos están definidos en [models.ts (Frontend)](file:///home/daniel/proje
 *   `admin_notes` (string, opcional): Comentarios o motivos de rechazo del administrador.
 *   `created_at` (string): Fecha y hora de creación.
 *   `price_breakdown` (`PriceBreakdown`): Detalle pormenorizado del cobro final.
+*   `is_for_third_party` (boolean): Flag indicando si la reserva es para un tercero externo patrocinado por el socio.
+*   `third_party_name` (string, opcional): Nombre completo del tercero ocupante.
+*   `third_party_rut` (string, opcional): RUT del tercero ocupante.
+*   `third_party_phone` (string, opcional): Teléfono de contacto del tercero.
+*   `admin_created_for_external` (boolean): Flag indicando si la reserva fue ingresada por administración para un externo.
 
 ---
 
@@ -84,12 +89,15 @@ Los modelos están definidos en [models.ts (Frontend)](file:///home/daniel/proje
 
 ### 3.1 Cálculo de Tarifas (`calculatePriceBreakdown`)
 El backend NestJS calcula dinámicamente el precio final en [bookings.service.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/bookings/bookings.service.ts):
-1.  **Días de Reserva:** Determina la diferencia de días entre `check_in` y `check_out` (mínimo 1 día).
-2.  **Costo Base del Espacio:** Determina si aplica `socio_price` o `base_price` multiplicando el valor unitario por la cantidad de días de reserva.
+1.  **Días de Reserva:** Determina la diferencia de días entre `check_in` y `check_out` (mínimo 1 día). Para arriendos de jornada única, la diferencia es de 1 día.
+2.  **Costo Base del Espacio:**
+    *   Si el titular es `socio` y realiza la reserva para sí mismo (`is_for_third_party = false`), aplica la tarifa con descuento `socio_price`.
+    *   Si el titular es `socio` pero reserva para un tercero (`is_for_third_party = true`), la tarifa preferencial se descarta y aplica la tarifa base `base_price` (Público General/Externo).
+    *   Si el titular es `external`, aplica `base_price`.
+    *   El costo total base es el precio diario unitario por la cantidad de días.
 3.  **Cobro por Acompañantes:**
-    *   Si el titular es `socio`, tiene derecho a un cupo gratuito de acompañantes definido por `free_guests_for_socio` (ej. 5 invitados en piscina).
-    *   Cualquier invitado adicional que supere el límite permitido se cobra diariamente al costo unitario de `guest_price`.
-    *   Si el titular es `external`, no hay cupos gratuitos; se cobra `guest_price` para cada invitado del listado.
+    *   Si aplica tarifa de socio (`socio` y `is_for_third_party = false`), tiene derecho a un cupo gratuito de acompañantes definido por `free_guests_for_socio` (ej. 5 invitados en piscina). Cualquier invitado adicional que supere este límite se cobra diariamente al costo de `guest_price`.
+    *   Si es reserva para un tercero o el titular es `external`, no hay cupos gratuitos; se cobra `guest_price` para cada invitado del listado.
 
 > [!NOTE]
 > **Aclaración sobre la Fórmula de Tarifas del Manual del Cliente:**
@@ -108,7 +116,8 @@ El backend NestJS calcula dinámicamente el precio final en [bookings.service.ts
 Antes de registrar cualquier reserva, el backend valida si las fechas están libres:
 1.  **Bloqueos Estáticos:** Compara las fechas solicitadas contra el diccionario `blockedDates` cargado con fechas fuera de servicio programadas.
 2.  **Solapamiento de Reservas:** Verifica que no exista ninguna reserva activa (en estado `confirmed` o `pending_approval`) en el mismo recinto que coincida con las fechas solicitadas.
-3.  **Límite de Capacidad:** Valida que el número de personas en `guests` no exceda el `max_capacity` del recinto.
+    *   **Arriendo por Jornada Única (Quinchos/Piscina):** Al igualarse check-in y check-out (`check_in === check_out`), la colisión de fechas se valida comparando exactamente el mismo día de manera inclusiva, garantizando que no se puedan agendar dos reservas el mismo día para el mismo espacio.
+3.  **Límite de Capacidad:** Valida que el número de personas en `guests` no exceda el `max_capacity` del recinto (limitado a un máximo de 6 personas en cabañas).
 
 ### 3.3 Encriptación de Contraseñas (PBKDF2)
 Para resguardar las credenciales en esta fase de mock y de cara a producción, implementamos un esquema de derivación de claves criptográficas PBKDF2:

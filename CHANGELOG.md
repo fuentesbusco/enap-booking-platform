@@ -8,6 +8,11 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ## [1.18.0] - 2026-06-18
 ### Añadido
+- **Estandarización de Cabañas (1 a 6):** Configuración estricta de 6 cabañas con capacidad máxima de 6 personas, equipamiento completo y advertencias de traer sábanas y toallas.
+- **Arriendo por Jornada Única para Quinchos y Piscina:** Selector único de "Día de la Jornada" que previene la selección de rangos de días, sincronizando check-in y check-out en la misma fecha, y validación de colisiones de fecha de forma inclusiva.
+- **Flujo de Patrocinio de Terceros para Socios:** Selector interactivo para socios al reservar para terceros, solicitando datos personales del tercero ocupante y recalculando dinámicamente el precio final con la tarifa base general.
+- **Detalle de Tercero en Administración:** Badge destacado "Para Tercero" y desglose de datos del ocupante patrocinado en la fila de reservas del administrador.
+- **Visualización de Tarifas Diferenciadas:** Badges visuales en las tarjetas del catálogo ("Socio Sindicato" en verde, "Público / Externo" en gris) y leyendas indicando cobro diario o por jornada.
 - **Columna Socio/No Socio en Reservas:** Integración de la columna "Tipo" en la tabla de administración de reservas para identificar de forma clara y con badges de colores a los socios y no socios.
 - **Contraseñas Temporales en Creación de Usuario:** Generación automática de contraseñas alfanuméricas de 6 caracteres para usuarios creados vía administración. Exposición de la clave en el toast de éxito y envío simulado del correo de credenciales.
 - **Módulo de Galería "Conoce el Centro":**
