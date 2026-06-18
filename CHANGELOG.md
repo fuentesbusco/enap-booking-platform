@@ -6,6 +6,16 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.18.0] - 2026-06-18
+### Añadido
+- **Columna Socio/No Socio en Reservas:** Integración de la columna "Tipo" en la tabla de administración de reservas para identificar de forma clara y con badges de colores a los socios y no socios.
+- **Contraseñas Temporales en Creación de Usuario:** Generación automática de contraseñas alfanuméricas de 6 caracteres para usuarios creados vía administración. Exposición de la clave en el toast de éxito y envío simulado del correo de credenciales.
+- **Módulo de Galería "Conoce el Centro":**
+  - Vista pública `/conoce-el-centro` con efectos visuales, hovers, zooms y Lightbox responsivo navegable por teclado (flechas y tecla Escape).
+  - Panel CRUD de administración en `/admin/galeria` para gestionar (agregar y eliminar) las fotos del recinto turístico.
+- **Spinner de Carga en Mis Reservas:** Implementación de un spinner animado en el listado de reservas del usuario para mejorar la experiencia visual de carga de datos.
+- **Fotos Reales del Centro Turístico:** Reemplazo de imágenes de stock de Unsplash por fotos reales provistas por el cliente (`/images/*`) en la Home, espacios y avisos, incluyendo actualización automática en caliente en el arranque (`SeedService`).
+
 ## [1.17.0] - 2026-06-17
 ### Añadido
 - **Conexión de Frontend a API de NestJS:** Refactorizados todos los servicios globales (`AuthService`, `SpacesService`, `BookingsService`, `AnnouncementsService`, `UsersService`) para realizar llamadas HTTP reales a los endpoints del backend en lugar de usar datos mocks locales.

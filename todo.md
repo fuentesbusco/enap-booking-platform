@@ -16,14 +16,21 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
   - [x] **Paso 3 (Invitados):** Registro de acompañantes (Nombre, RUT, Teléfono) con validación de capacidad máxima del recinto.
   - [x] **Paso 4 (Pago):** Detalle de desglose financiero, datos de transferencia y zona de carga de comprobante bancario.
 - [x] **Panel "Mis Reservas":** Consulta del listado histórico de reservas del usuario logueado con estados y desgloses.
+- [x] **Spinner de Carga en Mis Reservas:** Bloqueo visual durante la obtención de las reservas para evitar la visualización de listas vacías temporales.
+- [x] **Galería Pública con Lightbox:** Sección interactiva "Conoce el Centro" con un visor en pantalla completa (Lightbox) navegable mediante teclado (flechas y ESC).
+- [x] **Imágenes Reales en la Home y Espacios:** Integración de fotos reales locales (`/images/*`) provistas por el cliente en el catálogo de espacios y la Home.
 - [x] **Simulación de Carga de Comprobante:** Emulación de carga de archivos (PDF/imagen) para cambiar el estado a `pending_approval`.
 - [x] **Cambio de Perfiles de Prueba:** Botones rápidos en el Login para cambiar de rol instantáneamente (`socio`, `admin`) para testing local.
 
 ### Panel de Administración
 - [x] **Vista de Control de Reservas:** Tablas con filtros de estado y visualización rápida de comprobantes.
+- [x] **Columna Socio/No Socio en Reservas:** Columna "Tipo" en la administración de reservas que discrimina con badges de colores.
 - [x] **Aprobación / Rechazo:** Acciones administrativas para cambiar el estado de las reservas a `confirmed` o `rejected`.
 - [x] **CRUD de Espacios (Frontend):** Listado, creación, edición y eliminación (CRUD) totalmente funcionales mediante un formulario modal interactivo.
 - [x] **CRUD de Usuarios (Frontend):** Listado de usuarios, pantallas para registrar nuevos perfiles y controles administrativos interactivos para activar/desactivar socios del sindicato.
+- [x] **Contraseñas Temporales:** Generación de clave aleatoria de 6 caracteres al crear un usuario, visible en el toast de éxito.
+- [x] **Galería de Imágenes (CRUD):** Panel CRUD interactivo en `/admin/galeria` para agregar y eliminar fotos de la galería.
+- [x] **Checkbox de Avisos Destacados:** Corrección en el checkbox de avisos en la administración para persistir y ordenar correctamente los avisos fijos.
 - [x] **Calendario Visual de Ocupación:** Vista tipo calendario mensual interactivo para ver qué espacios están ocupados en qué fechas de manera gráfica (con filtros por recinto y detalles en hovers).
 
 ---
@@ -49,9 +56,10 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] API de usuarios: Activación/desactivación de socios sindicales, consulta de perfiles y registro de nuevos usuarios.
 
 ### Gestión de Espacios y Reservas
-- [x] API de Espacios: Endpoints GET para consultar espacios disponibles.
-- [x] API de Anuncios: Endpoints GET para consultar anuncios publicados.
-- [x] API de Reservas:
+- [x] **API de Espacios:** Endpoints GET para consultar espacios disponibles.
+- [x] **API de Anuncios:** Endpoints GET para consultar anuncios publicados.
+- [x] **API de Galería:** Endpoints GET, POST y DELETE con seguridad basada en roles (JWT/Admin).
+- [x] **API de Reservas:**
   - [x] Endpoint de creación de reservas.
   - [x] Validación de disponibilidad de fechas (evitando colisión de días bloqueados y solapamientos).
   - [x] Validación de capacidad máxima de invitados.
@@ -59,7 +67,9 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
   - [x] Listado de reservas personales (`/bookings/me`) y globales para administración (`/bookings`).
   - [x] Endpoints para simular la subida del comprobante bancario (`/bookings/upload-receipt`).
   - [x] Endpoints para aprobación y rechazo de reservas por parte del administrador.
-- [x] API de Espacios: Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
+- [x] **Generación de Contraseñas Temporales:** Retorno de contraseña autogenerada en el DTO de respuesta al crear usuario en la administración.
+- [x] **Sincronización de Imágenes en Caliente:** Actualización en caliente de URLs de Unsplash por locales (`/images/*`) en el arranque (`SeedService`).
+- [x] **API de Espacios:** Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
 
 ### Integración de Almacenamiento (AWS S3)
 - [x] Configuración del SDK de AWS en NestJS.

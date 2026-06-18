@@ -21,6 +21,9 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Cierre de Sesión**
   - *Acción:* Pulsar el botón **"Salir"** en el navbar o sidebar.
   - *Resultado esperado:* Sesión destruida en el cliente, redirección al inicio y ocultamiento de opciones privadas.
+- [x] **Ingreso con Contraseña Temporal**
+  - *Acción:* Iniciar sesión con un usuario recién creado desde la administración utilizando la clave alfanumérica de 6 caracteres.
+  - *Resultado esperado:* Autenticación exitosa y redirección a la página de inicio.
 
 ---
 
@@ -38,6 +41,12 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Visualización del Estado "En revisión"**
   - *Acción:* Ir a la sección **"Mis Reservas"**.
   - *Resultado esperado:* La reserva figura listada con la insignia azul de **"En revisión"**.
+- [x] **Indicador de Carga (Spinner) en "Mis Reservas"**
+  - *Acción:* Entrar a la sección **"Mis Reservas"** y observar la transición inicial.
+  - *Resultado esperado:* Se despliega un spinner de carga centrado mientras los datos son recuperados del backend, previniendo el parpadeo de una lista vacía.
+- [x] **Visualización de Fotos Reales del Centro**
+  - *Acción:* Navegar por la Home y el catálogo de espacios.
+  - *Resultado esperado:* Los recintos muestran imágenes reales del centro vacacional (`/images/*`) provistas por el cliente en lugar de las fotos de stock genéricas de Unsplash.
 
 ---
 
@@ -62,18 +71,22 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - [x] Editar precios de un espacio existente y verificar cambios en el flujo de reserva.
   - [x] Eliminar un espacio sin reservas activas.
 - [x] **Administración de Usuarios (`/admin/usuarios`)**
-  - [x] Crear un usuario con contraseña por defecto (`password123`) desde el panel.
+  - [x] Crear un usuario verificando la generación automática de la contraseña temporal de 6 caracteres, su exposición en el mensaje de éxito (toast) y envío ficticio por correo.
   - [x] Cambiar el estado de un usuario a **Inactivo** y verificar que no puede iniciar sesión en la app.
-- [ ] **Administración de Avisos (`/admin/avisos`)**
+- [x] **Administración de Avisos (`/admin/avisos`)**
   - [x] Crear un aviso destacando la publicación (Pinned).
-  - [ ] Confirmar que aparece al inicio del muro de noticias en la Home.
+  - [x] Confirmar que aparece al inicio del muro de noticias en la Home (ordenado correctamente si hay más de un aviso fijo).
   - [x] Eliminar un aviso y confirmar que desaparece de la Home y del listado de admin.
-- [ ] **Aprobación de Comprobantes (`/admin/reservas`)**
-  - [ ] Visualizar el enlace `📄 Comprobante` del depósito y abrirlo en pestaña nueva.
+- [x] **Aprobación de Comprobantes (`/admin/reservas`)**
+  - [x] Visualizar el enlace `📄 Comprobante` del depósito y abrirlo en pestaña nueva.
   - [x] Aprobar una reserva y verificar que pasa a estado **Confirmada** (tanto para admin como para el cliente).
+  - [x] Verificar la columna **"Tipo"** en el listado de reservas para comprobar si el solicitante es Socio o No Socio mediante etiquetas legibles.
 - [x] **Rechazo de Comprobantes con Observaciones**
   - [x] Rechazar una reserva ingresando un comentario de retroalimentación.
   - [x] Verificar que el cliente ve la reserva en estado **"Sin pago"** y visualiza las notas del admin.
+- [x] **Administración de Galería (`/admin/galeria`)**
+  - [x] Agregar una nueva imagen utilizando presets del sistema o ingresando URL y título manuales.
+  - [x] Eliminar una foto de la galería y validar que se quita de la base de datos de manera inmediata.
 
 ---
 
@@ -88,6 +101,20 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [ ] **Checkout desde el Flujo de Reserva del Usuario**
   - *Acción:* Realizar una reserva de usuario real eligiendo la pestaña **Mercado Pago** y completar el pago Sandbox.
   - *Resultado esperado:* Redirección a la sección de **Mis Reservas** del frontend, procesado en segundo plano de la confirmación en el backend y actualización instantánea a estado **Confirmada**.
+
+---
+
+## 🖼️ 6. Galería Pública "Conoce el Centro"
+
+- [x] **Acceso y Visualización (`/conoce-el-centro`)**
+  - *Acción:* Entrar a la sección de galería pública desde el menú principal.
+  - *Resultado esperado:* Despliegue correcto de la cuadrícula de fotos con efectos de hover, zoom suave y títulos.
+- [x] **Visualización en Lightbox**
+  - *Acción:* Hacer clic en cualquier foto de la galería.
+  - *Resultado esperado:* La imagen se abre en una pantalla completa oscura en alta definición, con controles para avanzar, retroceder o cerrar.
+- [x] **Navegación mediante Teclado**
+  - *Acción:* Usar las flechas direccionales izquierda y derecha para pasar de foto, y la tecla `ESC` para cerrar el visor.
+  - *Resultado esperado:* Comportamiento interactivo de navegación por fotos y cierre de visor correcto.
 
 
 ## 6. Comentarios revision
@@ -108,10 +135,11 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - Al registrar un usuario nuevo existosamente, el sistema redirecciona al home con el login ya activo, pero no se le muestra ningun indicador de exito al usuario, lo que puede generar confusión.
 - Al hacer logout el usuario no ve ningun feedback visual, solo cambiar rápidamente la visibilidad de las opciones del menu, pero no es claro para el usuario.
 
-# Segunda revision
+## 6. Segunda revisión (Aseguramiento de Calidad)
 
-- En el panel de adminsitacion de reservas, podria haber una columna indicando si es o no socio para mayor claridad.
-- Al crear un aviso destacado, al parecer no toma el checkbox de la administracion ya que no queda destacado.
-- Al crear un usuario por la administracion, se crea y se puede loguear, pero no queda claro que el password inicial es password123, desde este lugar, crear contraseña alfanumerica aleatoria de 6 caracteres y enviar por correo.
-- En la pagina, perfil socio, al entrar a "mis Reservas" se ve sin reservas y luego aparecen las reservas de otro usuario, falta loading.
-- Falta una seccion adminitrable de galeria de imagenes, que podemos ponerle "galeria", "fotos" o "conoce el centro".
+- [x] **Columna Socio/No Socio en Reservas**: Verificada la columna "Tipo" en la administración de reservas que discrimina con badges de colores.
+- [x] **Checkbox de Avisos Destacados**: Comprobado que al crear el aviso con el checkbox, se almacena como destacado en DB y se muestra primero en la Home.
+- [x] **Contraseñas Temporales**: Se genera una clave aleatoria de 6 caracteres al crear un usuario desde administración, se notifica al administrador en el toast y se envía por correo al usuario.
+- [x] **Spinner de Carga en Mis Reservas**: El spinner interactivo bloquea flashes de datos obsoletos o vacíos durante la obtención de las reservas.
+- [x] **Galería de Imágenes Administrable**: Sección pública "Conoce el Centro" interactiva con Lightbox y panel CRUD en la administración.
+- [x] **Integración de Imágenes Reales**: Integradas las fotos reales de la carpeta `/images/` en espacios, avisos y Home, con actualización en caliente de registros antiguos.

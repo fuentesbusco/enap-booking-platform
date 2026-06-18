@@ -63,13 +63,21 @@ Al ingresar con la cuenta de Administrador, aparecerá el menú **Administració
 *   **Eliminar:** Borra el espacio de la base de datos (advertencia: no se puede eliminar si tiene reservas asociadas).
 
 ### Gestión de Usuarios (`/admin/usuarios`)
-*   **Registrar Usuario:** Permite al administrador crear cuentas directas (Socios, Externos o Administradores). Las cuentas creadas de esta forma se inicializan con la contraseña por defecto `password123`.
+*   **Registrar Usuario:** Permite al administrador crear cuentas directas (Socios, Externos o Administradores). Las cuentas creadas de esta forma se inicializan con una contraseña alfanumérica aleatoria de 6 caracteres generada por el sistema. Esta contraseña se despliega en el toast informativo tras el registro exitoso y se envía simuladamente al correo electrónico del usuario. (Nota: Las cuentas demo precargadas como `carlos.munoz@enap.cl` continúan usando `password123`).
 *   **Activar/Desactivar:** Permite suspender temporalmente el acceso de un usuario al sistema haciendo clic en el botón de estado.
 
 ### Gestión de Avisos (`/admin/avisos`)
 *   **Crear Aviso:** Presiona **"Nuevo Aviso"**. Escribe un título y el contenido. Puedes marcar la casilla **"Destacar aviso"** para fijarlo al principio del muro.
 *   **Visualización:** Confirma que el aviso aparece publicado de inmediato en la sección de Noticias de la página de inicio.
 *   **Eliminar:** Permite dar de baja anuncios antiguos de forma instantánea.
+
+### Gestión de Galería de Fotos (`/admin/galeria`)
+*   **Añadir Imagen:** Permite al administrador cargar fotos reales del centro vacacional ingresando un título, descripción y una URL de imagen (o seleccionando entre los presets predeterminados).
+*   **Eliminar:** Permite dar de baja imágenes de la galería pública.
+
+### Gestión de Reservas (`/admin/reservas`)
+*   **Filtros y Aprobación:** El administrador puede revisar el listado de todas las reservas y usar filtros de estado (`Por aprobar`, `Aprobadas`, `Rechazadas`).
+*   **Identificación de Socios:** Se incluye una columna **"Tipo"** que muestra de forma destacada mediante una insignia de color si el solicitante es **Socio** o **No Socio (Público General/Externo)**.
 
 ---
 
@@ -103,3 +111,16 @@ Para facilitar el desarrollo local sin dependencias externas obligatorias, el ba
 2.  **Simulación de Envío de Correos (SMTP)**:
     *   Si las configuraciones de correo en el `.env` (`SMTP_USER`/`SMTP_PASS`) son valores de prueba (`mock_smtp_user`/`mock_smtp_pass`), el backend **omite la conexión al servidor SMTP** de Amazon SES.
     *   En su lugar, imprime un aviso detallado de depuración (`WARN`) en la consola del backend reflejando el remitente, destinatario, asunto y plantilla del correo simulado, evitando timeouts de conexión.
+
+---
+
+## 🖼️ 6. Galería Pública y Visor de Fotos "Conoce el Centro"
+El sistema cuenta con una sección interactiva para que los usuarios puedan conocer las instalaciones a través de fotografías reales cargadas por el administrador.
+
+1.  **Navegar a la Galería:** Ve al menú superior y selecciona **"Conoce el Centro"** (o accede a `/conoce-el-centro`). Verás un diseño de cuadrícula moderna con las fotos reales y sus títulos.
+2.  **Abrir el Lightbox:** Haz clic sobre cualquiera de las imágenes. Esta se abrirá en un visor de pantalla completa (Lightbox).
+3.  **Controles del Lightbox:** Puedes avanzar a la siguiente imagen usando la flecha derecha en pantalla, retroceder con la flecha izquierda, o cerrar la vista con la "X" superior.
+4.  **Uso de Teclado:** El visor también responde al teclado:
+    *   **Flecha Derecha (`➔`):** Siguiente imagen.
+    *   **Flecha Izquierda (`⬅`):** Imagen anterior.
+    *   **Tecla `ESC`:** Cerrar el Lightbox.
