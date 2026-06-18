@@ -10,9 +10,9 @@
 }
 
 @layer components {
-  .btn-primary   { @apply bg-forest text-white font-medium px-5 py-2.5 rounded-xl hover:bg-sage active:scale-95 transition-all duration-200; }
-  .btn-secondary { @apply bg-white text-forest font-medium px-5 py-2.5 rounded-xl border border-forest/20 hover:bg-mist active:scale-95 transition-all duration-200; }
-  .btn-sand      { @apply bg-sand text-charcoal font-semibold px-5 py-2.5 rounded-xl hover:brightness-95 active:scale-95 transition-all duration-200; }
+  .btn-primary   { @apply bg-forest text-white font-medium px-5 py-2.5 rounded-xl hover:bg-sage active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none; }
+  .btn-secondary { @apply bg-white text-forest font-medium px-5 py-2.5 rounded-xl border border-forest/20 hover:bg-mist active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none; }
+  .btn-sand      { @apply bg-sand text-charcoal font-semibold px-5 py-2.5 rounded-xl hover:brightness-95 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none; }
   .card          { @apply bg-white rounded-2xl shadow-card; }
   .input         { @apply w-full border border-charcoal/20 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-forest/30 focus:border-forest transition-all; }
   .badge         { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }

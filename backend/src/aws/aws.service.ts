@@ -36,6 +36,17 @@ export class AwsService {
    */
   async uploadFile(fileBuffer: Buffer, folder: string, filename: string, mimeType: string): Promise<string> {
     const key = `${folder}/${Date.now()}-${filename}`;
+    const accessKey = this.configService.get<string>('AWS_ACCESS_KEY_ID');
+    const secretKey = this.configService.get<string>('AWS_SECRET_ACCESS_KEY');
+    const isMock = !accessKey || !secretKey || accessKey.trim() === '' || secretKey.trim() === '' || accessKey.includes('YOUR_') || secretKey.includes('YOUR_');
+
+    if (isMock) {
+      const region = this.configService.get<string>('AWS_REGION', 'us-east-1');
+      const url = `https://${this.bucketName}.s3.${region}.amazonaws.com/${key}`;
+      this.logger.warn(`AWS S3 credentials not configured. Bypassing upload and returning mock URL: ${url}`);
+      return url;
+    }
+
     this.logger.log(`Subiendo archivo a S3: ${key} (MIME: ${mimeType})...`);
 
     try {
