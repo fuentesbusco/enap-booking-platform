@@ -18,4 +18,25 @@ export class AnnouncementsService {
       },
     });
   }
+
+  async create(data: {
+    title: string;
+    body: string;
+    imageUrl?: string;
+    isPinned?: boolean;
+  }): Promise<AnnouncementEntity> {
+    const newAnn = this.announcementRepository.create({
+      title: data.title,
+      body: data.body,
+      imageUrl: data.imageUrl,
+      isPinned: data.isPinned ?? false,
+      publishedAt: new Date().toISOString().split('T')[0],
+    });
+    return this.announcementRepository.save(newAnn);
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const result = await this.announcementRepository.delete(id);
+    return (result.affected ?? 0) > 0;
+  }
 }

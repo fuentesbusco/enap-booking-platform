@@ -20,4 +20,16 @@ export class AnnouncementsService {
       map((list) => list.map(mapAnnouncementToFrontend))
     );
   }
+
+  create(ann: Omit<Announcement, 'id' | 'published_at'>): Observable<Announcement> {
+    return this.http.post<any>(`${environment.apiUrl}/announcements`, ann).pipe(
+      map(mapAnnouncementToFrontend)
+    );
+  }
+
+  delete(id: number): Observable<boolean> {
+    return this.http.delete<{ success: boolean }>(`${environment.apiUrl}/announcements/${id}`).pipe(
+      map((res) => res.success)
+    );
+  }
 }
