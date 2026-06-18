@@ -22,6 +22,7 @@ export class MyBookingsComponent implements OnInit {
   bookings: Booking[] = [];
   paymentStatus: string | null = null;
   paymentCode: string | null = null;
+  loading = false;
 
   expandedBookingId: number | null = null;
   activePaymentMethods: Record<number, 'transfer' | 'mercadopago'> = {};
@@ -38,6 +39,7 @@ export class MyBookingsComponent implements OnInit {
       const paymentId = params['payment_id'] || params['collection_id'];
 
       if (this.paymentStatus === 'success' && this.paymentCode && paymentId && mpStatus === 'approved') {
+        this.loading = true;
         this.bookingsService.confirmPayment(this.paymentCode, paymentId, mpStatus).subscribe({
           next: () => {
             this.toastService.success('¡Pago verificado y reserva confirmada!');
@@ -55,7 +57,17 @@ export class MyBookingsComponent implements OnInit {
   }
 
   loadBookings() {
-    this.bookingsService.getMyBookings().subscribe((d) => (this.bookings = d));
+    this.loading = true;
+    this.bookingsService.getMyBookings().subscribe({
+      next: (d) => {
+        this.bookings = d;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error(err);
+      }
+    });
   }
 
   togglePaymentSection(bookingId: number) {

@@ -17,7 +17,7 @@ export class AnnouncementsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   async create(
-    @Body() body: { title: string; body: string; imageUrl?: string; isPinned?: boolean },
+    @Body() body: { title: string; body: string; imageUrl?: string; isPinned?: boolean; is_pinned?: boolean },
   ) {
     return this.announcementsService.create(body);
   }

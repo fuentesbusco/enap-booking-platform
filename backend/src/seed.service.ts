@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from './users/user.entity';
 import { SpaceEntity } from './spaces/space.entity';
 import { AnnouncementEntity } from './announcements/announcement.entity';
+import { GalleryEntity } from './gallery/gallery.entity';
 import { hashPassword } from './auth/hash.util';
 import { MOCK_SPACES, MOCK_ANNOUNCEMENTS, MOCK_USER_SOCIO, MOCK_USER_ADMIN, MOCK_USER_EXTERNAL } from './models';
 
@@ -18,6 +19,8 @@ export class SeedService implements OnApplicationBootstrap {
     private readonly spaceRepository: Repository<SpaceEntity>,
     @InjectRepository(AnnouncementEntity)
     private readonly announcementRepository: Repository<AnnouncementEntity>,
+    @InjectRepository(GalleryEntity)
+    private readonly galleryRepository: Repository<GalleryEntity>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -26,6 +29,7 @@ export class SeedService implements OnApplicationBootstrap {
       await this.seedSpaces();
       await this.seedUsers();
       await this.seedAnnouncements();
+      await this.seedGallery();
       this.logger.log('Database check and seeding complete.');
     } catch (error) {
       this.logger.error('Database seeding failed:', error);
@@ -144,5 +148,56 @@ export class SeedService implements OnApplicationBootstrap {
     );
     await this.announcementRepository.save(announcements);
     this.logger.log(`Successfully seeded ${announcements.length} announcements.`);
+  }
+
+  private async seedGallery() {
+    const count = await this.galleryRepository.count();
+    if (count > 0) {
+      this.logger.log('Gallery table is already seeded.');
+      return;
+    }
+
+    this.logger.log('Seeding gallery table...');
+    const galleryItems = [
+      {
+        title: 'Vista Aérea del Centro',
+        imageUrl: '/images/aerea-centro.jpeg',
+        description: 'Espectacular toma desde el aire de nuestro centro vacacional.',
+      },
+      {
+        title: 'Piscinas y Áreas Verdes',
+        imageUrl: '/images/aerea-piscinas.jpeg',
+        description: 'Área de piscinas principales con vegetación nativa y reposeras.',
+      },
+      {
+        title: 'Cabañas Familiares',
+        imageUrl: '/images/frontal-cabanas.jpeg',
+        description: 'Cabañas completamente equipadas para toda la familia.',
+      },
+      {
+        title: 'Quincho Techado',
+        imageUrl: '/images/quincho.jpeg',
+        description: 'Amplios quinchos para asados y reuniones familiares.',
+      },
+      {
+        title: 'Cancha de Fútbol',
+        imageUrl: '/images/cancha-furbol.jpeg',
+        description: 'Espacio deportivo para torneos y esparcimiento.',
+      },
+      {
+        title: 'Piscina en Tarde de Sol',
+        imageUrl: '/images/piscina-diagonal.jpeg',
+        description: 'Perfecto para refrescarse durante el verano y disfrutar con amigos.',
+      },
+      {
+        title: 'Entorno de Noche',
+        imageUrl: '/images/centro-norturna.jpeg',
+        description: 'Iluminación cálida y ambiente sumamente tranquilo por las noches.',
+      },
+    ];
+
+    const items = galleryItems.map((g) => this.galleryRepository.create(g));
+    await this.galleryRepository.save(items);
+    this.logger.log(`Successfully seeded ${items.length} gallery items.`);
   }
 }

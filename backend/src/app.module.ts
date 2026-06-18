@@ -23,6 +23,8 @@ import { AwsModule } from './aws/aws.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MercadoPagoModule } from './mercadopago/mercadopago.module';
 import { MercadoPagoController } from './mercadopago/mercadopago.controller';
+import { GalleryController } from './gallery/gallery.controller';
+import { GalleryService } from './gallery/gallery.service';
 
 
 // Entities
@@ -31,6 +33,7 @@ import { SpaceEntity } from './spaces/space.entity';
 import { GuestEntity } from './bookings/guest.entity';
 import { Booking } from './bookings/booking.entity';
 import { AnnouncementEntity } from './announcements/announcement.entity';
+import { GalleryEntity } from './gallery/gallery.entity';
 
 @Module({
   imports: [
@@ -47,7 +50,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
         username: config.get<string>('DB_USERNAME', 'root'),
         password: config.get<string>('DB_PASSWORD', ''),
         database: config.get<string>('DB_DATABASE', 'enap_booking'),
-        entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity],
+        entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity, GalleryEntity],
         synchronize: String(config.get('DB_SYNCHRONIZE', 'false')) === 'true',
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
         migrationsRun: String(config.get('DB_MIGRATIONS_RUN', 'true')) === 'true',
@@ -59,6 +62,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
       GuestEntity,
       Booking,
       AnnouncementEntity,
+      GalleryEntity,
     ]),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -91,6 +95,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
     BookingsController,
     UsersController,
     MercadoPagoController,
+    GalleryController,
   ],
   providers: [
     AppService,
@@ -100,6 +105,7 @@ import { AnnouncementEntity } from './announcements/announcement.entity';
     BookingsService,
     UsersService,
     SeedService,
+    GalleryService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

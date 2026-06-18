@@ -69,8 +69,12 @@ export class AdminUsersComponent implements OnInit {
     };
 
     this.usersService.create(userData).subscribe({
-      next: () => {
-        this.toastService.success('Usuario registrado exitosamente.');
+      next: (createdUser) => {
+        let msg = 'Usuario registrado exitosamente.';
+        if (createdUser && createdUser.tempPassword) {
+          msg += ` Contraseña temporal: ${createdUser.tempPassword} (Enviada por correo).`;
+        }
+        this.toastService.success(msg);
         this.loadUsers();
         this.closeModal();
         this.loading = false;

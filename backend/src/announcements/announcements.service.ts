@@ -25,12 +25,13 @@ export class AnnouncementsService {
     body: string;
     imageUrl?: string;
     isPinned?: boolean;
+    is_pinned?: boolean;
   }): Promise<AnnouncementEntity> {
     const newAnn = this.announcementRepository.create({
       title: data.title,
       body: data.body,
       imageUrl: data.imageUrl,
-      isPinned: data.isPinned ?? false,
+      isPinned: data.isPinned ?? data.is_pinned ?? false,
       publishedAt: new Date().toISOString().split('T')[0],
     });
     return this.announcementRepository.save(newAnn);

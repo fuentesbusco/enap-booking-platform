@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AnnouncementsController } from './announcements.controller';
 import { AnnouncementsService } from './announcements.service';
 import { AnnouncementEntity } from './announcement.entity';
+import { AuthService } from '../auth/auth.service';
 
 describe('AnnouncementsController', () => {
   let controller: AnnouncementsController;
@@ -20,9 +21,16 @@ describe('AnnouncementsController', () => {
       getAll: jest.fn(),
     };
 
+    const mockAuthService = {
+      verifyToken: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AnnouncementsController],
-      providers: [{ provide: AnnouncementsService, useValue: mockService }],
+      providers: [
+        { provide: AnnouncementsService, useValue: mockService },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compile();
 
     controller = module.get<AnnouncementsController>(AnnouncementsController);

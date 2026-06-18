@@ -9,6 +9,7 @@
       <a routerLink="/" routerLinkActive="text-white" [routerLinkActiveOptions]="{ exact: true }"
         class="hover:text-white transition-colors">Inicio</a>
       <a routerLink="/espacios" routerLinkActive="text-white" class="hover:text-white transition-colors">Espacios</a>
+      <a routerLink="/conoce-el-centro" routerLinkActive="text-white" class="hover:text-white transition-colors">Conoce el Centro</a>
       <a *ngIf="auth.isLoggedIn()" routerLink="/mis-reservas" routerLinkActive="text-white"
         class="hover:text-white transition-colors">Mis Reservas</a>
       <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="text-white"

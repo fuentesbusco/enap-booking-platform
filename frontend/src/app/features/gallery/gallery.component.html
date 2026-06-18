@@ -1,0 +1,134 @@
+<app-navbar />
+
+<div class="pt-16 min-h-screen bg-mist">
+  <!-- Cabecera Premium -->
+  <div class="bg-forest py-16 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-radial-gradient opacity-15"></div>
+    <div class="max-w-6xl mx-auto px-4 text-center relative z-10">
+      <p class="text-xs font-mono text-sand uppercase tracking-widest mb-2">
+        Galería de Fotos
+      </p>
+      <h1 class="font-display text-4xl md:text-5xl font-semibold tracking-tight">
+        Conoce el Centro
+      </h1>
+      <p class="text-white/70 max-w-xl mx-auto mt-4 text-sm md:text-base leading-relaxed">
+        Explora las instalaciones, recintos deportivos, cabañas y el hermoso entorno natural que nuestro Centro Vacacional Sindicato ENAP tiene para ofrecerte.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <!-- Spinner de Carga -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
+      <span class="animate-spin rounded-full h-10 w-10 border-4 border-forest border-t-transparent mb-3"></span>
+      <p class="text-charcoal/40 text-sm font-medium">Cargando fotos del centro...</p>
+    </div>
+
+    <!-- Contenido Grid -->
+    <div *ngIf="!loading && items.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div 
+        *ngFor="let item of items; let idx = index" 
+        (click)="openLightbox(idx)"
+        class="group bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover border border-charcoal/5 cursor-pointer transform hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      >
+        <!-- Contenedor Imagen con Zoom -->
+        <div class="relative overflow-hidden aspect-video bg-mist flex items-center justify-center">
+          <img 
+            [src]="item.image_url" 
+            [alt]="item.title"
+            class="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500"
+          />
+          <div class="absolute inset-0 bg-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <span class="bg-white/90 backdrop-blur-xs text-forest text-xs font-semibold py-2 px-4 rounded-xl shadow-md transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+              🔍 Ampliar Imagen
+            </span>
+          </div>
+        </div>
+
+        <!-- Detalles Pie de Imagen -->
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="font-semibold text-charcoal text-base group-hover:text-forest transition-colors duration-300">
+              {{ item.title }}
+            </h3>
+            <p *ngIf="item.description" class="text-charcoal/50 text-xs mt-2 leading-relaxed line-clamp-2">
+              {{ item.description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vacío -->
+    <div *ngIf="!loading && items.length === 0" class="card p-12 text-center max-w-md mx-auto">
+      <span class="text-4xl block mb-3">🖼️</span>
+      <h3 class="font-semibold text-charcoal text-lg">No hay imágenes</h3>
+      <p class="text-charcoal/40 text-sm mt-1">Pronto subiremos nuevas fotografías del centro.</p>
+    </div>
+  </div>
+
+  <!-- Lightbox Overlay (Vistas de Pantalla Completa) -->
+  <div 
+    *ngIf="selectedIndex !== null" 
+    (click)="closeLightbox()"
+    class="fixed inset-0 z-[100] bg-charcoal/95 backdrop-blur-xs flex flex-col justify-between p-4 transition-all duration-300 animate-fadeIn"
+  >
+    <!-- Botón Cerrar e Info superior -->
+    <div class="flex items-center justify-between text-white/80 w-full max-w-6xl mx-auto py-2">
+      <span class="font-mono text-xs tracking-wider bg-white/10 px-3 py-1 rounded-full">
+        {{ selectedIndex + 1 }} / {{ items.length }}
+      </span>
+      <button 
+        (click)="closeLightbox()" 
+        class="text-white hover:text-white/70 transition-colors p-2 rounded-full hover:bg-white/10 cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenedor de Imagen y Flechas -->
+    <div class="flex-1 flex items-center justify-between max-w-6xl w-full mx-auto relative min-h-0 py-4">
+      <!-- Flecha Izquierda -->
+      <button 
+        (click)="prevImage($event)"
+        class="absolute left-2 md:left-4 z-10 text-white hover:text-white/70 bg-white/5 hover:bg-white/10 p-3 rounded-full transition-colors cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Imagen -->
+      <div class="flex-1 h-full flex items-center justify-center min-h-0 select-none">
+        <img 
+          [src]="items[selectedIndex].image_url" 
+          [alt]="items[selectedIndex].title"
+          (click)="$event.stopPropagation()"
+          class="max-w-full max-h-full object-contain rounded-lg shadow-float"
+        />
+      </div>
+
+      <!-- Flecha Derecha -->
+      <button 
+        (click)="nextImage($event)"
+        class="absolute right-2 md:right-4 z-10 text-white hover:text-white/70 bg-white/5 hover:bg-white/10 p-3 rounded-full transition-colors cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Título e Info inferior -->
+    <div class="text-center text-white w-full max-w-3xl mx-auto py-4">
+      <h2 class="font-display text-lg md:text-xl font-semibold">
+        {{ items[selectedIndex].title }}
+      </h2>
+      <p *ngIf="items[selectedIndex].description" class="text-white/60 text-xs md:text-sm mt-1 max-w-2xl mx-auto leading-relaxed">
+        {{ items[selectedIndex].description }}
+      </p>
+    </div>
+  </div>
+</div>

@@ -7,6 +7,7 @@ export const routes: Routes = [
   { path: 'reservar/:spaceId', loadComponent: () => import('./features/booking/booking-flow.component').then(m => m.BookingFlowComponent) },
   { path: 'mis-reservas', loadComponent: () => import('./features/my-bookings/my-bookings.component').then(m => m.MyBookingsComponent), canActivate: [authGuard] },
   { path: 'ingresar', loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent) },
+  { path: 'conoce-el-centro', loadComponent: () => import('./features/gallery/gallery.component').then(m => m.GalleryComponent) },
   { path: 'admin', canActivate: [adminGuard], loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes) },
   { path: '**', redirectTo: '' },
 ];

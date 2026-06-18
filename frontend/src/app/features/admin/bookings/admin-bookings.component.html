@@ -43,6 +43,11 @@
             <th
               class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
             >
+              Tipo
+            </th>
+            <th
+              class="text-left px-5 py-3 text-[10px] font-mono text-charcoal/40 uppercase tracking-wider"
+            >
               Espacio
             </th>
             <th
@@ -82,6 +87,11 @@
               <div *ngIf="b.admin_notes" class="text-xs text-red-600 mt-1 font-medium bg-red-50 border border-red-100/50 rounded-lg px-2 py-1 inline-block">
                 Motivo: {{ b.admin_notes }}
               </div>
+            </td>
+            <td class="px-5 py-3.5">
+              <span [class]="b.user.role === 'socio' ? 'badge-green' : 'badge-gray'">
+                {{ b.user.role === 'socio' ? 'Socio' : 'No Socio' }}
+              </span>
             </td>
             <td class="px-5 py-3.5 text-charcoal/65">{{ b.space.name }}</td>
             <td class="px-5 py-3.5 font-mono text-xs text-charcoal/50">
@@ -129,7 +139,7 @@
           </tr>
           <tr *ngIf="filtered.length === 0">
             <td
-              colspan="7"
+              colspan="8"
               class="px-5 py-12 text-center text-charcoal/35 text-sm"
             >
               No hay reservas en este estado.

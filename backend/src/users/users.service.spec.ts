@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -28,11 +29,15 @@ describe('UsersService', () => {
       create: jest.fn(),
       save: jest.fn(),
     };
+    const mockNotificationsService = {
+      sendEmail: jest.fn().mockResolvedValue(true),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         { provide: getRepositoryToken(UserEntity), useValue: mockRepository },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 

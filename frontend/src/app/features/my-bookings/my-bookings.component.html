@@ -34,160 +34,169 @@
         </div>
       </div>
     </div>
-    <div *ngIf="bookings.length === 0" class="card p-12 text-center">
-      <span class="text-4xl block mb-3">📭</span>
-      <p class="text-charcoal/50 mb-4">Todavía no tienes reservas.</p>
-      <a routerLink="/espacios" class="btn-primary">Ver espacios disponibles</a>
+    <!-- Loader de Carga -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-card border border-charcoal/5">
+      <span class="animate-spin rounded-full h-10 w-10 border-4 border-forest border-t-transparent mb-3"></span>
+      <p class="text-charcoal/40 text-sm font-medium animate-pulse">Cargando tus reservas...</p>
     </div>
 
-    <div class="space-y-4">
-      <div *ngFor="let b of bookings" class="card p-5">
-        <div class="flex items-start justify-between gap-4 flex-wrap">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1 flex-wrap">
-              <span class="font-mono text-xs text-charcoal/40">{{
-                b.booking_code
-              }}</span>
-              <span [class]="badgeClass(b.status)">{{
-                statusLabel(b.status)
-              }}</span>
-            </div>
-            <h3 class="font-semibold text-charcoal">{{ b.space.name }}</h3>
-            <p class="text-charcoal/50 text-sm mt-0.5">
-              {{ b.check_in }} →
-              {{ b.check_out }}
-              &nbsp;·&nbsp; {{ b.guests.length }} invitado(s)
-            </p>
-          </div>
-          <div class="text-right shrink-0">
-            <p class="text-[10px] font-mono text-charcoal/35 uppercase">
-              Total
-            </p>
-            <p class="font-semibold text-forest text-lg">
-              {{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}
-            </p>
-          </div>
-        </div>
+    <!-- Contenido de Reservas -->
+    <div *ngIf="!loading">
+      <div *ngIf="bookings.length === 0" class="card p-12 text-center">
+        <span class="text-4xl block mb-3">📭</span>
+        <p class="text-charcoal/50 mb-4">Todavía no tienes reservas.</p>
+        <a routerLink="/espacios" class="btn-primary">Ver espacios disponibles</a>
+      </div>
 
-        <!-- Detalle si está pendiente de pago o rechazada -->
-        <div
-          *ngIf="b.status === 'pending_payment' || b.status === 'rejected'"
-          class="mt-4 border-t border-charcoal/5 pt-4"
-        >
-          <!-- Banner de rechazo en tarjeta -->
+      <div *ngIf="bookings.length > 0" class="space-y-4">
+        <div *ngFor="let b of bookings" class="card p-5">
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="font-mono text-xs text-charcoal/40">{{
+                  b.booking_code
+                }}</span>
+                <span [class]="badgeClass(b.status)">{{
+                  statusLabel(b.status)
+                }}</span>
+              </div>
+              <h3 class="font-semibold text-charcoal">{{ b.space.name }}</h3>
+              <p class="text-charcoal/50 text-sm mt-0.5">
+                {{ b.check_in }} →
+                {{ b.check_out }}
+                &nbsp;·&nbsp; {{ b.guests.length }} invitado(s)
+              </p>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-[10px] font-mono text-charcoal/35 uppercase">
+                Total
+              </p>
+              <p class="font-semibold text-forest text-lg">
+                {{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Detalle si está pendiente de pago o rechazada -->
           <div
-            *ngIf="b.status === 'rejected'"
-            class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-3.5 mb-4 text-xs font-medium"
+            *ngIf="b.status === 'pending_payment' || b.status === 'rejected'"
+            class="mt-4 border-t border-charcoal/5 pt-4"
           >
-            <span>⚠️ <strong>Reserva rechazada:</strong> {{ b.admin_notes || 'Comprobante no válido o ilegible.' }}</span>
-          </div>
-
-          <div class="flex items-center justify-between gap-4 flex-wrap">
-            <div class="flex-1">
-              <p class="text-sm font-medium text-charcoal/70">Pago pendiente</p>
-              <p class="text-xs text-charcoal/40 mt-0.5">
-                Completa el pago por transferencia o Mercado Pago.
-              </p>
-            </div>
-            <button
-              (click)="togglePaymentSection(b.id)"
-              class="btn-sand text-xs py-2 px-4 shrink-0 font-semibold"
+            <!-- Banner de rechazo en tarjeta -->
+            <div
+              *ngIf="b.status === 'rejected'"
+              class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-3.5 mb-4 text-xs font-medium"
             >
-              {{ expandedBookingId === b.id ? 'Ocultar Opciones' : 'Completar pago' }}
-            </button>
-          </div>
+              <span>⚠️ <strong>Reserva rechazada:</strong> {{ b.admin_notes || 'Comprobante no válido o ilegible.' }}</span>
+            </div>
 
-          <!-- Opciones de pago expandidas -->
-          <div *ngIf="expandedBookingId === b.id" class="mt-4 bg-mist/40 border border-charcoal/5 rounded-2xl p-4 transition-all duration-300">
-            <!-- Tabs -->
-            <div class="flex gap-2 mb-4 bg-mist p-1 rounded-xl">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-charcoal/70">Pago pendiente</p>
+                <p class="text-xs text-charcoal/40 mt-0.5">
+                  Completa el pago por transferencia o Mercado Pago.
+                </p>
+              </div>
               <button
-                type="button"
-                (click)="setPaymentMethod(b.id, 'transfer')"
-                class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all"
-                [class.bg-white]="activePaymentMethods[b.id] === 'transfer'"
-                [class.shadow-xs]="activePaymentMethods[b.id] === 'transfer'"
-                [class.text-forest]="activePaymentMethods[b.id] === 'transfer'"
-                [class.text-charcoal]="activePaymentMethods[b.id] !== 'transfer'"
-                [class.opacity-50]="activePaymentMethods[b.id] !== 'transfer'"
+                (click)="togglePaymentSection(b.id)"
+                class="btn-sand text-xs py-2 px-4 shrink-0 font-semibold"
               >
-                🏦 Transferencia
-              </button>
-              <button
-                type="button"
-                (click)="setPaymentMethod(b.id, 'mercadopago')"
-                class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all"
-                [class.bg-white]="activePaymentMethods[b.id] === 'mercadopago'"
-                [class.shadow-xs]="activePaymentMethods[b.id] === 'mercadopago'"
-                [class.text-forest]="activePaymentMethods[b.id] === 'mercadopago'"
-                [class.text-charcoal]="activePaymentMethods[b.id] !== 'mercadopago'"
-                [class.opacity-50]="activePaymentMethods[b.id] !== 'mercadopago'"
-              >
-                💳 Mercado Pago
+                {{ expandedBookingId === b.id ? 'Ocultar Opciones' : 'Completar pago' }}
               </button>
             </div>
 
-            <!-- Transferencia bancaria form -->
-            <div *ngIf="activePaymentMethods[b.id] === 'transfer'" class="space-y-3">
-              <div class="bg-forest/5 border border-forest/10 rounded-xl p-3.5 text-xs text-charcoal/70 space-y-1">
-                <div class="flex justify-between"><span>Banco:</span><span class="font-medium font-sans">Banco Estado</span></div>
-                <div class="flex justify-between"><span>Cuenta:</span><span class="font-medium font-mono">Cte. 12345678-9</span></div>
-                <div class="flex justify-between"><span>Titular:</span><span class="font-medium font-sans">Sindicato ENAP Refinería</span></div>
-                <div class="flex justify-between"><span>RUT:</span><span class="font-medium font-mono">71.234.567-8</span></div>
-                <div class="flex justify-between border-t border-charcoal/5 pt-1.5 mt-1">
-                  <strong>Total a transferir:</strong>
-                  <strong class="text-forest font-mono">{{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}</strong>
+            <!-- Opciones de pago expandidas -->
+            <div *ngIf="expandedBookingId === b.id" class="mt-4 bg-mist/40 border border-charcoal/5 rounded-2xl p-4 transition-all duration-300">
+              <!-- Tabs -->
+              <div class="flex gap-2 mb-4 bg-mist p-1 rounded-xl">
+                <button
+                  type="button"
+                  (click)="setPaymentMethod(b.id, 'transfer')"
+                  class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all"
+                  [class.bg-white]="activePaymentMethods[b.id] === 'transfer'"
+                  [class.shadow-xs]="activePaymentMethods[b.id] === 'transfer'"
+                  [class.text-forest]="activePaymentMethods[b.id] === 'transfer'"
+                  [class.text-charcoal]="activePaymentMethods[b.id] !== 'transfer'"
+                  [class.opacity-50]="activePaymentMethods[b.id] !== 'transfer'"
+                >
+                  🏦 Transferencia
+                </button>
+                <button
+                  type="button"
+                  (click)="setPaymentMethod(b.id, 'mercadopago')"
+                  class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all"
+                  [class.bg-white]="activePaymentMethods[b.id] === 'mercadopago'"
+                  [class.shadow-xs]="activePaymentMethods[b.id] === 'mercadopago'"
+                  [class.text-forest]="activePaymentMethods[b.id] === 'mercadopago'"
+                  [class.text-charcoal]="activePaymentMethods[b.id] !== 'mercadopago'"
+                  [class.opacity-50]="activePaymentMethods[b.id] !== 'mercadopago'"
+                >
+                  💳 Mercado Pago
+                </button>
+              </div>
+
+              <!-- Transferencia bancaria form -->
+              <div *ngIf="activePaymentMethods[b.id] === 'transfer'" class="space-y-3">
+                <div class="bg-forest/5 border border-forest/10 rounded-xl p-3.5 text-xs text-charcoal/70 space-y-1">
+                  <div class="flex justify-between"><span>Banco:</span><span class="font-medium font-sans">Banco Estado</span></div>
+                  <div class="flex justify-between"><span>Cuenta:</span><span class="font-medium font-mono">Cte. 12345678-9</span></div>
+                  <div class="flex justify-between"><span>Titular:</span><span class="font-medium font-sans">Sindicato ENAP Refinería</span></div>
+                  <div class="flex justify-between"><span>RUT:</span><span class="font-medium font-mono">71.234.567-8</span></div>
+                  <div class="flex justify-between border-t border-charcoal/5 pt-1.5 mt-1">
+                    <strong>Total a transferir:</strong>
+                    <strong class="text-forest font-mono">{{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}</strong>
+                  </div>
+                </div>
+
+                <!-- File selector & upload button -->
+                <div>
+                  <label class="text-[10px] font-mono text-charcoal/50 uppercase block mb-1">Comprobante de pago</label>
+                  <div class="flex gap-2 items-center">
+                    <input
+                      type="file"
+                      (change)="onFileSelected($event, b.id)"
+                      accept=".pdf,image/*"
+                      class="input text-xs py-1.5 flex-1 bg-white"
+                    />
+                    <button
+                      [disabled]="!selectedFiles[b.id] || uploading[b.id]"
+                      (click)="uploadReceipt(b.id)"
+                      class="btn-primary text-xs py-2 px-4 font-semibold flex items-center justify-center gap-1 shrink-0 cursor-pointer"
+                    >
+                      <span *ngIf="uploading[b.id]" class="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
+                      Subir
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <!-- File selector & upload button -->
-              <div>
-                <label class="text-[10px] font-mono text-charcoal/50 uppercase block mb-1">Comprobante de pago</label>
-                <div class="flex gap-2 items-center">
-                  <input
-                    type="file"
-                    (change)="onFileSelected($event, b.id)"
-                    accept=".pdf,image/*"
-                    class="input text-xs py-1.5 flex-1 bg-white"
-                  />
-                  <button
-                    [disabled]="!selectedFiles[b.id] || uploading[b.id]"
-                    (click)="uploadReceipt(b.id)"
-                    class="btn-primary text-xs py-2 px-4 font-semibold flex items-center justify-center gap-1 shrink-0 cursor-pointer"
-                  >
-                    <span *ngIf="uploading[b.id]" class="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
-                    Subir
-                  </button>
-                </div>
+              <!-- Mercado Pago checkout option -->
+              <div *ngIf="activePaymentMethods[b.id] === 'mercadopago'" class="text-center py-2">
+                <p class="text-xs text-charcoal/60 mb-3 leading-relaxed">
+                  Paga de forma rápida y segura con tarjeta o saldo de Mercado Pago.
+                </p>
+                <button
+                  [disabled]="paying[b.id]"
+                  (click)="payWithMercadoPago(b)"
+                  class="btn-primary w-full text-xs py-2.5 font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span *ngIf="paying[b.id]" class="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
+                  Pagar con Mercado Pago
+                </button>
               </div>
             </div>
-
-            <!-- Mercado Pago checkout option -->
-            <div *ngIf="activePaymentMethods[b.id] === 'mercadopago'" class="text-center py-2">
-              <p class="text-xs text-charcoal/60 mb-3 leading-relaxed">
-                Paga de forma rápida y segura con tarjeta o saldo de Mercado Pago.
-              </p>
-              <button
-                [disabled]="paying[b.id]"
-                (click)="payWithMercadoPago(b)"
-                class="btn-primary w-full text-xs py-2.5 font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span *ngIf="paying[b.id]" class="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
-                Pagar con Mercado Pago
-              </button>
-            </div>
           </div>
-        </div>
 
-        <!-- Estado pendiente aprobación -->
-        <div
-          *ngIf="b.status === 'pending_approval'"
-          class="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-3"
-        >
-          <p class="text-sm text-blue-800">
-            ✅ Comprobante recibido. La administración validará tu pago en los
-            próximos días hábiles.
-          </p>
+          <!-- Estado pendiente aprobación -->
+          <div
+            *ngIf="b.status === 'pending_approval'"
+            class="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-3"
+          >
+            <p class="text-sm text-blue-800">
+              ✅ Comprobante recibido. La administración validará tu pago en los
+              próximos días hábiles.
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -11,6 +11,15 @@ export interface User {
   ficha_number?: string;
   is_active?: boolean;
   passwordHash?: string;
+  tempPassword?: string;
+}
+
+export interface GalleryItem {
+  id: number;
+  title: string;
+  description?: string;
+  image_url: string;
+  created_at?: string;
 }
 
 export interface Space {
@@ -79,6 +88,18 @@ export function mapUserToFrontend(user: any): User {
     role: user.role,
     ficha_number: user.fichaNumber || user.ficha_number,
     is_active: user.isActive !== undefined ? user.isActive : user.is_active,
+    tempPassword: user.tempPassword,
+  };
+}
+
+export function mapGalleryItemToFrontend(item: any): GalleryItem {
+  if (!item) return item;
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    image_url: item.imageUrl || item.image_url,
+    created_at: item.createdAt || item.created_at,
   };
 }
 

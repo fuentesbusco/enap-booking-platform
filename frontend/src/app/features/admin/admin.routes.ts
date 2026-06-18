@@ -33,6 +33,10 @@ export const adminRoutes: Routes = [
         path: 'mercadopago',
         loadComponent: () => import('./mercadopago/admin-mercadopago.component').then(m => m.AdminMercadoPagoComponent),
       },
+      {
+        path: 'galeria',
+        loadComponent: () => import('./gallery/admin-gallery.component').then(m => m.AdminGalleryComponent),
+      },
     ],
   },
 ];

@@ -1,0 +1,115 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { GalleryService } from '../../../core/services/gallery.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { GalleryItem } from '../../../core/models';
+
+@Component({
+  selector: 'app-admin-gallery',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './admin-gallery.component.html',
+})
+export class AdminGalleryComponent implements OnInit {
+  private service = inject(GalleryService);
+  private toastService = inject(ToastService);
+
+  items: GalleryItem[] = [];
+  loading = false;
+
+  // Modal State
+  showModal = false;
+
+  // Form Fields
+  formTitle = '';
+  formDescription = '';
+  formImageUrl = '';
+
+  // Preset Images for Quick Selection
+  presetImages = [
+    { label: 'Vista Aérea General', value: '/images/aerea-centro.jpeg' },
+    { label: 'Piscinas Principales', value: '/images/aerea-piscinas.jpeg' },
+    { label: 'Cabañas Familiares', value: '/images/frontal-cabanas.jpeg' },
+    { label: 'Quinchos Techados', value: '/images/quincho.jpeg' },
+    { label: 'Cancha de Fútbol', value: '/images/cancha-furbol.jpeg' },
+    { label: 'Piscina de Cerca', value: '/images/piscina-diagonal.jpeg' },
+    { label: 'Entorno Nocturno', value: '/images/centro-norturna.jpeg' },
+    { label: 'Dron Central', value: '/images/aerea-dron-centro.jpeg' },
+    { label: 'Quincho Nocturno', value: '/images/quincho-nocturno.jpeg' },
+    { label: 'Piscina Nocturna', value: '/images/piscina-nocturna.jpeg' },
+  ];
+
+  ngOnInit() {
+    this.loadGallery();
+  }
+
+  loadGallery() {
+    this.service.getAll().subscribe((d) => (this.items = d));
+  }
+
+  openCreateModal() {
+    this.formTitle = '';
+    this.formDescription = '';
+    this.formImageUrl = this.presetImages[0].value;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+
+  selectPreset(url: string) {
+    this.formImageUrl = url;
+  }
+
+  saveGalleryItem() {
+    if (!this.formTitle.trim() || !this.formImageUrl.trim()) {
+      this.toastService.warning('Por favor complete todos los campos obligatorios.');
+      return;
+    }
+    if (this.loading) return;
+    this.loading = true;
+
+    const itemData = {
+      title: this.formTitle,
+      description: this.formDescription,
+      image_url: this.formImageUrl,
+    };
+
+    this.service.create(itemData).subscribe({
+      next: () => {
+        this.toastService.success('Imagen guardada con éxito en la galería.');
+        this.loadGallery();
+        this.closeModal();
+        this.loading = false;
+      },
+      error: () => {
+        this.toastService.error('Error al guardar la imagen en la galería.');
+        this.loading = false;
+      }
+    });
+  }
+
+  deleteGalleryItem(id: number) {
+    if (confirm('¿Está seguro de que desea eliminar esta imagen de la galería?')) {
+      if (this.loading) return;
+      this.loading = true;
+      this.service.delete(id).subscribe({
+        next: (success) => {
+          this.loading = false;
+          if (success) {
+            this.toastService.success('Imagen eliminada correctamente.');
+            this.loadGallery();
+          } else {
+            this.toastService.error('No se pudo eliminar la imagen.');
+          }
+        },
+        error: () => {
+          this.toastService.error('Error al eliminar la imagen.');
+          this.loading = false;
+        }
+      });
+    }
+  }
+}

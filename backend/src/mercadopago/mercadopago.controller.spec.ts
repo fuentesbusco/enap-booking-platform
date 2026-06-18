@@ -64,7 +64,7 @@ describe('MercadoPagoController', () => {
 
       const result = await controller.createPreference(body);
 
-      expect(mpService.createPreference).toHaveBeenCalledWith('Cabaña Bosque', 1, 150000);
+      expect(mpService.createPreference).toHaveBeenCalledWith('Cabaña Bosque', 1, 150000, undefined);
       expect(result).toEqual({
         success: true,
         id: 'preference-id-123',

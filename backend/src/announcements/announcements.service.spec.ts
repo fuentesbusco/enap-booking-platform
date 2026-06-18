@@ -44,6 +44,7 @@ describe('AnnouncementsService', () => {
         order: {
           isPinned: 'DESC',
           publishedAt: 'DESC',
+          id: 'DESC',
         },
       });
       expect(result).toEqual([mockAnnouncement]);
