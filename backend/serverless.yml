@@ -34,9 +34,6 @@ provider:
     JWT_SECRET: ${env:JWT_SECRET}
     JWT_EXPIRATION: ${env:JWT_EXPIRATION, '24h'}
     ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS}
-    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
-    AWS_REGION: ${env:AWS_REGION, 'us-east-1'}
     AWS_S3_BUCKET: ${env:AWS_S3_BUCKET, 'enap-booking-bucket'}
     AWS_S3_MOCK: ${env:AWS_S3_MOCK, 'true'}
     SMTP_HOST: ${env:SMTP_HOST, 'email-smtp.us-east-1.amazonaws.com'}
