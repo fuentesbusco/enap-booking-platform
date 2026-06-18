@@ -67,6 +67,7 @@ describe('MercadoPagoService', () => {
           {
             title: 'Test cabin',
             quantity: 1,
+            unitPrice: 50000,
             unit_price: 50000,
           },
         ],

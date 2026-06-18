@@ -36,12 +36,14 @@ export class MercadoPagoService {
             unit_price: unitPrice,
           } as any,
         ],
-      };
 
-      if (backUrls) {
-        body.back_urls = backUrls;
-        body.auto_return = 'approved';
-      }
+        back_urls: {
+          success: backUrls?.success,
+          failure: backUrls?.failure,
+          pending: backUrls?.pending
+        },
+        auto_return: "approved",
+      };
 
       const response = await preference.create({ body });
       return response;
