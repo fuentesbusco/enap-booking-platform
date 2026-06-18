@@ -55,6 +55,8 @@ describe('BookingsService', () => {
     guests: [],
     createdAt: new Date(),
     priceBreakdown: { base: 105000, days: 3, guests_count: 2, guests_total: 7000, free_guests_applied: 0, discount: 0, total: 112000 },
+    isForThirdParty: false,
+    adminCreatedForExternal: false,
   };
 
   beforeEach(async () => {
@@ -211,6 +213,33 @@ describe('BookingsService', () => {
 
       expect(result).toEqual(mockBooking);
       expect(notificationsService.sendEmail).toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException for pool bookings if total guests exceed maxCapacity on same day', async () => {
+      const poolSpace = { ...mockSpace, id: 9, type: 'pool' as any, maxCapacity: 80 };
+      spacesService.getById.mockResolvedValue(poolSpace);
+      
+      const existingBookingForPool = {
+        ...mockBooking,
+        space: poolSpace,
+        checkIn: '2025-12-15',
+        checkOut: '2025-12-15',
+        guests: Array(75).fill({ id: 1, fullName: 'Guest', rut: '1-1' }),
+      };
+
+      const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([existingBookingForPool]),
+      };
+      bookingRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      // Attempt to book with 10 guests (total occupants = 11), exceeding remaining capacity of 4 (80 - 76)
+      const guests = Array(10).fill({ full_name: 'New Guest', rut: '2-2' });
+      await expect(
+        service.createBooking(mockUser, poolSpace.id, '2025-12-15', '2025-12-15', guests),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

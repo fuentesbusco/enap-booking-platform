@@ -126,9 +126,9 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Estandarización de Cabañas (1 a 6)**
   - *Acción:* Navegar por el catálogo de espacios y examinar Cabaña 1 a Cabaña 6.
   - *Resultado esperado:* Cada cabaña indica capacidad para 6 personas, muestra el equipamiento detallado y despliega la advertencia sobre traer sábanas, fundas y toallas en el formulario de reserva.
-- [x] **Reserva por Jornada Única (Quinchos y Piscina)**
-  - *Acción:* Iniciar reserva de un Quincho o Piscina y seleccionar una fecha en el Paso 2.
-  - *Resultado esperado:* El sistema presenta un único control "Día de la Jornada", asigna automáticamente entrada e iguala salida para el mismo día, y restringe colisiones bloqueando la fecha de forma inclusiva si ya hay una reserva activa.
+- [x] **Reserva por Jornada Única y Control de Aforo (Quinchos y Piscina)**
+  - *Acción:* Iniciar reserva de un Quincho o Piscina y seleccionar una fecha.
+  - *Resultado esperado:* El sistema presenta un único control "Día de la Jornada" (iguala check-in y check-out). En Quinchos (exclusivo), la fecha se bloquea si hay al menos una reserva activa. En Piscina (compartido), la fecha permanece libre para otros socios, bloqueándose solo si el aforo total acumulado de ese día alcanza los 80 cupos.
 - [x] **Reserva de Socio para un Tercero Ocupante (Patrocinio)**
   - *Acción:* Iniciar sesión como socio y realizar una reserva de cabaña. En el Paso 2, seleccionar "Para un Tercero Externo (Tarifa General)" e introducir el Nombre, RUT y Teléfono del tercero.
   - *Resultado esperado:* La tarifa se calcula con el valor base general y la reserva se completa, quedando vinculada al socio.

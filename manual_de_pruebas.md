@@ -123,7 +123,9 @@ graph TD
 1.  **Iniciar Reserva:** Ve a **Espacios**, selecciona un Quincho (ej. *Quincho Central*) o la *Piscina General*.
 2.  **Selector de Fecha de Jornada:** Verás que no hay campos de Check-in y Check-out. En su lugar, se presenta el selector **"Día de la Jornada"**.
 3.  **Selección de Fecha:** Selecciona una fecha válida. El sistema setea internamente la misma fecha de entrada y salida (`check_in = check_out`), contando la reserva como 1 día.
-4.  **Verificación de Conflictos:** Si intentas seleccionar una fecha que ya está bloqueada (ej: `28/12` para Quincho Central), aparecerá una alerta de conflicto en color rojo impidiendo continuar.
+4.  **Verificación de Conflictos:**
+    *   **Quinchos:** Si intentas seleccionar una fecha que ya está ocupada por otra reserva (ej: `28/12` para Quincho Central), aparecerá una alerta de conflicto en color rojo impidiendo continuar.
+    *   **Piscina:** Múltiples socios pueden reservar el mismo día. La alerta de conflicto se mostrará únicamente cuando el aforo acumulado de todas las reservas de ese día alcance los 80 cupos máximos. Si intentas reservar excediendo este aforo, el sistema mostrará los cupos restantes disponibles.
 5.  **Completar checkout:** Añade acompañantes y completa el flujo.
 
 ### Flujo F: Socio reserva para un Tercero Ocupante (Patrocinio de Beneficio)

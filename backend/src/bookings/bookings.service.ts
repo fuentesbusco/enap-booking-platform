@@ -96,7 +96,7 @@ export class BookingsService {
       throw new BadRequestException(`El espacio supera la capacidad máxima permitida de ${space.maxCapacity} personas.`);
     }
 
-    const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut);
+    const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut, guests.length);
     if (isBlocked) {
       throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
     }
@@ -263,7 +263,9 @@ export class BookingsService {
   }
 
   async getBlockedDatesForSpace(spaceId: number): Promise<string[]> {
+    const space = await this.spacesService.getById(spaceId);
     const bookings = await this.bookingRepository.createQueryBuilder('booking')
+      .leftJoinAndSelect('booking.guests', 'guest')
       .where('booking.spaceId = :spaceId', { spaceId })
       .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
       .getMany();
@@ -272,15 +274,37 @@ export class BookingsService {
     const staticBlocks = this.blockedDates[spaceId] || [];
     staticBlocks.forEach((d) => dates.add(d));
 
-    for (const b of bookings) {
-      const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
-      datesInRange.forEach((d) => dates.add(d));
+    if (space.type === 'pool') {
+      const dailyOccupancy: { [date: string]: number } = {};
+      for (const b of bookings) {
+        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+        const bookingOccupants = 1 + (b.guests?.length || 0);
+        for (const d of datesInRange) {
+          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + bookingOccupants;
+        }
+      }
+      for (const [date, count] of Object.entries(dailyOccupancy)) {
+        if (count >= space.maxCapacity) {
+          dates.add(date);
+        }
+      }
+    } else {
+      for (const b of bookings) {
+        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+        datesInRange.forEach((d) => dates.add(d));
+      }
     }
 
     return Array.from(dates).sort();
   }
 
-  private async isBlocked(spaceId: number, checkIn: string, checkOut: string): Promise<boolean> {
+  private async isBlocked(
+    spaceId: number,
+    checkIn: string,
+    checkOut: string,
+    newGuestsCount = 0,
+  ): Promise<boolean> {
+    const space = await this.spacesService.getById(spaceId);
     const datesToCheck = this.getDatesInRange(checkIn, checkOut);
     
     // 1. Static check
@@ -289,14 +313,42 @@ export class BookingsService {
     if (hasStaticBlock) return true;
 
     // 2. Overlapping check in DB
-    const overlapping = await this.bookingRepository.createQueryBuilder('booking')
-      .where('booking.spaceId = :spaceId', { spaceId })
-      .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
-      .andWhere('booking.check_in <= :checkOut', { checkOut })
-      .andWhere('booking.check_out >= :checkIn', { checkIn })
-      .getMany();
+    if (space.type === 'pool') {
+      const overlappingBookings = await this.bookingRepository.createQueryBuilder('booking')
+        .leftJoinAndSelect('booking.guests', 'guest')
+        .where('booking.spaceId = :spaceId', { spaceId })
+        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+        .getMany();
 
-    return overlapping.length > 0;
+      const newBookingOccupants = 1 + newGuestsCount;
+
+      for (const date of datesToCheck) {
+        let dailyOccupancy = 0;
+        for (const b of overlappingBookings) {
+          const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+          if (datesInRange.includes(date)) {
+            dailyOccupancy += 1 + (b.guests?.length || 0);
+          }
+        }
+        if (dailyOccupancy + newBookingOccupants > space.maxCapacity) {
+          throw new BadRequestException(
+            `El recinto de Piscina no tiene suficientes cupos disponibles para este día. Cupos restantes: ${
+              space.maxCapacity - dailyOccupancy
+            }, requeridos: ${newBookingOccupants}.`
+          );
+        }
+      }
+      return false;
+    } else {
+      const overlapping = await this.bookingRepository.createQueryBuilder('booking')
+        .where('booking.spaceId = :spaceId', { spaceId })
+        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+        .andWhere('booking.check_in <= :checkOut', { checkOut })
+        .andWhere('booking.check_out >= :checkIn', { checkIn })
+        .getMany();
+
+      return overlapping.length > 0;
+    }
   }
 
   private getDatesInRange(startStr: string, endStr: string): string[] {

@@ -116,7 +116,9 @@ El backend NestJS calcula dinámicamente el precio final en [bookings.service.ts
 Antes de registrar cualquier reserva, el backend valida si las fechas están libres:
 1.  **Bloqueos Estáticos:** Compara las fechas solicitadas contra el diccionario `blockedDates` cargado con fechas fuera de servicio programadas.
 2.  **Solapamiento de Reservas:** Verifica que no exista ninguna reserva activa (en estado `confirmed` o `pending_approval`) en el mismo recinto que coincida con las fechas solicitadas.
-    *   **Arriendo por Jornada Única (Quinchos/Piscina):** Al igualarse check-in y check-out (`check_in === check_out`), la colisión de fechas se valida comparando exactamente el mismo día de manera inclusiva, garantizando que no se puedan agendar dos reservas el mismo día para el mismo espacio.
+    *   **Arriendo por Jornada Única y Control de Aforo:**
+        *   **Quinchos (Exclusivos):** La colisión de fechas se valida comparando el mismo día de manera inclusiva. Cualquier reserva activa en esa fecha bloquea el espacio por completo.
+        *   **Piscina (Compartida / No Exclusiva):** La piscina admite reservas simultáneas de múltiples socios para el mismo día. La disponibilidad de un día se calcula sumando el aforo de todas las reservas activas en ese día (`1 + booking.guests.length` por reserva). Si la ocupación total más los ocupantes de la nueva reserva superan el aforo máximo (`80` personas), el sistema rechaza la solicitud detallando los cupos disponibles restantes.
 3.  **Límite de Capacidad:** Valida que el número de personas en `guests` no exceda el `max_capacity` del recinto (limitado a un máximo de 6 personas en cabañas).
 
 ### 3.3 Encriptación de Contraseñas (PBKDF2)

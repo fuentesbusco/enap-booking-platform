@@ -11,7 +11,9 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 ### Flujo de Clientes / Socios
 - [x] **Selector de Espacios:** Catálogo interactivo de Cabañas, Quinchos y Piscinas con filtros y desglose de tarifas.
 - [x] **Estandarización de Cabañas (1 a 6):** Configuración de exactamente 6 cabañas con capacidad máxima de 6 personas y amenities actualizados (descripción y advertencia de sábanas/toallas).
-- [x] **Arriendo por Jornada Única (Quinchos/Piscina):** Selector de fecha único ("Día de la Jornada") que iguala check-in y check-out y bloquea colisiones de forma inclusiva.
+- [x] **Arriendo por Jornada Única (Quinchos/Piscina):** Selector de fecha único ("Día de la Jornada") que iguala check-in y check-out.
+  - [x] **Disponibilidad Exclusiva (Quinchos):** Bloqueo total de la fecha ante cualquier reserva activa.
+  - [x] **Capacidad Compartida (Piscina):** No exclusividad. Múltiples socios pueden reservar el mismo día hasta alcanzar la capacidad máxima (80 personas), bloqueándose solo cuando el aforo total está completo.
 - [x] **Flujo de Patrocinio a Tercero:** Selector para socio para arriendos a terceros externos con registro de sus datos (Nombre, RUT, Teléfono) y cálculo dinámico de tarifa base general.
 - [x] **Refinamiento de Tarifas en Catálogo:** Badges "Socio Sindicato" (verde) y "Público / Externo" (gris) para cada espacio y aclaraciones de tipo de cobro (por día o jornada).
 - [x] **Flujo de Reserva Completo (4 pasos):**
