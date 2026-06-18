@@ -11,7 +11,7 @@ export const MOCK_SPACES: Space[] = [
     socio_price: 35000,
     guest_price: 3500,
     free_guests_for_socio: 0,
-    images: ['https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80'],
+    images: ['/images/frontal-cabanas.jpeg', '/images/aereo-dron-cabanas.jpeg'],
     amenities: ['Cocina equipada', 'TV', 'Ropa de cama', 'Estacionamiento', 'Parrilla exterior'],
   },
   {
@@ -24,7 +24,7 @@ export const MOCK_SPACES: Space[] = [
     socio_price: 45000,
     guest_price: 3500,
     free_guests_for_socio: 0,
-    images: ['https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=800&q=80'],
+    images: ['/images/frontal-cabanas-secundaria.jpeg', '/images/aereo-dron-cabanas.jpeg'],
     amenities: ['Cocina equipada', 'TV', 'Ropa de cama', 'Terraza privada', 'Parrilla exterior', 'Estacionamiento doble'],
   },
   {
@@ -37,7 +37,7 @@ export const MOCK_SPACES: Space[] = [
     socio_price: 26000,
     guest_price: 3500,
     free_guests_for_socio: 0,
-    images: ['https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=800&q=80'],
+    images: ['/images/aereo-dron-cabanas.jpeg', '/images/frontal-cabanas.jpeg'],
     amenities: ['Cocina americana', 'TV', 'Ropa de cama', 'Jardín compartido'],
   },
   {
@@ -50,7 +50,7 @@ export const MOCK_SPACES: Space[] = [
     socio_price: 30000,
     guest_price: 3500,
     free_guests_for_socio: 0,
-    images: ['https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80'],
+    images: ['/images/quincho.jpeg', '/images/quincho-nocturno.jpeg'],
     amenities: ['Parrilla grande', 'Mesas y sillas', 'Lavadero', 'Iluminación nocturna', 'Estacionamiento cercano'],
   },
   {
@@ -63,7 +63,7 @@ export const MOCK_SPACES: Space[] = [
     socio_price: 22000,
     guest_price: 3500,
     free_guests_for_socio: 0,
-    images: ['https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'],
+    images: ['/images/quincho-diagonal-frontal.jpeg', '/images/quincho-nocturno.jpeg'],
     amenities: ['Parrilla', 'Mesas y sillas', 'Jardín directo', 'Iluminación'],
   },
   {
@@ -76,7 +76,7 @@ export const MOCK_SPACES: Space[] = [
     socio_price: 0,
     guest_price: 3500,
     free_guests_for_socio: 5,
-    images: ['https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=800&q=80'],
+    images: ['/images/piscina-diagonal.jpeg', '/images/aerea-piscina-central.jpeg', '/images/piscina-quitasol.jpeg', '/images/piscina-entrada.jpeg'],
     amenities: ['Zona de niños', 'Área de sol', 'Camarines', 'Duchas', 'Guardería'],
   },
 ];
@@ -86,7 +86,7 @@ export const MOCK_ANNOUNCEMENTS: Announcement[] = [
     id: 1,
     title: 'Apertura temporada de verano 2025-2026',
     body: 'El Centro Vacacional abre sus puertas para la temporada estival. Reserva con anticipación para asegurar tu espacio preferido. Los socios tienen prioridad de reserva durante los primeros 7 días.',
-    image_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
+    image_url: '/images/aerea-piscinas.jpeg',
     published_at: '2025-11-15',
     is_pinned: true,
   },
@@ -101,6 +101,7 @@ export const MOCK_ANNOUNCEMENTS: Announcement[] = [
     id: 3,
     title: 'Mantención programada - Quincho Central',
     body: 'El Quincho Central estará fuera de servicio los días 10 y 11 de diciembre por mantención de la parrilla y techumbre. Disculpen las molestias.',
+    image_url: '/images/quincho.jpeg',
     published_at: '2025-12-05',
     is_pinned: false,
   },
