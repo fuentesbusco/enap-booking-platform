@@ -100,7 +100,10 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - *Resultado esperado:* Redirección de vuelta automática a la administración mostrando el banner verde **"¡Pago de Prueba Exitoso!"**.
 - [ ] **Checkout desde el Flujo de Reserva del Usuario**
   - *Acción:* Realizar una reserva de usuario real eligiendo la pestaña **Mercado Pago** y completar el pago Sandbox.
-  - *Resultado esperado:* Redirección a la sección de **Mis Reservas** del frontend, procesado en segundo plano de la confirmación en el backend y actualización instantánea a estado **Confirmada**.
+  - *Resultado esperado:* Redirección de vuelta automática a la página de éxito del frontend, procesado en segundo plano de la confirmación en el backend y actualización instantánea a estado **Confirmada**.
+- [x] **Rutas de Retorno en el Frontend (Éxito, Error, Pendiente)**
+  - *Acción:* Cargar la pasarela de Mercado Pago y permitir la redirección de retorno, o navegar directamente a `/mercadopago/success?payment_id=456&status=approved&external_reference=ENP-123`.
+  - *Resultado esperado:* Visualización de vistas con diseño premium personalizado (verde para éxito, rojo para error, naranja para pendiente) extrayendo dinámicamente el ID de pago, código de reserva y estado.
 
 ---
 

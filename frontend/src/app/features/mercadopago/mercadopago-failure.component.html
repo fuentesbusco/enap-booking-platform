@@ -1,0 +1,53 @@
+<app-navbar></app-navbar>
+
+<div class="min-h-[calc(100vh-64px)] bg-mist/30 py-12 px-4 flex items-center justify-center">
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-charcoal/5 overflow-hidden animate-fadeIn">
+    <!-- Failure Header Gradient -->
+    <div class="bg-gradient-to-r from-red-600 to-red-500 p-8 text-center text-white relative">
+      <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm shadow-inner border border-white/20">
+        <span class="text-4xl">❌</span>
+      </div>
+      <h2 class="font-display text-2xl font-bold tracking-tight">Pago Rechazado</h2>
+      <p class="text-white/80 text-sm mt-1">El proceso de pago no pudo completarse</p>
+    </div>
+
+    <!-- Details Card -->
+    <div class="p-8">
+      <p class="text-charcoal/70 text-sm text-center mb-6">
+        Lo sentimos, la transacción a través de Mercado Pago no fue autorizada o fue cancelada. No se ha realizado ningún cargo y la reserva continúa pendiente de pago.
+      </p>
+
+      <div class="bg-mist/50 rounded-xl p-5 border border-charcoal/5 mb-8" *ngIf="paymentId || externalReference">
+        <p class="text-xs font-mono text-charcoal/40 uppercase tracking-wider mb-3 font-semibold">
+          Detalles de la Transacción
+        </p>
+        <div class="space-y-2.5 text-sm">
+          <div class="flex justify-between" *ngIf="paymentId">
+            <span class="text-charcoal/60">ID de Pago</span>
+            <span class="font-mono font-medium text-charcoal">{{ paymentId }}</span>
+          </div>
+          <div class="flex justify-between" *ngIf="externalReference">
+            <span class="text-charcoal/60">Código de Reserva</span>
+            <span class="font-mono font-medium text-charcoal">{{ externalReference }}</span>
+          </div>
+          <div class="flex justify-between" *ngIf="status">
+            <span class="text-charcoal/60">Estado</span>
+            <span class="px-2 py-0.5 text-xs rounded bg-red-100 text-red-800 font-semibold uppercase">
+              {{ status }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a routerLink="/mis-reservas" class="btn-primary w-full text-center py-3">
+          Reintentar Pago
+        </a>
+        <a routerLink="/" class="btn-secondary w-full text-center py-3">
+          Ir al inicio
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

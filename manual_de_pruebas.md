@@ -197,6 +197,12 @@ Utiliza estos datos suministrados por el sistema para completar el pago de prueb
 ### Verificación del Retorno Automático
 Una vez completado el pago de prueba con éxito, Mercado Pago te redirigirá automáticamente de vuelta al panel de administración del frontend y verás un banner verde confirmando: **"¡Pago de Prueba Exitoso! (status=success)"**.
 
+### Rutas de Retorno para Checkout de Reservas (Éxito, Error y Pendiente)
+Cuando realizas el pago de una reserva real mediante Mercado Pago en el checkout de la plataforma o en "Mis Reservas", Mercado Pago te redirige automáticamente a una de las siguientes tres vistas del frontend según el resultado de la transacción:
+*   **Éxito (`/mercadopago/success`):** Muestra una tarjeta premium de éxito de color verde, extrayendo dinámicamente de la URL los parámetros `payment_id`, `status` y el `external_reference` (código de reserva).
+*   **Fallo (`/mercadopago/failure`):** Muestra una tarjeta de advertencia de color rojo con opciones para reintentar la transacción.
+*   **Pendiente (`/mercadopago/pending`):** Muestra una tarjeta informativa de color amarillo/ámbar explicando que el pago se encuentra en proceso de validación.
+
 ---
 
 ## ⚙️ 5. Simulaciones Locales (Bypasses en el Backend)

@@ -8,6 +8,9 @@ export const routes: Routes = [
   { path: 'mis-reservas', loadComponent: () => import('./features/my-bookings/my-bookings.component').then(m => m.MyBookingsComponent), canActivate: [authGuard] },
   { path: 'ingresar', loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent) },
   { path: 'conoce-el-centro', loadComponent: () => import('./features/gallery/gallery.component').then(m => m.GalleryComponent) },
+  { path: 'mercadopago/success', loadComponent: () => import('./features/mercadopago/mercadopago-success.component').then(m => m.MercadoPagoSuccessComponent) },
+  { path: 'mercadopago/failure', loadComponent: () => import('./features/mercadopago/mercadopago-failure.component').then(m => m.MercadoPagoFailureComponent) },
+  { path: 'mercadopago/pending', loadComponent: () => import('./features/mercadopago/mercadopago-pending.component').then(m => m.MercadoPagoPendingComponent) },
   { path: 'admin', canActivate: [adminGuard], loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes) },
   { path: '**', redirectTo: '' },
 ];

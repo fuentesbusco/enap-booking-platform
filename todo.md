@@ -106,5 +106,6 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 ### Automatización de Pagos (Fase 2)
 - [x] Integración de la API de **MercadoPago** en el backend (SDK, inicialización y credenciales).
 - [ ] Integración de la API de **Transbank Webpay** en el backend.
-- [ ] Retorno automático tras la pasarela de pagos.
+- [x] Páginas de Retorno de Mercado Pago (Frontend): Creación de vistas de éxito, fallo y pendiente para validación del retorno.
 - [ ] Endpoint de Webhook para recibir notificaciones asincrónicas de confirmación de pago y actualizar el estado de la reserva inmediatamente.
+

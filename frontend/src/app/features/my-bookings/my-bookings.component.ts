@@ -119,9 +119,9 @@ export class MyBookingsComponent implements OnInit {
   payWithMercadoPago(booking: Booking) {
     this.paying[booking.id] = true;
     const backUrls = {
-      success: `${window.location.origin}/mis-reservas?payment=success&code=${booking.booking_code}`,
-      failure: `${window.location.origin}/mis-reservas?payment=failure&code=${booking.booking_code}`,
-      pending: `${window.location.origin}/mis-reservas?payment=pending&code=${booking.booking_code}`
+      success: `${window.location.origin}/mercadopago/success?external_reference=${booking.booking_code}`,
+      failure: `${window.location.origin}/mercadopago/failure?external_reference=${booking.booking_code}`,
+      pending: `${window.location.origin}/mercadopago/pending?external_reference=${booking.booking_code}`
     };
 
     const description = `Reserva ${booking.space.name} - Código ${booking.booking_code}`;

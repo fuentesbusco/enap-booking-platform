@@ -201,9 +201,9 @@ export class BookingFlowComponent implements OnInit {
             } else {
               // Mercado Pago payment flow
               const backUrls = {
-                success: `${window.location.origin}/mis-reservas?payment=success&code=${b.booking_code}`,
-                failure: `${window.location.origin}/mis-reservas?payment=failure&code=${b.booking_code}`,
-                pending: `${window.location.origin}/mis-reservas?payment=pending&code=${b.booking_code}`
+                success: `${window.location.origin}/mercadopago/success?external_reference=${b.booking_code}`,
+                failure: `${window.location.origin}/mercadopago/failure?external_reference=${b.booking_code}`,
+                pending: `${window.location.origin}/mercadopago/pending?external_reference=${b.booking_code}`
               };
 
               this.mpService

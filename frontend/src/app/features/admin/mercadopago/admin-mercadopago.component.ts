@@ -45,9 +45,9 @@ export class AdminMercadoPagoComponent implements OnInit {
 
     // Retorno a la misma página administrativa con queryParams para simular flujo
     const backUrls = {
-      success: `https://enap-front-web.vercel.app/admin/mercadopago?status=success`,
-      failure: `https://enap-front-web.vercel.app/admin/mercadopago?status=failure`,
-      pending: `https://enap-front-web.vercel.app/admin/mercadopago?status=pending`
+      success: `${window.location.origin}/admin/mercadopago?status=success`,
+      failure: `${window.location.origin}/admin/mercadopago?status=failure`,
+      pending: `${window.location.origin}/admin/mercadopago?status=pending`
     };
 
     this.mpService.createPreference(this.title, this.quantity, this.unitPrice, backUrls).subscribe({
