@@ -38,7 +38,9 @@ export class AwsService {
     const key = `${folder}/${Date.now()}-${filename}`;
     const accessKey = this.configService.get<string>('AWS_ACCESS_KEY_ID');
     const secretKey = this.configService.get<string>('AWS_SECRET_ACCESS_KEY');
-    const isMock = !accessKey || !secretKey || accessKey.trim() === '' || secretKey.trim() === '' || accessKey.includes('YOUR_') || secretKey.includes('YOUR_');
+    const isMock = !accessKey || !secretKey || accessKey.trim() === '' || secretKey.trim() === '' || 
+                   accessKey.includes('YOUR_') || secretKey.includes('YOUR_') ||
+                   accessKey.includes('mock_') || secretKey.includes('mock_');
 
     if (isMock) {
       const region = this.configService.get<string>('AWS_REGION', 'us-east-1');

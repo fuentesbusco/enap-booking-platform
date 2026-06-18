@@ -75,15 +75,23 @@
               <p class="font-medium text-charcoal text-sm">
                 {{ b.user.full_name }}
               </p>
-              <p class="text-xs text-charcoal/35">{{ b.user.rut }}</p>
+              <div class="flex gap-2 text-xs text-charcoal/35">
+                <span>RUT: {{ b.user.rut }}</span>
+                <span *ngIf="b.user.ficha_number">| Ficha: {{ b.user.ficha_number }}</span>
+              </div>
             </td>
             <td class="px-5 py-3.5 text-charcoal/65">{{ b.space.name }}</td>
             <td class="px-5 py-3.5 font-mono text-xs text-charcoal/50">
               {{ b.check_in | date: "dd/MM" }} →
               {{ b.check_out | date: "dd/MM/yy" }}
             </td>
-            <td class="px-5 py-3.5 font-semibold text-forest text-sm">
-              {{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}
+            <td class="px-5 py-3.5">
+              <div class="font-semibold text-forest text-sm">
+                {{ b.total_amount | currency: "CLP" : "$" : "1.0-0" }}
+              </div>
+              <a *ngIf="b.receipt_url" [href]="b.receipt_url" target="_blank" class="text-[11px] text-charcoal/50 hover:text-forest underline block mt-0.5">
+                📄 Comprobante
+              </a>
             </td>
             <td class="px-5 py-3.5">
               <span [class]="badgeClass(b.status)">{{
