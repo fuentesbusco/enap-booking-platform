@@ -14,9 +14,14 @@ export class AwsService {
     const region = this.configService.get<string>('AWS_REGION', 'us-east-1');
     this.bucketName = this.configService.get<string>('AWS_S3_BUCKET', 'enap-booking-bucket');
 
+    const hasRealCredentials = accessKeyId && secretAccessKey && 
+                               accessKeyId.trim() !== '' && secretAccessKey.trim() !== '' &&
+                               !accessKeyId.includes('YOUR_') && !secretAccessKey.includes('YOUR_') &&
+                               !accessKeyId.includes('mock_') && !secretAccessKey.includes('mock_');
+
     this.s3Client = new S3Client({
       region,
-      credentials: accessKeyId && secretAccessKey ? {
+      credentials: hasRealCredentials ? {
         accessKeyId,
         secretAccessKey,
       } : undefined,
@@ -38,14 +43,25 @@ export class AwsService {
     const key = `${folder}/${Date.now()}-${filename}`;
     const accessKey = this.configService.get<string>('AWS_ACCESS_KEY_ID');
     const secretKey = this.configService.get<string>('AWS_SECRET_ACCESS_KEY');
-    const isMock = !accessKey || !secretKey || accessKey.trim() === '' || secretKey.trim() === '' || 
-                   accessKey.includes('YOUR_') || secretKey.includes('YOUR_') ||
-                   accessKey.includes('mock_') || secretKey.includes('mock_');
+    
+    // Si se define AWS_S3_MOCK en 'false', se obliga al comportamiento real (útil para roles IAM en Lambda)
+    const mockEnvVal = this.configService.get<string>('AWS_S3_MOCK');
+    let isMock = true;
+    
+    if (mockEnvVal === 'false') {
+      isMock = false;
+    } else if (mockEnvVal === 'true') {
+      isMock = true;
+    } else {
+      isMock = !accessKey || !secretKey || accessKey.trim() === '' || secretKey.trim() === '' || 
+               accessKey.includes('YOUR_') || secretKey.includes('YOUR_') ||
+               accessKey.includes('mock_') || secretKey.includes('mock_');
+    }
 
     if (isMock) {
       const region = this.configService.get<string>('AWS_REGION', 'us-east-1');
       const url = `https://${this.bucketName}.s3.${region}.amazonaws.com/${key}`;
-      this.logger.warn(`AWS S3 credentials not configured. Bypassing upload and returning mock URL: ${url}`);
+      this.logger.warn(`AWS S3 mock enabled. Bypassing upload and returning mock URL: ${url}`);
       return url;
     }
 
