@@ -44,4 +44,19 @@ export class Booking {
 
   @Column({ type: 'simple-json', name: 'price_breakdown' })
   priceBreakdown: PriceBreakdown;
+
+  @Column({ name: 'is_for_third_party', type: 'boolean', default: false })
+  isForThirdParty: boolean;
+
+  @Column({ name: 'third_party_name', type: 'varchar', nullable: true })
+  thirdPartyName?: string;
+
+  @Column({ name: 'third_party_rut', type: 'varchar', nullable: true })
+  thirdPartyRut?: string;
+
+  @Column({ name: 'third_party_phone', type: 'varchar', nullable: true })
+  thirdPartyPhone?: string;
+
+  @Column({ name: 'admin_created_for_external', type: 'boolean', default: false })
+  adminCreatedForExternal: boolean;
 }

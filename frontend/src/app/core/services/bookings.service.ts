@@ -29,9 +29,10 @@ export class BookingsService {
     );
   }
 
-  calculatePrice(space: Space, checkIn: string, checkOut: string, guestCount: number): PriceBreakdown {
+  calculatePrice(space: Space, checkIn: string, checkOut: string, guestCount: number, isForThirdParty: boolean = false): PriceBreakdown {
     const role = this.auth.currentUser()?.role ?? 'external';
-    const isSocio = role === 'socio';
+    const resolvedRole = isForThirdParty ? 'external' : role;
+    const isSocio = resolvedRole === 'socio';
     const days = this.daysDiff(checkIn, checkOut) || 1;
     const unitPrice = isSocio ? space.socio_price : space.base_price;
     const base = unitPrice * days;
@@ -55,12 +56,22 @@ export class BookingsService {
     check_in: string;
     check_out: string;
     guests: Guest[];
+    isForThirdParty?: boolean;
+    thirdPartyName?: string;
+    thirdPartyRut?: string;
+    thirdPartyPhone?: string;
+    adminCreatedForExternal?: boolean;
   }): Observable<Booking> {
     const body = {
       spaceId: data.space.id,
       checkIn: data.check_in,
       checkOut: data.check_out,
       guests: data.guests,
+      isForThirdParty: data.isForThirdParty,
+      thirdPartyName: data.thirdPartyName,
+      thirdPartyRut: data.thirdPartyRut,
+      thirdPartyPhone: data.thirdPartyPhone,
+      adminCreatedForExternal: data.adminCreatedForExternal,
     };
     return this.http.post<any>(`${environment.apiUrl}/bookings`, body).pipe(
       map(mapBookingToFrontend)

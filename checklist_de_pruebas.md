@@ -119,7 +119,7 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 
 ## 6. Comentarios revision
 
-# Primera revision
+### Primera revision
 
 - El usuario invitado puede no tener codigo de socio
 - En la pagina no existe como concepto el usuario externo, causa confusión con el usuario invitado.
@@ -135,7 +135,7 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - Al registrar un usuario nuevo existosamente, el sistema redirecciona al home con el login ya activo, pero no se le muestra ningun indicador de exito al usuario, lo que puede generar confusión.
 - Al hacer logout el usuario no ve ningun feedback visual, solo cambiar rápidamente la visibilidad de las opciones del menu, pero no es claro para el usuario.
 
-## 6. Segunda revisión (Aseguramiento de Calidad)
+### Segunda revisión (Aseguramiento de Calidad)
 
 - [x] **Columna Socio/No Socio en Reservas**: Verificada la columna "Tipo" en la administración de reservas que discrimina con badges de colores.
 - [x] **Checkbox de Avisos Destacados**: Comprobado que al crear el aviso con el checkbox, se almacena como destacado en DB y se muestra primero en la Home.
@@ -143,3 +143,13 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Spinner de Carga en Mis Reservas**: El spinner interactivo bloquea flashes de datos obsoletos o vacíos durante la obtención de las reservas.
 - [x] **Galería de Imágenes Administrable**: Sección pública "Conoce el Centro" interactiva con Lightbox y panel CRUD en la administración.
 - [x] **Integración de Imágenes Reales**: Integradas las fotos reales de la carpeta `/images/` en espacios, avisos y Home, con actualización en caliente de registros antiguos.
+
+### Comentarios clientes
+
+- Las cabañas se distribuyen del 1 al 6
+- Los quinchos el arriendo es por jornada, al igual que el acceso de piscina
+- Las cabañas se encuentran equipadas para 6 personas con menaje, servicios, juegos de batería, cocina, refrigerador, hornos, juguera, secador de pelo, televisión satélital e Internet controlado, dos camarotes y una cama matrimonial. Se debe contemplar traer en la estadía: toallas, sábanas y fundas de almohadas.
+- Cuando es arriendo externo, el cliente comunica que el socio realiza el arriendo y selecciona si el que arrienda es socio, conyugue o carga directa o terceros, al ser tercero pide los datos personales de la persona externa. Ademas de registrar los datos del socio. (aunque el flujo puede ser mejorado)
+- Si no es amigo ni conocido de socio, un tercero completamente externo, hoy el cliente lo ingresa, ingresa la reserva y lo deja asociado al administrador. (aunque el flujo puede ser mejorado)
+- A los terceros se les cobra el precio normal, no de socio.
+- Cliente dice que podria haber icono de "externos" para hacerlo por separado, como lo tenemos ya ahora, pero indicar bien los valores.

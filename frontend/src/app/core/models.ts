@@ -57,6 +57,11 @@ export interface Booking {
   admin_notes?: string;
   created_at: string;
   price_breakdown: PriceBreakdown;
+  is_for_third_party?: boolean;
+  third_party_name?: string;
+  third_party_rut?: string;
+  third_party_phone?: string;
+  admin_created_for_external?: boolean;
 }
 
 export interface PriceBreakdown {
@@ -186,6 +191,11 @@ export function mapBookingToFrontend(booking: any): Booking {
     admin_notes: booking.adminNotes || booking.admin_notes,
     created_at: booking.createdAt || booking.created_at,
     price_breakdown: booking.priceBreakdown || booking.price_breakdown,
+    is_for_third_party: booking.isForThirdParty !== undefined ? booking.isForThirdParty : booking.is_for_third_party,
+    third_party_name: booking.thirdPartyName || booking.third_party_name,
+    third_party_rut: booking.thirdPartyRut || booking.third_party_rut,
+    third_party_phone: booking.thirdPartyPhone || booking.third_party_phone,
+    admin_created_for_external: booking.adminCreatedForExternal !== undefined ? booking.adminCreatedForExternal : booking.admin_created_for_external,
   };
 }
 

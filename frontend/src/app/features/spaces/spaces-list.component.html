@@ -72,36 +72,35 @@
           </div>
 
           <!-- Precios -->
-          <div
-            class="flex items-end justify-between border-t border-charcoal/5 pt-4"
-          >
-            <div>
-              <p
-                class="text-[10px] font-mono text-charcoal/35 uppercase tracking-wider"
-              >
-                Socios
+          <div class="grid grid-cols-2 gap-2 border-t border-charcoal/5 pt-4">
+            <div class="bg-forest/5 border border-forest/15 rounded-xl p-2">
+              <p class="text-[8px] font-mono text-forest uppercase tracking-wider font-bold mb-0.5">
+                Socio Sindicato
               </p>
-              <p class="font-semibold text-forest">
+              <p class="text-sm font-bold text-forest leading-none">
                 {{
                   s.socio_price === 0
-                    ? "Incluido"
+                    ? "Sin costo"
                     : (s.socio_price | currency: "CLP" : "$" : "1.0-0")
                 }}
               </p>
             </div>
-            <div class="text-right">
-              <p
-                class="text-[10px] font-mono text-charcoal/35 uppercase tracking-wider"
-              >
-                Público General
+            <div class="bg-charcoal/5 border border-charcoal/15 rounded-xl p-2 text-right">
+              <p class="text-[8px] font-mono text-charcoal/50 uppercase tracking-wider font-bold mb-0.5">
+                Público / Externo
               </p>
-              <p class="font-semibold text-charcoal/60">
+              <p class="text-sm font-bold text-charcoal/70 leading-none">
                 {{ s.base_price | currency: "CLP" : "$" : "1.0-0" }}
               </p>
             </div>
+          </div>
+          <div class="flex items-center justify-between mt-3.5">
+            <span class="text-[10px] text-charcoal/40 font-mono">
+              * {{ s.type === 'cabin' ? 'Valor por día' : 'Valor por jornada' }}
+            </span>
             <a
               [routerLink]="['/reservar', s.id]"
-              class="btn-primary text-sm py-2"
+              class="btn-primary text-xs py-1.5 px-3.5"
             >
               Reservar
             </a>

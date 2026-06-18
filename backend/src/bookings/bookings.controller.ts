@@ -43,7 +43,17 @@ export class BookingsController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async create(
     @Headers() headers: Record<string, string>,
-    @Body() body: { spaceId: number; checkIn: string; checkOut: string; guests: Guest[] },
+    @Body() body: {
+      spaceId: number;
+      checkIn: string;
+      checkOut: string;
+      guests: Guest[];
+      isForThirdParty?: boolean;
+      thirdPartyName?: string;
+      thirdPartyRut?: string;
+      thirdPartyPhone?: string;
+      adminCreatedForExternal?: boolean;
+    },
   ) {
     const user = await this.getAuthenticatedUser(headers);
     return this.bookingsService.createBooking(
@@ -52,6 +62,13 @@ export class BookingsController {
       body.checkIn,
       body.checkOut,
       body.guests,
+      {
+        isForThirdParty: body.isForThirdParty,
+        thirdPartyName: body.thirdPartyName,
+        thirdPartyRut: body.thirdPartyRut,
+        thirdPartyPhone: body.thirdPartyPhone,
+        adminCreatedForExternal: body.adminCreatedForExternal,
+      },
     );
   }
 

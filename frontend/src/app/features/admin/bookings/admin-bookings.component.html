@@ -84,14 +84,27 @@
                 <span>RUT: {{ b.user.rut }}</span>
                 <span *ngIf="b.user.ficha_number">| Socio: {{ b.user.ficha_number }}</span>
               </div>
+              
+              <!-- Detalles de Tercero Patrocinado -->
+              <div *ngIf="b.is_for_third_party" class="mt-2 bg-yellow-50/70 border border-yellow-100 rounded-lg p-2 text-xs text-charcoal">
+                <span class="font-semibold text-yellow-800 block mb-0.5">Ocupante Externo Patrocinado:</span>
+                <p class="font-medium">{{ b.third_party_name }}</p>
+                <p class="text-charcoal/70">RUT: {{ b.third_party_rut }} <span *ngIf="b.third_party_phone">| Tel: {{ b.third_party_phone }}</span></p>
+              </div>
+
               <div *ngIf="b.admin_notes" class="text-xs text-red-600 mt-1 font-medium bg-red-50 border border-red-100/50 rounded-lg px-2 py-1 inline-block">
                 Motivo: {{ b.admin_notes }}
               </div>
             </td>
             <td class="px-5 py-3.5">
-              <span [class]="b.user.role === 'socio' ? 'badge-green' : 'badge-gray'">
-                {{ b.user.role === 'socio' ? 'Socio' : 'No Socio' }}
-              </span>
+              <div class="flex flex-col gap-1 items-start">
+                <span [class]="b.user.role === 'socio' ? 'badge-green' : 'badge-gray'">
+                  {{ b.user.role === 'socio' ? 'Socio' : 'No Socio' }}
+                </span>
+                <span *ngIf="b.is_for_third_party" class="text-[10px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded font-medium">
+                  Para Tercero
+                </span>
+              </div>
             </td>
             <td class="px-5 py-3.5 text-charcoal/65">{{ b.space.name }}</td>
             <td class="px-5 py-3.5 font-mono text-xs text-charcoal/50">

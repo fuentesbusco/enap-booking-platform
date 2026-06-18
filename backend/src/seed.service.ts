@@ -37,9 +37,9 @@ export class SeedService implements OnApplicationBootstrap {
   }
 
   private async seedSpaces() {
-    const count = await this.spaceRepository.count();
-    if (count === 0) {
-      this.logger.log('Seeding spaces table...');
+    const dbSpaces = await this.spaceRepository.find();
+    if (dbSpaces.length === 0) {
+      this.logger.log('Seeding spaces table from scratch...');
       const spaces = MOCK_SPACES.map((s) =>
         this.spaceRepository.create({
           name: s.name,
@@ -57,15 +57,116 @@ export class SeedService implements OnApplicationBootstrap {
       await this.spaceRepository.save(spaces);
       this.logger.log(`Successfully seeded ${spaces.length} spaces.`);
     } else {
-      const dbSpaces = await this.spaceRepository.find();
-      for (const dbSpace of dbSpaces) {
-        const mockSpace = MOCK_SPACES.find((ms) => ms.name === dbSpace.name);
-        if (mockSpace && (dbSpace.images.length === 0 || dbSpace.images[0].includes('unsplash.com'))) {
-          this.logger.log(`Updating images for space: ${dbSpace.name}`);
-          dbSpace.images = mockSpace.images;
-          await this.spaceRepository.save(dbSpace);
+      this.logger.log('Synchronizing existing spaces in database with new client comments specifications...');
+      // 1. Get all cabins from DB
+      const dbCabins = dbSpaces.filter((s) => s.type === 'cabin');
+      // 2. Get all quinchos from DB
+      const dbQuinchos = dbSpaces.filter((s) => s.type === 'quincho');
+      // 3. Get all pools from DB
+      const dbPools = dbSpaces.filter((s) => s.type === 'pool');
+
+      const mockCabins = MOCK_SPACES.filter((s) => s.type === 'cabin');
+      const mockQuinchos = MOCK_SPACES.filter((s) => s.type === 'quincho');
+      const mockPools = MOCK_SPACES.filter((s) => s.type === 'pool');
+
+      // Update/Create Cabins (1 to 6)
+      for (let i = 0; i < mockCabins.length; i++) {
+        const mockCabin = mockCabins[i];
+        if (i < dbCabins.length) {
+          // Update existing cabin
+          const dbCabin = dbCabins[i];
+          dbCabin.name = mockCabin.name;
+          dbCabin.description = mockCabin.description;
+          dbCabin.maxCapacity = mockCabin.max_capacity;
+          dbCabin.basePrice = mockCabin.base_price;
+          dbCabin.socioPrice = mockCabin.socio_price;
+          dbCabin.guestPrice = mockCabin.guest_price;
+          dbCabin.freeGuestsForSocio = mockCabin.free_guests_for_socio;
+          dbCabin.images = mockCabin.images;
+          dbCabin.amenities = mockCabin.amenities;
+          await this.spaceRepository.save(dbCabin);
+        } else {
+          // Create missing cabin
+          const newCabin = this.spaceRepository.create({
+            name: mockCabin.name,
+            type: 'cabin',
+            description: mockCabin.description,
+            maxCapacity: mockCabin.max_capacity,
+            basePrice: mockCabin.base_price,
+            socioPrice: mockCabin.socio_price,
+            guestPrice: mockCabin.guest_price,
+            freeGuestsForSocio: mockCabin.free_guests_for_socio,
+            images: mockCabin.images,
+            amenities: mockCabin.amenities,
+          });
+          await this.spaceRepository.save(newCabin);
         }
       }
+
+      // Update/Create Quinchos
+      for (let i = 0; i < mockQuinchos.length; i++) {
+        const mockQuincho = mockQuinchos[i];
+        if (i < dbQuinchos.length) {
+          const dbQuincho = dbQuinchos[i];
+          dbQuincho.name = mockQuincho.name;
+          dbQuincho.description = mockQuincho.description;
+          dbQuincho.maxCapacity = mockQuincho.max_capacity;
+          dbQuincho.basePrice = mockQuincho.base_price;
+          dbQuincho.socioPrice = mockQuincho.socio_price;
+          dbQuincho.guestPrice = mockQuincho.guest_price;
+          dbQuincho.freeGuestsForSocio = mockQuincho.free_guests_for_socio;
+          dbQuincho.images = mockQuincho.images;
+          dbQuincho.amenities = mockQuincho.amenities;
+          await this.spaceRepository.save(dbQuincho);
+        } else {
+          const newQuincho = this.spaceRepository.create({
+            name: mockQuincho.name,
+            type: 'quincho',
+            description: mockQuincho.description,
+            maxCapacity: mockQuincho.max_capacity,
+            basePrice: mockQuincho.base_price,
+            socioPrice: mockQuincho.socio_price,
+            guestPrice: mockQuincho.guest_price,
+            freeGuestsForSocio: mockQuincho.free_guests_for_socio,
+            images: mockQuincho.images,
+            amenities: mockQuincho.amenities,
+          });
+          await this.spaceRepository.save(newQuincho);
+        }
+      }
+
+      // Update/Create Pools
+      for (let i = 0; i < mockPools.length; i++) {
+        const mockPool = mockPools[i];
+        if (i < dbPools.length) {
+          const dbPool = dbPools[i];
+          dbPool.name = mockPool.name;
+          dbPool.description = mockPool.description;
+          dbPool.maxCapacity = mockPool.max_capacity;
+          dbPool.basePrice = mockPool.base_price;
+          dbPool.socioPrice = mockPool.socio_price;
+          dbPool.guestPrice = mockPool.guest_price;
+          dbPool.freeGuestsForSocio = mockPool.free_guests_for_socio;
+          dbPool.images = mockPool.images;
+          dbPool.amenities = mockPool.amenities;
+          await this.spaceRepository.save(dbPool);
+        } else {
+          const newPool = this.spaceRepository.create({
+            name: mockPool.name,
+            type: 'pool',
+            description: mockPool.description,
+            maxCapacity: mockPool.max_capacity,
+            basePrice: mockPool.base_price,
+            socioPrice: mockPool.socio_price,
+            guestPrice: mockPool.guest_price,
+            freeGuestsForSocio: mockPool.free_guests_for_socio,
+            images: mockPool.images,
+            amenities: mockPool.amenities,
+          });
+          await this.spaceRepository.save(newPool);
+        }
+      }
+      this.logger.log('Database spaces synchronized successfully.');
     }
   }
 

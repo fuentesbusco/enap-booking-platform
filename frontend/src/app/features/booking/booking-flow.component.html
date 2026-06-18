@@ -49,12 +49,10 @@
         class="w-full h-48 object-cover rounded-xl mb-6"
       /> -->
 
-      <div class="grid grid-cols-2 gap-4 mb-6">
+      <!-- Selector de fechas condicional -->
+      <div *ngIf="space?.type === 'cabin'" class="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label
-            class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5"
-            >Check-in</label
-          >
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Check-in</label>
           <input
             type="date"
             [(ngModel)]="checkIn"
@@ -64,10 +62,7 @@
           />
         </div>
         <div>
-          <label
-            class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5"
-            >Check-out</label
-          >
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Check-out</label>
           <input
             type="date"
             [(ngModel)]="checkOut"
@@ -75,6 +70,33 @@
             class="input"
             (change)="recalculate()"
           />
+        </div>
+      </div>
+
+      <!-- Selector para Quinchos y Piscina (Jornada Única) -->
+      <div *ngIf="space?.type !== 'cabin'" class="mb-6">
+        <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">
+          Día de la Jornada
+        </label>
+        <input
+          type="date"
+          [ngModel]="checkIn"
+          (ngModelChange)="onJornadaDateChange($event)"
+          [min]="today"
+          class="input w-full"
+        />
+      </div>
+
+      <!-- Advertencia de sábanas y toallas para Cabañas -->
+      <div *ngIf="space?.type === 'cabin'" class="bg-forest/5 border border-forest/15 rounded-xl p-4 mb-6">
+        <div class="flex gap-3">
+          <span class="text-xl">⚠️</span>
+          <div>
+            <h4 class="font-display font-bold text-sm text-forest mb-0.5">Nota importante para su estadía</h4>
+            <p class="text-xs text-charcoal/70 leading-relaxed">
+              Debe contemplar traer sábanas, fundas de almohada y toallas, ya que no se encuentran incluidas en el servicio. La cabaña está equipada para 6 personas con cocina completa, menaje y televisión satelital.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -131,9 +153,74 @@
         si no los tienes ahora.
       </p>
 
+      <!-- Selector para quién es la reserva -->
+      <div *ngIf="isSocio" class="bg-mist rounded-xl p-4 mb-5 border border-charcoal/10">
+        <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2">
+          ¿Para quién es esta reserva?
+        </label>
+        <div class="flex flex-col gap-2">
+          <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+            <input
+              type="radio"
+              [value]="false"
+              [(ngModel)]="isForThirdParty"
+              (change)="recalculate()"
+              class="form-radio text-forest focus:ring-forest"
+            />
+            <span>Para mí / Carga familiar (Tarifa Socio)</span>
+          </label>
+          <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+            <input
+              type="radio"
+              [value]="true"
+              [(ngModel)]="isForThirdParty"
+              (change)="recalculate()"
+              class="form-radio text-forest focus:ring-forest"
+            />
+            <span>Para un Tercero Externo (Tarifa General)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Datos del tercero ocupante si aplica -->
+      <div *ngIf="isForThirdParty" class="bg-forest/5 border border-forest/15 rounded-xl p-4 mb-5 space-y-3">
+        <h4 class="font-display font-bold text-sm text-forest mb-1">Datos del Ocupante Externo (Tercero)</h4>
+        
+        <div>
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1">Nombre Completo</label>
+          <input
+            type="text"
+            [(ngModel)]="thirdPartyName"
+            placeholder="Ej: Juan Pérez"
+            class="input w-full bg-white"
+          />
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1">RUT</label>
+            <input
+              type="text"
+              [(ngModel)]="thirdPartyRut"
+              placeholder="Ej: 12.345.678-9"
+              class="input w-full bg-white"
+            />
+          </div>
+          <div>
+            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1">Teléfono</label>
+            <input
+              type="text"
+              [(ngModel)]="thirdPartyPhone"
+              placeholder="Ej: +56912345678"
+              class="input w-full bg-white"
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- Beneficio socio piscina -->
       <div
-        *ngIf="isSocio && space?.type === 'pool'"
+        *ngIf="isSocio && space?.type === 'pool' && !isForThirdParty"
         class="bg-forest/8 border border-forest/20 rounded-xl p-3 mb-5 flex items-center gap-3"
       >
         <span class="text-xl">🎁</span>

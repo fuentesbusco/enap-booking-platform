@@ -47,8 +47,16 @@ export class BookingsService {
     return booking;
   }
 
-  calculatePriceBreakdown(space: SpaceEntity, checkIn: string, checkOut: string, guestCount: number, role: string): PriceBreakdown {
-    const isSocio = role === 'socio';
+  calculatePriceBreakdown(
+    space: SpaceEntity,
+    checkIn: string,
+    checkOut: string,
+    guestCount: number,
+    role: string,
+    isForThirdParty: boolean = false,
+  ): PriceBreakdown {
+    const resolvedRole = isForThirdParty ? 'external' : role;
+    const isSocio = resolvedRole === 'socio';
     const days = this.daysDiff(checkIn, checkOut) || 1;
     const unitPrice = isSocio ? space.socioPrice : space.basePrice;
     const base = unitPrice * days;
@@ -74,6 +82,13 @@ export class BookingsService {
     checkIn: string,
     checkOut: string,
     guests: { full_name: string; rut: string; phone?: string }[],
+    options?: {
+      isForThirdParty?: boolean;
+      thirdPartyName?: string;
+      thirdPartyRut?: string;
+      thirdPartyPhone?: string;
+      adminCreatedForExternal?: boolean;
+    },
   ): Promise<Booking> {
     const space = await this.spacesService.getById(spaceId);
 
@@ -86,7 +101,15 @@ export class BookingsService {
       throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
     }
 
-    const breakdown = this.calculatePriceBreakdown(space, checkIn, checkOut, guests.length, user.role);
+    const resolvedRole = (options?.adminCreatedForExternal || options?.isForThirdParty) ? 'external' : user.role;
+    const breakdown = this.calculatePriceBreakdown(
+      space,
+      checkIn,
+      checkOut,
+      guests.length,
+      resolvedRole,
+      options?.isForThirdParty
+    );
     
     // Generate Booking Code based on database count
     const totalCount = await this.bookingRepository.count();
@@ -102,6 +125,11 @@ export class BookingsService {
       status: 'pending_payment',
       totalAmount: breakdown.total,
       priceBreakdown: breakdown,
+      isForThirdParty: !!options?.isForThirdParty,
+      thirdPartyName: options?.thirdPartyName,
+      thirdPartyRut: options?.thirdPartyRut,
+      thirdPartyPhone: options?.thirdPartyPhone,
+      adminCreatedForExternal: !!options?.adminCreatedForExternal,
     });
 
     const savedBooking = await this.bookingRepository.save(newBooking);

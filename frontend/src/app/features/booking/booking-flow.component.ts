@@ -39,18 +39,33 @@ export class BookingFlowComponent implements OnInit {
   today = new Date().toISOString().split('T')[0];
   loading = false;
 
+  isForThirdParty = false;
+  thirdPartyName = '';
+  thirdPartyRut = '';
+  thirdPartyPhone = '';
+
   get isSocio() {
     return this.auth.isSocio();
   }
   
   get hasConflict(): boolean {
     if (!this.checkIn || !this.checkOut) return false;
-    const start = new Date(this.checkIn);
-    const end = new Date(this.checkOut);
+    const start = new Date(this.checkIn + 'T00:00:00');
+    const end = new Date(this.checkOut + 'T00:00:00');
     return this.blockedDates.some((d) => {
-      const bd = new Date(d);
-      return bd >= start && bd < end;
+      const bd = new Date(d + 'T00:00:00');
+      if (this.checkIn === this.checkOut) {
+        return bd.getTime() === start.getTime();
+      } else {
+        return bd >= start && bd < end;
+      }
     });
+  }
+
+  onJornadaDateChange(val: string) {
+    this.checkIn = val;
+    this.checkOut = val;
+    this.recalculate();
   }
 
   ngOnInit() {
@@ -93,6 +108,7 @@ export class BookingFlowComponent implements OnInit {
         this.checkIn,
         this.checkOut,
         this.guests.length,
+        this.isForThirdParty,
       );
     }
   }
@@ -156,6 +172,10 @@ export class BookingFlowComponent implements OnInit {
           check_in: this.checkIn,
           check_out: this.checkOut,
           guests: this.guests,
+          isForThirdParty: this.isForThirdParty,
+          thirdPartyName: this.isForThirdParty ? this.thirdPartyName : undefined,
+          thirdPartyRut: this.isForThirdParty ? this.thirdPartyRut : undefined,
+          thirdPartyPhone: this.isForThirdParty ? this.thirdPartyPhone : undefined,
         })
         .subscribe({
           next: (b) => {
