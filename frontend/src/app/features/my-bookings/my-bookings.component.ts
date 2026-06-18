@@ -20,11 +20,31 @@ export class MyBookingsComponent implements OnInit {
   paymentCode: string | null = null;
 
   ngOnInit() {
-    this.bookingsService.getMyBookings().subscribe((d) => (this.bookings = d));
     this.route.queryParams.subscribe((params) => {
       this.paymentStatus = params['payment'] || null;
       this.paymentCode = params['code'] || null;
+      
+      const mpStatus = params['status'];
+      const paymentId = params['payment_id'] || params['collection_id'];
+
+      if (this.paymentStatus === 'success' && this.paymentCode && paymentId && mpStatus === 'approved') {
+        this.bookingsService.confirmPayment(this.paymentCode, paymentId, mpStatus).subscribe({
+          next: () => {
+            this.loadBookings();
+          },
+          error: (err) => {
+            console.error('Error confirming payment with backend:', err);
+            this.loadBookings();
+          }
+        });
+      } else {
+        this.loadBookings();
+      }
     });
+  }
+
+  loadBookings() {
+    this.bookingsService.getMyBookings().subscribe((d) => (this.bookings = d));
   }
 
   statusLabel(s: BookingStatus) {

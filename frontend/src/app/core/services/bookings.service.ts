@@ -85,6 +85,14 @@ export class BookingsService {
     return this.http.post<any>(`${environment.apiUrl}/bookings/upload-receipt`, formData);
   }
 
+  confirmPayment(bookingCode: string, paymentId: string, status: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/bookings/confirm-payment`, {
+      bookingCode,
+      paymentId,
+      status,
+    });
+  }
+
   private daysDiff(a: string, b: string): number {
     return Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
   }

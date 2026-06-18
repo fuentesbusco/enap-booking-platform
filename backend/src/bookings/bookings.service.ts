@@ -199,6 +199,40 @@ export class BookingsService {
     return this.bookingRepository.save(booking);
   }
 
+  async confirmPayment(bookingCode: string, paymentId: string, status: string): Promise<Booking> {
+    const booking = await this.bookingRepository.findOne({
+      where: { bookingCode },
+      relations: { user: true, space: true },
+    });
+
+    if (!booking) {
+      throw new Error(`Reserva no encontrada con el código ${bookingCode}`);
+    }
+
+    if (status === 'approved') {
+      booking.status = 'confirmed';
+      booking.adminNotes = `Pagado vía Mercado Pago. ID Pago: ${paymentId}`;
+      const savedBooking = await this.bookingRepository.save(booking);
+
+      if (savedBooking.user?.email) {
+        const emailHtml = getBookingPaymentConfirmedEmailTemplate(savedBooking);
+        this.notificationsService
+          .sendEmail(
+            savedBooking.user.email,
+            `Reserva Confirmada y Pago Aprobado - Código: ${savedBooking.bookingCode}`,
+            emailHtml,
+          )
+          .catch((error) => {
+            this.logger.error(`Error al enviar correo de aprobación de pago para reserva ${savedBooking.bookingCode}:`, error);
+          });
+      }
+
+      return savedBooking;
+    }
+
+    return booking;
+  }
+
   async getBlockedDatesForSpace(spaceId: number): Promise<string[]> {
     const bookings = await this.bookingRepository.createQueryBuilder('booking')
       .where('booking.spaceId = :spaceId', { spaceId })

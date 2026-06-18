@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { MercadoPagoService } from '../../../core/services/mercadopago.service';
 
 @Component({
@@ -9,8 +10,9 @@ import { MercadoPagoService } from '../../../core/services/mercadopago.service';
   imports: [CommonModule, FormsModule],
   templateUrl: './admin-mercadopago.component.html',
 })
-export class AdminMercadoPagoComponent {
+export class AdminMercadoPagoComponent implements OnInit {
   private mpService = inject(MercadoPagoService);
+  private route = inject(ActivatedRoute);
 
   title = 'Reserva de Prueba Sandbox';
   quantity = 1;
@@ -21,6 +23,13 @@ export class AdminMercadoPagoComponent {
   initPoint = '';
   sandboxInitPoint = '';
   errorMessage = '';
+  testStatus: string | null = null;
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      this.testStatus = params['status'] || null;
+    });
+  }
 
   generatePreference() {
     if (!this.title || this.quantity <= 0 || this.unitPrice <= 0) {
@@ -36,9 +45,9 @@ export class AdminMercadoPagoComponent {
 
     // Retorno a la misma página administrativa con queryParams para simular flujo
     const backUrls = {
-      success: `${window.location.origin}/admin/mercadopago?status=success`,
-      failure: `${window.location.origin}/admin/mercadopago?status=failure`,
-      pending: `${window.location.origin}/admin/mercadopago?status=pending`
+      success: `https://enap-front-web.vercel.app/admin/mercadopago?status=success`,
+      failure: `https://enap-front-web.vercel.app/admin/mercadopago?status=failure`,
+      pending: `https://enap-front-web.vercel.app/admin/mercadopago?status=pending`
     };
 
     this.mpService.createPreference(this.title, this.quantity, this.unitPrice, backUrls).subscribe({

@@ -92,6 +92,22 @@ export class BookingsController {
     };
   }
 
+  @Post('confirm-payment')
+  @UseGuards(JwtAuthGuard)
+  async confirmPayment(
+    @Body() body: { bookingCode: string; paymentId: string; status: string },
+  ) {
+    const booking = await this.bookingsService.confirmPayment(
+      body.bookingCode,
+      body.paymentId,
+      body.status,
+    );
+    return {
+      success: true,
+      booking,
+    };
+  }
+
   @Patch(':id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
