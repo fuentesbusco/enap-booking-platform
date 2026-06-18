@@ -21,11 +21,24 @@ export class NotificationsService {
     });
   }
 
-  /**
-   * Envía un correo electrónico de forma asíncrona utilizando el transportador configurado.
-   */
   async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
     const from = this.configService.get<string>('SMTP_FROM', 'no-reply@sindicatoenap.cl');
+    const host = this.configService.get<string>('SMTP_HOST');
+    const user = this.configService.get<string>('SMTP_USER');
+    const pass = this.configService.get<string>('SMTP_PASS');
+
+    const isMock = !host || !user || !pass || 
+                   host.includes('YOUR_') || 
+                   user.includes('mock_') || 
+                   pass.includes('mock_') || 
+                   user.includes('YOUR_') || 
+                   pass.includes('YOUR_');
+
+    if (isMock) {
+      this.logger.warn(`SMTP credentials not configured (mock values detected). Simulated sending email to: ${to} - Subject: "${subject}"`);
+      return true;
+    }
+
     this.logger.log(`Sending email to ${to} with subject "${subject}"...`);
     
     try {
