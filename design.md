@@ -130,16 +130,18 @@ La API del backend expone los siguientes endpoints (escuchando por defecto en el
 *   `PATCH /users/:id/toggle-status`: (Admin) Activar o desactivar a un usuario/socio sindical.
 *   `GET /users/profile`: Obtención del perfil del usuario autenticado actual.
 *   `GET /spaces`: Obtención de todos los espacios reservables y sus tarifas.
+*   `GET /spaces/:id`: Obtención de los detalles de un espacio reservable específico.
 *   `POST /spaces`: (Admin) Creación de un nuevo espacio.
 *   `PUT /spaces/:id`: (Admin) Edición y actualización de las propiedades de un espacio.
 *   `DELETE /spaces/:id`: (Admin) Eliminación de un espacio.
 *   `GET /announcements`: Lista de comunicados informativos publicados.
 *   `GET /bookings`: (Admin) Listado de todas las reservas del sistema.
 *   `GET /bookings/me`: Historial de reservas asociadas al usuario autenticado actual.
+*   `GET /bookings/blocked-dates/:spaceId`: Consulta pública de fechas bloqueadas y reservadas para un espacio.
 *   `POST /bookings`: Creación de una reserva (ejecuta validaciones de capacidad y disponibilidad de fechas).
 *   `POST /bookings/upload-receipt`: Simula la recepción de un comprobante de transferencia y lo asocia a la reserva en estado `pending_approval`.
 *   `PATCH /bookings/:id/approve`: (Admin) Aprobación administrativa (pasa a `confirmed`).
-*   `PATCH /bookings/:id/reject`: (Admin) Rechazo administrativo (pasa a `rejected` y adjunta comentarios del administrador).
+*   `PATCH /bookings/:id/reject`: (Admin) Rechazo administrativa (pasa a `rejected` y adjunta comentarios del administrador).
 
 ---
 

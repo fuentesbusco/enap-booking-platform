@@ -11,7 +11,7 @@ async function bootstrap() {
   // Configure secure CORS policies
   const allowedOrigins = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',') 
-    : ['http://localhost:4200'];
+    : ['http://localhost:4200', 'http://127.0.0.1:4200'];
 
   app.enableCors({
     origin: allowedOrigins,

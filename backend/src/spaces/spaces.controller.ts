@@ -22,6 +22,11 @@ export class SpacesController {
     return this.spacesService.getAll();
   }
 
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return this.spacesService.getById(Number(id));
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
