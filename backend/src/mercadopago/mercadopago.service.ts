@@ -25,7 +25,7 @@ export class MercadoPagoService {
     unitPrice: number,
     backUrls?: { success: string; failure: string; pending: string }
   ): Promise<any> {
-    this.logger.log(`Creando preferencia de Mercado Pago: ${title} (Cant: ${quantity}, Precio: ${unitPrice})...`);
+    this.logger.log(`[MP Service] Creando preferencia: "${title}" x${quantity} ($${unitPrice}). URLs retorno: ${JSON.stringify(backUrls)}`);
     try {
       const preference = new Preference(this.mpClient);
       const body: any = {
@@ -46,9 +46,10 @@ export class MercadoPagoService {
       };
 
       const response = await preference.create({ body });
+      this.logger.log(`[MP Service] Preferencia creada en Mercado Pago con éxito. ID: ${response.id}, SandboxPoint: ${response.sandbox_init_point}`);
       return response;
     } catch (error) {
-      this.logger.error('Error al crear preferencia de Mercado Pago:', error);
+      this.logger.error('[MP Service] Error al crear preferencia en Mercado Pago:', error);
       throw error;
     }
   }

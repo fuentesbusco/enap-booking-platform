@@ -90,14 +90,17 @@ export class BookingsService {
       adminCreatedForExternal?: boolean;
     },
   ): Promise<Booking> {
+    this.logger.log(`[Reserva] Creando intento para usuario ${user.email} (ID: ${user.id}) en espacio ID ${spaceId} (${checkIn} a ${checkOut}) con ${guests.length} invitados.`);
     const space = await this.spacesService.getById(spaceId);
 
     if (guests.length > space.maxCapacity) {
+      this.logger.warn(`[Reserva] Creación fallida: ${guests.length} invitados supera capacidad máxima de ${space.maxCapacity} para ${space.name}.`);
       throw new BadRequestException(`El espacio supera la capacidad máxima permitida de ${space.maxCapacity} personas.`);
     }
 
     const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut, guests.length);
     if (isBlocked) {
+      this.logger.warn(`[Reserva] Creación fallida: conflicto de disponibilidad para ${space.name} en rango ${checkIn} a ${checkOut}.`);
       throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
     }
 
@@ -133,6 +136,7 @@ export class BookingsService {
     });
 
     const savedBooking = await this.bookingRepository.save(newBooking);
+    this.logger.log(`[Reserva] Registro guardado con éxito. ID: ${savedBooking.id}, Código: ${savedBooking.bookingCode}, Estado inicial: ${savedBooking.status}, Total: ${savedBooking.totalAmount}`);
 
     // Create guests referencing saved booking
     const guestEntities = guests.map((g) =>
@@ -179,9 +183,11 @@ export class BookingsService {
   }
 
   async approveBooking(id: number): Promise<Booking> {
+    this.logger.log(`[Aprobar Reserva] Solicitud de aprobación manual para reserva ID: ${id}`);
     const booking = await this.getById(id);
     booking.status = 'confirmed';
     const savedBooking = await this.bookingRepository.save(booking);
+    this.logger.log(`[Aprobar Reserva] Reserva ID: ${id} aprobada con éxito. Código: ${savedBooking.bookingCode}`);
 
     if (savedBooking.user?.email) {
       const emailHtml = getBookingPaymentConfirmedEmailTemplate(savedBooking);
@@ -200,10 +206,12 @@ export class BookingsService {
   }
 
   async rejectBooking(id: number, notes: string): Promise<Booking> {
+    this.logger.log(`[Rechazar Reserva] Solicitud de rechazo manual para reserva ID: ${id}. Notas admin: "${notes}"`);
     const booking = await this.getById(id);
     booking.status = 'rejected';
     booking.adminNotes = notes;
     const savedBooking = await this.bookingRepository.save(booking);
+    this.logger.log(`[Rechazar Reserva] Reserva ID: ${id} rechazada con éxito. Código: ${savedBooking.bookingCode}`);
 
     if (savedBooking.user?.email) {
       const emailHtml = getBookingPaymentRejectedEmailTemplate(savedBooking);
@@ -222,6 +230,7 @@ export class BookingsService {
   }
 
   async uploadReceipt(id: number, receiptUrl: string): Promise<Booking> {
+    this.logger.log(`[Subir Comprobante] Recibido comprobante para reserva ID: ${id}. URL: ${receiptUrl}`);
     const booking = await this.getById(id);
     booking.status = 'pending_approval';
     booking.receiptUrl = receiptUrl;
@@ -229,12 +238,14 @@ export class BookingsService {
   }
 
   async confirmPayment(bookingCode: string, paymentId: string, status: string): Promise<Booking> {
+    this.logger.log(`[Confirmar Pago MP] Recibido webhook de Mercado Pago para reserva ${bookingCode}. ID Pago: ${paymentId}, Estado recibido: ${status}`);
     const booking = await this.bookingRepository.findOne({
       where: { bookingCode },
       relations: { user: true, space: true },
     });
 
     if (!booking) {
+      this.logger.error(`[Confirmar Pago MP] Error: No se encontró la reserva con código ${bookingCode}`);
       throw new Error(`Reserva no encontrada con el código ${bookingCode}`);
     }
 
@@ -242,6 +253,7 @@ export class BookingsService {
       booking.status = 'confirmed';
       booking.adminNotes = `Pagado vía Mercado Pago. ID Pago: ${paymentId}`;
       const savedBooking = await this.bookingRepository.save(booking);
+      this.logger.log(`[Confirmar Pago MP] Reserva ${bookingCode} confirmada exitosamente tras aprobación de pago.`);
 
       if (savedBooking.user?.email) {
         const emailHtml = getBookingPaymentConfirmedEmailTemplate(savedBooking);
@@ -259,6 +271,7 @@ export class BookingsService {
       return savedBooking;
     }
 
+    this.logger.warn(`[Confirmar Pago MP] Estado del pago no aprobado para reserva ${bookingCode}: ${status}`);
     return booking;
   }
 
@@ -310,7 +323,10 @@ export class BookingsService {
     // 1. Static check
     const staticBlocks = this.blockedDates[spaceId] || [];
     const hasStaticBlock = datesToCheck.some((d) => staticBlocks.includes(d));
-    if (hasStaticBlock) return true;
+    if (hasStaticBlock) {
+      this.logger.warn(`[Bloqueo] Bloqueo estático detectado en fecha(s) consultada(s) para espacio ID ${spaceId}.`);
+      return true;
+    }
 
     // 2. Overlapping check in DB
     if (space.type === 'pool') {
@@ -331,6 +347,7 @@ export class BookingsService {
           }
         }
         if (dailyOccupancy + newBookingOccupants > space.maxCapacity) {
+          this.logger.warn(`[Bloqueo Piscina] Sin cupos el ${date}. Ocupación actual: ${dailyOccupancy}, Nuevos ocupantes: ${newBookingOccupants}, Máximo: ${space.maxCapacity}`);
           throw new BadRequestException(
             `El recinto de Piscina no tiene suficientes cupos disponibles para este día. Cupos restantes: ${
               space.maxCapacity - dailyOccupancy
