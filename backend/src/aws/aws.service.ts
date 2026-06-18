@@ -19,13 +19,15 @@ export class AwsService {
                                !accessKeyId.includes('YOUR_') && !secretAccessKey.includes('YOUR_') &&
                                !accessKeyId.includes('mock_') && !secretAccessKey.includes('mock_');
 
-    this.s3Client = new S3Client({
-      region,
-      credentials: hasRealCredentials ? {
+    const clientConfig: any = { region };
+    if (hasRealCredentials) {
+      clientConfig.credentials = {
         accessKeyId,
         secretAccessKey,
-      } : undefined,
-    });
+      };
+    }
+
+    this.s3Client = new S3Client(clientConfig);
   }
 
   getS3Client(): S3Client {
