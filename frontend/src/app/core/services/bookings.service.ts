@@ -61,6 +61,7 @@ export class BookingsService {
     thirdPartyRut?: string;
     thirdPartyPhone?: string;
     adminCreatedForExternal?: boolean;
+    visitType?: string;
   }): Observable<Booking> {
     const body = {
       spaceId: data.space.id,
@@ -72,6 +73,7 @@ export class BookingsService {
       thirdPartyRut: data.thirdPartyRut,
       thirdPartyPhone: data.thirdPartyPhone,
       adminCreatedForExternal: data.adminCreatedForExternal,
+      visitType: data.visitType,
     };
     return this.http.post<any>(`${environment.apiUrl}/bookings`, body).pipe(
       map(mapBookingToFrontend)

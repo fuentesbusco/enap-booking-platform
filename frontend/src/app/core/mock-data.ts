@@ -118,6 +118,19 @@ export const MOCK_SPACES: Space[] = [
     images: ['/images/piscina-diagonal.jpeg', '/images/aerea-piscina-central.jpeg', '/images/piscina-quitasol.jpeg', '/images/piscina-entrada.jpeg'],
     amenities: ['Zona de niños', 'Área de sol', 'Camarines', 'Duchas', 'Guardería'],
   },
+  {
+    id: 10,
+    name: 'Club House',
+    type: 'quincho',
+    description: 'Sede social y Club House con capacidad para 50 personas, equipado con cocina completa, salón de eventos, baños y área exterior. Ideal para celebraciones grandes y reuniones de socios.',
+    max_capacity: 50,
+    base_price: 80000,
+    socio_price: 50000,
+    guest_price: 3500,
+    free_guests_for_socio: 0,
+    images: ['/images/aerea-centro.jpeg', '/images/frontal-cabanas.jpeg'],
+    amenities: ['Cocina completa', 'Salón de eventos', 'Mesas y sillas para 50', 'Baños integrados', 'Estacionamiento amplio'],
+  },
 ];
 
 export const MOCK_ANNOUNCEMENTS: Announcement[] = [

@@ -68,12 +68,18 @@ export class UsersService {
 
     const passwordHash = hashPassword(plainPassword);
 
+    let fichaNumber = userData.ficha_number ?? userData.fichaNumber;
+    if (userData.role === 'socio' && (!fichaNumber || !fichaNumber.trim())) {
+      const randomDigits = Math.floor(1000 + Math.random() * 9000);
+      fichaNumber = `ENP-${randomDigits}`;
+    }
+
     const newUser = this.userRepository.create({
       fullName: userData.full_name ?? userData.fullName,
       rut: userData.rut,
       email: userData.email,
       role: userData.role,
-      fichaNumber: userData.ficha_number ?? userData.fichaNumber,
+      fichaNumber,
       isActive: userData.is_active ?? userData.isActive ?? true,
       passwordHash,
     });

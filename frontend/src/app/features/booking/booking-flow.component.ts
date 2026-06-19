@@ -42,6 +42,9 @@ export class BookingFlowComponent implements OnInit {
   breakdown: PriceBreakdown | null = null;
   blockedDates: string[] = [];
   paymentMethod = 'transfer';
+  termsAccepted = false;
+  visitType = 'personal'; // 'personal' | 'family' | 'friends'
+  showTermsModal = false;
   
   selectedFile: File | null = null;
   createdBookingCode = '';
@@ -52,6 +55,21 @@ export class BookingFlowComponent implements OnInit {
   thirdPartyName = '';
   thirdPartyRut = '';
   thirdPartyPhone = '';
+
+  onVisitTypeChange(type: string) {
+    this.visitType = type;
+    this.isForThirdParty = (type === 'friends');
+    this.recalculate();
+  }
+
+  openTermsModal(event: Event) {
+    event.preventDefault();
+    this.showTermsModal = true;
+  }
+
+  closeTermsModal() {
+    this.showTermsModal = false;
+  }
 
   get isSocio() {
     return this.auth.isSocio();
@@ -255,6 +273,7 @@ export class BookingFlowComponent implements OnInit {
           thirdPartyName: this.isForThirdParty ? this.thirdPartyName : undefined,
           thirdPartyRut: this.isForThirdParty ? this.thirdPartyRut : undefined,
           thirdPartyPhone: this.isForThirdParty ? this.thirdPartyPhone : undefined,
+          visitType: this.visitType,
         })
         .subscribe({
           next: (b) => {

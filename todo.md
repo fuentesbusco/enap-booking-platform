@@ -27,6 +27,11 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 - [x] **Imágenes Reales en la Home y Espacios:** Integración de fotos reales locales (`/images/*`) provistas por el cliente en el catálogo de espacios y la Home.
 - [x] **Simulación de Carga de Comprobante:** Emulación de carga de archivos (PDF/imagen) para cambiar el estado a `pending_approval`.
 - [x] **Cambio de Perfiles de Prueba:** Botones rápidos en el Login para cambiar de rol instantáneamente (`socio`, `admin`) para testing local.
+- [x] **Validaciones y Ajustes Hito 2 (Semana 4):**
+  - [x] Selector triple del Tipo de Visita (Uso Personal, Carga Familiar, Tercero) en Paso 2.
+  - [x] Edad de los invitados en la tabla dinámica de invitados del Paso 2.
+  - [x] Modal emergente detallado con el Reglamento y Condiciones de arriendo en Paso 3.
+  - [x] Mensaje advirtiendo validación de transferencia bancaria en un plazo máximo de 48 horas en Paso 4.
 
 ### Panel de Administración
 - [x] **Vista de Control de Reservas:** Tablas con filtros de estado y visualización rápida de comprobantes.
@@ -78,6 +83,13 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] **Generación de Contraseñas Temporales:** Retorno de contraseña autogenerada en el DTO de respuesta al crear usuario en la administración.
 - [x] **Sincronización de Imágenes en Caliente:** Actualización en caliente de URLs de Unsplash por locales (`/images/*`) en el arranque (`SeedService`).
 - [x] **API de Espacios:** Endpoints de escritura/edición (`POST`, `PUT`, `DELETE`) para el CRUD de administración.
+- [x] **Validaciones y Ajustes Hito 2 (Semana 4):**
+  - [x] Sembrado de recinto **Club House** en la base de datos de espacios.
+  - [x] Generación automática de número de ficha (`ENP-XXXX`) para socios registrados sin código manual.
+  - [x] Almacenamiento de la declaración de **Tipo de Visita** en el registro de reservas.
+  - [x] Almacenamiento de la **Edad** de invitados en tabla dinámica y base de datos.
+  - [x] Expiración pasiva dinámica de reservas sin pago tras 48 horas de inactividad.
+  - [x] Cierre automático de disponibilidades los días lunes (mantención general).
 
 ### Integración de Almacenamiento (AWS S3)
 - [x] Configuración del SDK de AWS en NestJS.

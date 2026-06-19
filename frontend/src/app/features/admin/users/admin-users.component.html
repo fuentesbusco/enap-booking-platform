@@ -113,8 +113,8 @@
 
         <!-- Ficha (Condicional) -->
         <div *ngIf="formRole === 'socio'">
-          <label class="block text-xs font-semibold text-charcoal/60 uppercase tracking-wider mb-1">Código de Socio *</label>
-          <input type="text" name="fichaNumber" [(ngModel)]="formFichaNumber" placeholder="Ej: ENP-0042" required class="input" />
+          <label class="block text-xs font-semibold text-charcoal/60 uppercase tracking-wider mb-1">Código de Socio (Opcional)</label>
+          <input type="text" name="fichaNumber" [(ngModel)]="formFichaNumber" placeholder="Se autogenera si se deja vacío" class="input" />
         </div>
 
         <!-- Botones de Acción -->

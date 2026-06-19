@@ -60,6 +60,12 @@ export class Booking {
   @Column({ name: 'admin_created_for_external', type: 'boolean', default: false })
   adminCreatedForExternal: boolean;
 
+  @Column({ name: 'terms_accepted', type: 'boolean', default: true })
+  termsAccepted: boolean;
+
+  @Column({ name: 'visit_type', type: 'varchar', nullable: true })
+  visitType?: string;
+
   @OneToOne('FeedbackEntity', 'booking', { eager: true })
   feedback?: any;
 }

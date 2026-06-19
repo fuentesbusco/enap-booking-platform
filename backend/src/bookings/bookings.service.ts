@@ -28,12 +28,14 @@ export class BookingsService {
   ) {}
 
   async getAll(): Promise<Booking[]> {
+    await this.expireOldBookings();
     return this.bookingRepository.find({
       order: { id: 'DESC' },
     });
   }
 
   async getByUser(userId: number): Promise<Booking[]> {
+    await this.expireOldBookings();
     return this.bookingRepository.find({
       where: { user: { id: userId } },
       order: { id: 'DESC' },
@@ -84,15 +86,17 @@ export class BookingsService {
     spaceId: number,
     checkIn: string,
     checkOut: string,
-    guests: { full_name: string; rut: string; phone?: string }[],
+    guests: { full_name: string; rut: string; phone?: string; age?: number }[],
     options?: {
       isForThirdParty?: boolean;
       thirdPartyName?: string;
       thirdPartyRut?: string;
       thirdPartyPhone?: string;
       adminCreatedForExternal?: boolean;
+      visitType?: string;
     },
   ): Promise<Booking> {
+    await this.expireOldBookings();
     this.logger.log(`[Reserva] Creando intento para usuario ${user.email} (ID: ${user.id}) en espacio ID ${spaceId} (${checkIn} a ${checkOut}) con ${guests.length} invitados.`);
     const space = await this.spacesService.getById(spaceId);
 
@@ -136,6 +140,8 @@ export class BookingsService {
       thirdPartyRut: options?.thirdPartyRut,
       thirdPartyPhone: options?.thirdPartyPhone,
       adminCreatedForExternal: !!options?.adminCreatedForExternal,
+      termsAccepted: true,
+      visitType: options?.visitType,
     });
 
     const savedBooking = await this.bookingRepository.save(newBooking);
@@ -147,6 +153,7 @@ export class BookingsService {
         fullName: g.full_name,
         rut: g.rut,
         phone: g.phone,
+        age: g.age,
         booking: savedBooking,
       }),
     );
@@ -286,6 +293,7 @@ export class BookingsService {
   }
 
   async getBlockedDatesForSpace(spaceId: number): Promise<string[]> {
+    await this.expireOldBookings();
     const space = await this.spacesService.getById(spaceId);
     const bookings = await this.bookingRepository.createQueryBuilder('booking')
       .leftJoinAndSelect('booking.guests', 'guest')
@@ -294,6 +302,18 @@ export class BookingsService {
       .getMany();
 
     const dates = new Set<string>();
+    
+    // Cierre automático los lunes (mantención general)
+    const start = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const end = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+    const current = new Date(start);
+    while (current <= end) {
+      if (current.getDay() === 1) {
+        dates.add(current.toISOString().split('T')[0]);
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
     const staticBlocks = this.blockedDates[spaceId] || [];
     staticBlocks.forEach((d) => dates.add(d));
 
@@ -330,6 +350,16 @@ export class BookingsService {
     const space = await this.spacesService.getById(spaceId);
     const datesToCheck = this.getDatesInRange(checkIn, checkOut);
     
+    // Cierre automático los lunes
+    const hasMonday = datesToCheck.some((d) => {
+      const day = new Date(d + 'T00:00:00').getDay();
+      return day === 1; // 1 = Lunes
+    });
+    if (hasMonday) {
+      this.logger.warn(`[Bloqueo Lunes] Intento de reserva en día de mantención (Lunes) en espacio ID ${spaceId}.`);
+      throw new BadRequestException('El Centro Vacacional se encuentra cerrado los días lunes por mantención general.');
+    }
+
     // 1. Static check
     const staticBlocks = this.blockedDates[spaceId] || [];
     const hasStaticBlock = datesToCheck.some((d) => staticBlocks.includes(d));
@@ -375,6 +405,27 @@ export class BookingsService {
         .getMany();
 
       return overlapping.length > 0;
+    }
+  }
+
+  async expireOldBookings(): Promise<void> {
+    try {
+      const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+      const oldBookings = await this.bookingRepository.createQueryBuilder('booking')
+        .where('booking.status = :status', { status: 'pending_payment' })
+        .andWhere('booking.createdAt <= :fortyEightHoursAgo', { fortyEightHoursAgo })
+        .getMany();
+
+      if (oldBookings.length > 0) {
+        this.logger.log(`[Expiración] Expirando ${oldBookings.length} reservas pendientes de pago sin actividad.`);
+        for (const b of oldBookings) {
+          b.status = 'expired';
+          b.adminNotes = (b.adminNotes || '') + ' Expirado automáticamente por falta de pago (límite 48 horas).';
+          await this.bookingRepository.save(b);
+        }
+      }
+    } catch (e) {
+      this.logger.error('Error expiring old bookings:', e);
     }
   }
 

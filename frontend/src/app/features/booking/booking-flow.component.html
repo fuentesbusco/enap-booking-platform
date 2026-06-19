@@ -245,28 +245,41 @@
       <!-- Selector para quién es la reserva -->
       <div *ngIf="isSocio" class="bg-mist rounded-xl p-4 mb-5 border border-charcoal/10">
         <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2">
-          ¿Para quién es esta reserva?
+          Declaración de Tipo de Visita
         </label>
         <div class="flex flex-col gap-2">
           <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
             <input
               type="radio"
-              [value]="false"
-              [(ngModel)]="isForThirdParty"
-              (change)="recalculate()"
+              value="personal"
+              name="visitType"
+              [(ngModel)]="visitType"
+              (change)="onVisitTypeChange('personal')"
               class="form-radio text-forest focus:ring-forest"
             />
-            <span>Para mí / Carga familiar (Tarifa Socio)</span>
+            <span>Uso Personal (Tarifa Socio)</span>
           </label>
           <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
             <input
               type="radio"
-              [value]="true"
-              [(ngModel)]="isForThirdParty"
-              (change)="recalculate()"
+              value="family"
+              name="visitType"
+              [(ngModel)]="visitType"
+              (change)="onVisitTypeChange('family')"
               class="form-radio text-forest focus:ring-forest"
             />
-            <span>Para un Tercero Externo (Tarifa General)</span>
+            <span>Carga Familiar (Tarifa Socio)</span>
+          </label>
+          <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+            <input
+              type="radio"
+              value="friends"
+              name="visitType"
+              [(ngModel)]="visitType"
+              (change)="onVisitTypeChange('friends')"
+              class="form-radio text-forest focus:ring-forest"
+            />
+            <span>Familiares o Amigos (Tarifa General)</span>
           </label>
         </div>
       </div>
@@ -332,18 +345,25 @@
           <input
             [(ngModel)]="g.full_name"
             placeholder="Nombre completo"
-            class="input col-span-5"
+            class="input col-span-4"
             type="text"
           />
           <input
             [(ngModel)]="g.rut"
             placeholder="RUT"
-            class="input col-span-4"
+            class="input col-span-3"
             type="text"
+          />
+          <input
+            [(ngModel)]="g.age"
+            placeholder="Edad"
+            class="input col-span-2"
+            type="number"
+            min="0"
           />
           <button
             (click)="removeGuest(i)"
-            class="col-span-2 text-red-400 hover:text-red-600 text-sm transition-colors"
+            class="col-span-2 text-red-400 hover:text-red-600 text-sm transition-colors cursor-pointer"
           >
             Quitar
           </button>
@@ -558,13 +578,28 @@
         </p>
       </div>
 
+      <!-- Aceptación de Términos y Condiciones -->
+      <div class="mb-6 bg-mist/30 border border-charcoal/10 rounded-xl p-4 flex items-start gap-3 text-xs text-charcoal/70 animate-fadeIn">
+        <input
+          type="checkbox"
+          id="termsConsent"
+          [(ngModel)]="termsAccepted"
+          class="mt-0.5 rounded border-charcoal/30 text-forest focus:ring-forest cursor-pointer"
+        />
+        <label for="termsConsent" class="leading-relaxed cursor-pointer select-none">
+          Acepto y declaro mi conformidad con las normas del recinto, los 
+          <a href="#" (click)="openTermsModal($event)" class="text-forest font-semibold hover:underline">términos de arriendo</a> 
+          del Centro Vacacional Limache y autorizo el registro de mi consentimiento.
+        </label>
+      </div>
+
       <div class="flex gap-3">
         <button (click)="prevStep()" [disabled]="loading" class="btn-secondary flex-1">
           Volver
         </button>
         <button
           (click)="nextStep()"
-          [disabled]="(breakdown && breakdown.total > 0 && paymentMethod === 'transfer' && !selectedFile) || loading"
+          [disabled]="(breakdown && breakdown.total > 0 && paymentMethod === 'transfer' && !selectedFile) || !termsAccepted || loading"
           class="btn-primary flex-1 flex justify-center items-center gap-2"
         >
           <span *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
@@ -588,7 +623,7 @@
       </p>
       <p class="text-charcoal/55 mb-6 text-sm">
         <span *ngIf="breakdown && breakdown.total > 0">
-          La administración validará el comprobante de pago y confirmará tu reserva.
+          La administración validará tu comprobante de pago en un plazo máximo de 48 horas para confirmar tu reserva.
         </span>
         <span *ngIf="breakdown && breakdown.total === 0">
           No requiere validación de transferencia.
@@ -640,6 +675,45 @@
           >Ver mis reservas</a
         >
         <a routerLink="/" class="btn-primary flex-1">Volver al inicio</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Términos y Condiciones -->
+  <div *ngIf="showTermsModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <!-- Backdrop oscuro -->
+    <div (click)="closeTermsModal()" class="absolute inset-0 bg-charcoal/45 backdrop-blur-xs transition-opacity duration-300"></div>
+
+    <!-- Contenido del Modal -->
+    <div class="bg-white rounded-2xl shadow-float max-w-lg w-full relative z-10 overflow-hidden border border-charcoal/10 transition-transform duration-300 scale-100 flex flex-col max-h-[85vh]">
+      <!-- Encabezado -->
+      <div class="px-6 py-4 bg-forest text-white flex items-center justify-between">
+        <h2 class="font-display text-xl font-semibold">Reglamento y Términos de Arriendo</h2>
+        <button (click)="closeTermsModal()" class="text-white/70 hover:text-white transition-colors cursor-pointer focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Cuerpo del Modal -->
+      <div class="p-6 space-y-4 overflow-y-auto text-sm text-charcoal/85 leading-relaxed">
+        <p class="font-medium text-forest">Al reservar en el Centro Vacacional Limache, el socio declara aceptar las siguientes normas de convivencia y arriendo:</p>
+        
+        <ul class="list-disc list-inside space-y-2.5 text-xs text-charcoal/75">
+          <li><strong>Uso Responsable:</strong> Los recintos e instalaciones son de uso exclusivo para el socio titular y sus invitados registrados. Se prohíbe el ingreso de personas no declaradas.</li>
+          <li><strong>Textiles Personales:</strong> Por razones de higiene y para mantener tarifas preferentes accesibles, las cabañas <strong>NO incluyen sábanas, fundas de almohada ni toallas</strong>. Cada ocupante deberá traer sus propios implementos.</li>
+          <li><strong>Horarios de Cabañas:</strong> El ingreso (Check-in) es a partir de las <strong>14:00 horas</strong> y la salida (Check-out) es estrictamente hasta las <strong>12:00 horas</strong>.</li>
+          <li><strong>Horarios de Quinchos y Piscina:</strong> El uso de estas dependencias está permitido desde las <strong>09:00 horas hasta las 19:00 horas</strong>.</li>
+          <li><strong>Mascotas:</strong> Se prohíbe terminantemente el ingreso de mascotas de cualquier tipo al recinto.</li>
+          <li><strong>Política de Cancelación:</strong> Las reprogramaciones debido a mal clima o fuerza mayor deben solicitarse con un mínimo de <strong>48 horas de anticipación</strong>.</li>
+          <li><strong>Validación de Pagos:</strong> Si se selecciona transferencia, el socio cuenta con 24 horas para subir el comprobante. La administración revisará y validará el comprobante en un plazo de hasta 48 horas.</li>
+        </ul>
+      </div>
+
+      <!-- Pie del Modal -->
+      <div class="px-6 py-4 bg-mist/30 border-t border-charcoal/5 flex justify-end">
+        <button (click)="closeTermsModal()" class="btn-primary py-2 px-6 text-sm cursor-pointer">Entendido</button>
       </div>
     </div>
   </div>

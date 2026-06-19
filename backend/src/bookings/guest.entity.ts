@@ -15,6 +15,9 @@ export class GuestEntity {
   @Column({ nullable: true })
   phone?: string;
 
+  @Column({ nullable: true })
+  age?: number;
+
   @ManyToOne(() => Booking, (booking) => booking.guests, { onDelete: 'CASCADE' })
   booking: Booking;
 }

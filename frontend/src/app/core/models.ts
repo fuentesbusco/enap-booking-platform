@@ -44,6 +44,7 @@ export interface Guest {
   full_name: string;
   rut: string;
   phone?: string;
+  age?: number;
 }
 
 export interface Booking {
@@ -66,6 +67,7 @@ export interface Booking {
   third_party_phone?: string;
   admin_created_for_external?: boolean;
   feedback?: any;
+  visit_type?: string;
 }
 
 export interface PriceBreakdown {
@@ -172,6 +174,7 @@ export function mapGuestToFrontend(guest: any): Guest {
     full_name: guest.fullName || guest.full_name,
     rut: guest.rut,
     phone: guest.phone,
+    age: guest.age,
   };
 }
 
@@ -182,6 +185,7 @@ export function mapGuestToBackend(guest: any): any {
     fullName: guest.full_name,
     rut: guest.rut,
     phone: guest.phone,
+    age: guest.age,
   };
 }
 
@@ -207,6 +211,7 @@ export function mapBookingToFrontend(booking: any): Booking {
     third_party_phone: booking.thirdPartyPhone || booking.third_party_phone,
     admin_created_for_external: booking.adminCreatedForExternal !== undefined ? booking.adminCreatedForExternal : booking.admin_created_for_external,
     feedback: booking.feedback,
+    visit_type: booking.visitType || booking.visit_type,
   };
 }
 
