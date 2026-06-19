@@ -28,20 +28,6 @@ export class AdminGalleryComponent implements OnInit {
 
   uploadingImage = false;
 
-  // Preset Images for Quick Selection
-  presetImages = [
-    { label: 'Vista Aérea General', value: '/images/aerea-centro.jpeg' },
-    { label: 'Piscinas Principales', value: '/images/aerea-piscinas.jpeg' },
-    { label: 'Cabañas Familiares', value: '/images/frontal-cabanas.jpeg' },
-    { label: 'Quinchos Techados', value: '/images/quincho.jpeg' },
-    { label: 'Cancha de Fútbol', value: '/images/cancha-furbol.jpeg' },
-    { label: 'Piscina de Cerca', value: '/images/piscina-diagonal.jpeg' },
-    { label: 'Entorno Nocturno', value: '/images/centro-norturna.jpeg' },
-    { label: 'Dron Central', value: '/images/aerea-dron-centro.jpeg' },
-    { label: 'Quincho Nocturno', value: '/images/quincho-nocturno.jpeg' },
-    { label: 'Piscina Nocturna', value: '/images/piscina-nocturna.jpeg' },
-  ];
-
   ngOnInit() {
     this.loadGallery();
   }
@@ -76,16 +62,12 @@ export class AdminGalleryComponent implements OnInit {
   openCreateModal() {
     this.formTitle = '';
     this.formDescription = '';
-    this.formImageUrl = this.presetImages[0].value;
+    this.formImageUrl = '';
     this.showModal = true;
   }
 
   closeModal() {
     this.showModal = false;
-  }
-
-  selectPreset(url: string) {
-    this.formImageUrl = url;
   }
 
   saveGalleryItem() {
