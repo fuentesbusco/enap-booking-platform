@@ -17,6 +17,7 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 - **Auto-Confirmación de Reservas de Costo Cero ($0):** Implementada lógica para reservas gratuitas (ej. piscina para socio con menos de 5 invitados, o quinchos por convenio de costo $0):
   - **Backend**: Guarda la reserva con estado inicial `confirmed` (en vez de `pending_payment`) y envía directamente la plantilla de correo de confirmación de pago aprobado.
   - **Frontend**: Adapta de forma dinámica los Pasos 3 y 4 del flujo de reserva ocultando formularios de pago y cargadores de comprobantes bancarios, permitiendo la confirmación inmediata y mostrando mensajes de éxito con aprobación directa sin transferencias pendientes.
+- **Orden de Reservas (Más nuevas primero):** Configurada la consulta en la base de datos en [bookings.service.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/bookings/bookings.service.ts) para ordenar las reservas de forma descendente por `id` (tanto para la lista personal de socios como para la administración), asegurando que los registros más recientes se desplieguen siempre arriba.
 
 ## [1.18.0] - 2026-06-18
 ### Añadido

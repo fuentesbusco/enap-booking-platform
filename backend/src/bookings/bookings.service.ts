@@ -28,12 +28,15 @@ export class BookingsService {
   ) {}
 
   async getAll(): Promise<Booking[]> {
-    return this.bookingRepository.find();
+    return this.bookingRepository.find({
+      order: { id: 'DESC' },
+    });
   }
 
   async getByUser(userId: number): Promise<Booking[]> {
     return this.bookingRepository.find({
       where: { user: { id: userId } },
+      order: { id: 'DESC' },
     });
   }
 
