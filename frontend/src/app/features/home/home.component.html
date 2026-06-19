@@ -9,11 +9,18 @@
 
   <div class="relative z-10 max-w-6xl mx-auto px-4 w-full">
     <div class="max-w-lg mb-10">
-      <span
-        class="inline-flex items-center gap-1.5 bg-sand/20 border border-sand/30 text-sand text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full mb-5">
-        <span class="w-1.5 h-1.5 bg-sand rounded-full"></span>
-        Limache, Chile
-      </span>
+      <div class="flex items-center gap-2 flex-wrap mb-5">
+        <span
+          class="inline-flex items-center gap-1.5 bg-sand/20 border border-sand/30 text-sand text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full">
+          <span class="w-1.5 h-1.5 bg-sand rounded-full"></span>
+          Limache, Chile
+        </span>
+        <span *ngIf="weatherData"
+          class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white text-xs font-mono tracking-wide px-3 py-1 rounded-full backdrop-blur-xs animate-fadeIn">
+          <span>{{ weatherData.icon }}</span>
+          <span>{{ weatherData.temp }}°C · {{ weatherData.text }}</span>
+        </span>
+      </div>
       <h1 class="text-white font-display text-5xl md:text-6xl leading-tight mb-5">
         Tu descanso<br />te está esperando
       </h1>

@@ -110,6 +110,28 @@
         />
       </div>
 
+      <!-- Clima Local Limache -->
+      <div *ngIf="weatherData" class="bg-gradient-to-r from-forest/5 to-forest/10 border border-forest/15 rounded-xl p-4 mb-6 flex items-center justify-between animate-fadeIn text-sm">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl filter drop-shadow-xs">{{ weatherData.icon }}</span>
+          <div>
+            <h4 class="font-display font-bold text-sm text-forest mb-0.5">Clima local en Limache</h4>
+            <p class="text-xs text-charcoal/70 leading-relaxed">
+              {{ weatherData.text }} con una temperatura de <strong>{{ weatherData.temp }}°C</strong>. ¡Ideal para planificar tu viaje!
+            </p>
+          </div>
+        </div>
+        
+        <!-- Previsión compacta de los siguientes días -->
+        <div class="hidden sm:flex gap-4 border-l border-forest/20 pl-4 shrink-0">
+          <div *ngFor="let day of weatherData.forecast.slice(0, 2); let isLast = last" class="text-center">
+            <span class="text-lg block mb-0.5">{{ day.icon }}</span>
+            <p class="text-[9px] font-mono text-charcoal/40 uppercase font-bold">{{ day.date | date: 'dd/MM' }}</p>
+            <p class="text-[10px] text-forest font-semibold font-mono">{{ day.max }}°C</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Advertencia de sábanas y toallas para Cabañas -->
       <div *ngIf="space?.type === 'cabin'" class="bg-forest/5 border border-forest/15 rounded-xl p-4 mb-6">
         <div class="flex gap-3">

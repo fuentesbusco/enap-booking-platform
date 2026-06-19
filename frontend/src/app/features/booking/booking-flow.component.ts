@@ -8,6 +8,7 @@ import { BookingsService } from '../../core/services/bookings.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MercadoPagoService } from '../../core/services/mercadopago.service';
 import { FeedbackService } from '../../core/services/feedback.service';
+import { WeatherService } from '../../core/services/weather.service';
 import { Space, Guest, PriceBreakdown } from '../../core/models';
 
 @Component({
@@ -23,6 +24,7 @@ export class BookingFlowComponent implements OnInit {
   private bookingsService = inject(BookingsService);
   private mpService = inject(MercadoPagoService);
   private feedbackService = inject(FeedbackService);
+  private weatherService = inject(WeatherService);
   auth = inject(AuthService);
 
   space: Space | undefined;
@@ -31,6 +33,7 @@ export class BookingFlowComponent implements OnInit {
 
   activeImageIndex = 0;
   feedbacks: any[] = [];
+  weatherData: any = null;
 
   checkIn = '';
   checkOut = '';
@@ -103,6 +106,12 @@ export class BookingFlowComponent implements OnInit {
           this.feedbacks = res.feedbacks || [];
         },
         error: (err) => console.error('Error fetching feedbacks:', err)
+      });
+
+      // Load weather forecast
+      this.weatherService.getLimacheWeather().subscribe({
+        next: (data) => this.weatherData = data,
+        error: (err) => console.error('Error fetching weather in booking flow:', err)
       });
 
       // Restore pending booking state if returning from authentication redirect

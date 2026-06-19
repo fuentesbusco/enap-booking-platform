@@ -5,6 +5,7 @@ import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { AnnouncementsService } from '../../core/services/announcements.service';
 import { FaqService } from '../../core/services/faq.service';
+import { WeatherService } from '../../core/services/weather.service';
 import { Space, Announcement } from '../../core/models';
 
 @Component({
@@ -17,11 +18,13 @@ export class HomeComponent implements OnInit {
   private spacesService = inject(SpacesService);
   private announcementsService = inject(AnnouncementsService);
   private faqService = inject(FaqService);
+  private weatherService = inject(WeatherService);
 
   spaces: Space[] = [];
   announcements: Announcement[] = [];
   faqs: any[] = [];
   openFaqId: number | null = null;
+  weatherData: any = null;
 
   tiposEspacio = [
     {
@@ -69,6 +72,10 @@ export class HomeComponent implements OnInit {
       .subscribe((d) => (this.announcements = d));
     this.faqService.getAll().subscribe((d) => {
       this.faqs = (d || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+    });
+    this.weatherService.getLimacheWeather().subscribe({
+      next: (data) => this.weatherData = data,
+      error: (err) => console.error('Error fetching weather in home', err)
     });
   }
 
