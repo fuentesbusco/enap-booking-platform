@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { GalleryService } from '../../core/services/gallery.service';
 import { GalleryItem } from '../../core/models';
 import { NavbarComponent } from '../../shared/components/navbar.component';
+import { FooterComponent } from '../../shared/components/footer.component';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent, FooterComponent],
   templateUrl: './gallery.component.html',
 })
 export class GalleryComponent implements OnInit {

@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
+import { FooterComponent } from '../../shared/components/footer.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { AnnouncementsService } from '../../core/services/announcements.service';
 import { FaqService } from '../../core/services/faq.service';
@@ -11,7 +12,7 @@ import { Space, Announcement } from '../../core/models';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {

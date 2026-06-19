@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/navbar.component';
+import { FooterComponent } from '../../shared/components/footer.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { BookingsService } from '../../core/services/bookings.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,7 +15,7 @@ import { Space, Guest, PriceBreakdown } from '../../core/models';
 @Component({
   selector: 'app-booking-flow',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent],
+  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './booking-flow.component.html',
 })
 export class BookingFlowComponent implements OnInit {

@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
+import { FooterComponent } from '../../shared/components/footer.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { WeatherService } from '../../core/services/weather.service';
 import { Space, SpaceType } from '../../core/models';
@@ -9,7 +10,7 @@ import { Space, SpaceType } from '../../core/models';
 @Component({
   selector: 'app-spaces-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './spaces-list.component.html',
 })
 export class SpacesListComponent implements OnInit {
