@@ -437,7 +437,7 @@
             >
               <span class="font-semibold text-charcoal">Monto a transferir</span>
               <span class="font-bold text-forest text-lg">{{
-                breakdown?.total | currency: "CLP" : "$" : "1.0-0"
+                breakdown.total | currency: "CLP" : "$" : "1.0-0"
               }}</span>
             </div>
           </div>
@@ -496,7 +496,7 @@
         <div class="flex justify-between border-b border-charcoal/10 pb-2 mb-3">
           <span class="font-semibold text-charcoal">Monto a pagar</span>
           <span class="font-bold text-forest text-lg">{{
-            breakdown?.total | currency: "CLP" : "$" : "1.0-0"
+            breakdown.total | currency: "CLP" : "$" : "1.0-0"
           }}</span>
         </div>
         <p class="text-charcoal/65 leading-relaxed">
