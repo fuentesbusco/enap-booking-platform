@@ -5,6 +5,7 @@ import { UserEntity } from './users/user.entity';
 import { SpaceEntity } from './spaces/space.entity';
 import { AnnouncementEntity } from './announcements/announcement.entity';
 import { GalleryEntity } from './gallery/gallery.entity';
+import { FaqEntity } from './faq/faq.entity';
 import { hashPassword } from './auth/hash.util';
 import { MOCK_SPACES, MOCK_ANNOUNCEMENTS, MOCK_USER_SOCIO, MOCK_USER_ADMIN, MOCK_USER_EXTERNAL } from './models';
 
@@ -21,6 +22,8 @@ export class SeedService implements OnApplicationBootstrap {
     private readonly announcementRepository: Repository<AnnouncementEntity>,
     @InjectRepository(GalleryEntity)
     private readonly galleryRepository: Repository<GalleryEntity>,
+    @InjectRepository(FaqEntity)
+    private readonly faqRepository: Repository<FaqEntity>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -30,6 +33,7 @@ export class SeedService implements OnApplicationBootstrap {
       await this.seedUsers();
       await this.seedAnnouncements();
       await this.seedGallery();
+      await this.seedFaqs();
       this.logger.log('Database check and seeding complete.');
     } catch (error) {
       this.logger.error('Database seeding failed:', error);
@@ -314,5 +318,57 @@ export class SeedService implements OnApplicationBootstrap {
     const items = galleryItems.map((g) => this.galleryRepository.create(g));
     await this.galleryRepository.save(items);
     this.logger.log(`Successfully seeded ${items.length} gallery items.`);
+  }
+
+  private async seedFaqs() {
+    this.logger.log('Checking/Seeding FAQs table...');
+    const defaultFaqs = [
+      {
+        question: '¿Quiénes tienen acceso a las tarifas preferenciales del Centro Vacacional?',
+        answer: 'Las tarifas preferenciales ("Socio Sindicato") se aplican exclusivamente a los socios activos del Sindicato de Trabajadores ENAP y sus cargas familiares directas. Al ingresar, el sistema valida tu RUT y tu ficha para aplicar el descuento de forma automática. Los externos/público general pueden reservar a tarifa base si hay disponibilidad.',
+        order: 1,
+      },
+      {
+        question: '¿Cuáles son los atractivos turísticos cercanos en la zona de Limache?',
+        answer: 'El centro se encuentra en una ubicación privilegiada del Valle de Marga Marga. Puedes visitar el Embalse Los Aromos (ideal para kayak, fotografía y paseos al aire libre), la histórica Estación de Limache, el Parque Nacional La Campana en Olmué (famoso por sus senderos de trekking y palmas chilenas), y las viñas boutique locales. Además, Viña del Mar y Valparaíso quedan a solo 40 minutos en tren suburbano.',
+        order: 2,
+      },
+      {
+        question: '¿Cuál es la política para llevar invitados a la piscina del Centro?',
+        answer: 'Como beneficio sindical, cada socio titular tiene derecho a ingresar con hasta 5 invitados gratis a la piscina general por jornada de reserva. A partir del sexto invitado, se aplica una tarifa especial de invitado diario de $3.000 CLP, la cual se detalla al registrar a las personas en el paso de invitados del flujo de reserva.',
+        order: 3,
+      },
+      {
+        question: '¿Las cabañas familiares incluyen sábanas, toallas y artículos de aseo?',
+        answer: 'Para mantener tarifas sindicales preferenciales accesibles y por protocolo de higiene, las cabañas NO incluyen sábanas, fundas de almohada ni toallas de baño. Cada cabaña cuenta con frazadas, vajilla completa, microondas, refrigerador y utensilios de cocina. Te sugerimos traer tus propios textiles personales.',
+        order: 4,
+      },
+      {
+        question: '¿Cómo funciona el proceso de pago y validación de reserva por transferencia?',
+        answer: 'Puedes pagar directamente con Mercado Pago (tarjetas o saldo) para confirmación inmediata, o elegir transferencia bancaria. Si seleccionas transferencia, tienes un plazo de 24 horas para realizar el depósito y subir el comprobante de pago en la sección "Mis Reservas" para que la administración valide y confirme tu cupo.',
+        order: 5,
+      },
+      {
+        question: '¿Puedo cancelar o reprogramar si las condiciones del clima no son favorables?',
+        answer: 'Sí, las reprogramaciones de quinchos o piscina debido al clima o motivos de fuerza mayor se pueden solicitar sin costo adicional avisando con un mínimo de 48 horas de anticipación al correo de administración (admin&#64;sindicatoenap.cl).',
+        order: 6,
+      },
+    ];
+
+    let seededCount = 0;
+    for (const df of defaultFaqs) {
+      const exists = await this.faqRepository.findOne({ where: { question: df.question } });
+      if (!exists) {
+        const faq = this.faqRepository.create(df);
+        await this.faqRepository.save(faq);
+        seededCount++;
+      }
+    }
+    
+    if (seededCount > 0) {
+      this.logger.log(`Successfully seeded ${seededCount} new FAQs.`);
+    } else {
+      this.logger.log('All default FAQs are already present in the database.');
+    }
   }
 }
