@@ -1,179 +1,157 @@
-# Checklist de Pruebas - Certificación de Entrega
+# Checklist de Pruebas - Certificación de Entrega de Producción
 
-Este documento sirve como bitácora y lista de verificación (checklist) de aseguramiento de calidad (QA) para validar el correcto funcionamiento de la plataforma en su totalidad antes del envío final al cliente.
+Este documento sirve como bitácora y lista de verificación (checklist) de aseguramiento de calidad (QA) para certificar el correcto funcionamiento de toda la plataforma en producción.
 
 ---
 
-## 🔐 1. Autenticación y Registro
+## 🔐 1. Autenticación, Registro y Perfil
 
 - [x] **Registro de Socio Sindical**
-  - *Acción:* Ir a `/ingresar` ➔ Registro, completar datos y un RUT válido, con un número de Ficha Sindical (ej: `ENP-0112`).
-  - *Resultado esperado:* Registro exitoso, redirección automática al inicio con sesión activa y rol de **Socio**.
+  - *Acción:* Registrarse en `/ingresar` con un RUT válido y un código de socio (ej: `ENP-0112`).
+  - *Resultado:* Registro exitoso, redirección automática a Inicio con perfil de **Socio**.
 - [x] **Registro de Usuario Externo**
-  - *Acción:* Registrarse sin ingresar número de ficha.
-  - *Resultado esperado:* Registro exitoso, redirección con sesión activa y rol de **Externo** (tarifa base).
+  - *Acción:* Registrarse sin código de socio.
+  - *Resultado:* Registro exitoso, redirección con perfil de **Externo** (tarifa base).
 - [x] **Ingreso Directo (Login)**
-  - *Acción:* Iniciar sesión con un correo y contraseña registrados.
-  - *Resultado esperado:* Redirección a la página de inicio o a la última página de reserva intentada.
+  - *Acción:* Iniciar sesión con credenciales válidas.
+  - *Resultado:* Redirección exitosa con JWT guardado en local.
 - [x] **Acceso Rápido (Demos)**
-  - *Acción:* Hacer clic en "Socio Demo" o "Admin Demo" en la pantalla de ingreso.
-  - *Resultado esperado:* Inicio de sesión instantáneo con las credenciales preconfiguradas.
-- [x] **Cierre de Sesión**
-  - *Acción:* Pulsar el botón **"Salir"** en el navbar o sidebar.
-  - *Resultado esperado:* Sesión destruida en el cliente, redirección al inicio y ocultamiento de opciones privadas.
-- [x] **Ingreso con Contraseña Temporal**
-  - *Acción:* Iniciar sesión con un usuario recién creado desde la administración utilizando la clave alfanumérica de 6 caracteres.
-  - *Resultado esperado:* Autenticación exitosa y redirección a la página de inicio.
+  - *Acción:* Hacer clic en "Socio Demo" o "Admin Demo" en el Login.
+  - *Resultado:* Login inmediato de prueba con un solo clic.
+- [x] **Cierre de Sesión (Logout)**
+  - *Acción:* Pulsar "Salir" en el menú.
+  - *Resultado:* Cierre instantáneo, eliminación del token y actualización de Navbar/Footer.
+- [x] **Gestión de Datos de Contacto (Perfil)**
+  - *Acción:* Ir a `/perfil` y cambiar Correo y Teléfono.
+  - *Resultado:* Validación estricta del formato telefónico chileno `^(\+56)?9\d{8}$` (ej: `912345678`), guardando los datos exitosamente.
+- [x] **Actualización Segura de Contraseña**
+  - *Acción:* Digitar contraseña actual, nueva contraseña y confirmarla en `/perfil`.
+  - *Resultado:* Actualización exitosa en el backend con derivación criptográfica PBKDF2 hash.
 
 ---
 
-## 🏦 2. Flujo de Reserva con Transferencia Bancaria
+## 🏦 2. Flujo de Reserva y Pagos
 
 - [x] **Cálculo de Precios Dinámico (Paso 2)**
-  - *Acción:* Seleccionar fechas de reserva y modificar la cantidad de acompañantes.
-  - *Resultado esperado:* El total acumulado se actualiza en tiempo real según el rol (Socio tiene descuento, Externo paga tarifa base, los primeros 5 invitados de Socio a Piscina son gratis).
-- [x] **Fechas Bloqueadas (Paso 1)**
-  - *Acción:* Intentar seleccionar un rango de fechas que coincida con una reserva ya confirmada o en revisión para ese mismo espacio.
-  - *Resultado esperado:* El sistema muestra una alerta roja "Las fechas no están disponibles" y bloquea el botón "Continuar".
-- [x] **Adjuntar Comprobante y Enviar (Paso 3 y 4)**
-  - *Acción:* Seleccionar la opción de Transferencia, subir un archivo JPG/PNG/PDF de prueba y hacer clic en **"Enviar reserva"**.
-  - *Resultado esperado:* Botón muestra spinner de carga. Redirección a Paso 4 con el código único de reserva (ej. `ENP-2025-00004`).
-- [x] **Visualización del Estado "En revisión"**
-  - *Acción:* Ir a la sección **"Mis Reservas"**.
-  - *Resultado esperado:* La reserva figura listada con la insignia azul de **"En revisión"**.
-- [x] **Indicador de Carga (Spinner) en "Mis Reservas"**
-  - *Acción:* Entrar a la sección **"Mis Reservas"** y observar la transición inicial.
-  - *Resultado esperado:* Se despliega un spinner de carga centrado mientras los datos son recuperados del backend, previniendo el parpadeo de una lista vacía.
+  - *Acción:* Elegir fechas de arriendo e invitados.
+  - *Resultado:* Precios actualizados en tiempo real según rol (Socio descuento, Externo tarifa base, 5 invitados piscina gratis).
+- [x] **Fechas Bloqueadas y Solapamientos (Paso 1)**
+  - *Acción:* Intentar reservar un recinto en fechas previamente reservadas y confirmadas.
+  - *Resultado:* Sistema alerta de colisión en color rojo y restringe el avance.
+- [x] **Subir Comprobante a S3 (Paso 3 y 4)**
+  - *Acción:* Elegir Transferencia, cargar archivo JPG/PNG/PDF y presionar "Enviar reserva".
+  - *Resultado:* Archivo subido exitosamente a AWS S3. Código autogenerado único (ej: `ENP-2026-00004`) y redirección a mis reservas.
+- [x] **Estado "En revisión" en Mis Reservas**
+  - *Acción:* Verificar estado tras enviar comprobante.
+  - *Resultado:* Reserva figura listada con la insignia azul de **"En revisión"**.
+- [x] **Spinner de Carga en Mis Reservas**
+  - *Acción:* Acceder a la pestaña de reservas.
+  - *Resultado:* Se muestra spinner de carga, previniendo el parpadeo de tablas vacías.
 - [x] **Visualización de Fotos Reales del Centro**
-  - *Acción:* Navegar por la Home y el catálogo de espacios.
-  - *Resultado esperado:* Los recintos muestran imágenes reales del centro vacacional (`/images/*`) provistas por el cliente en lugar de las fotos de stock genéricas de Unsplash.
+  - *Acción:* Comprobar que se muestran fotos del recinto (`/images/*`) en lugar de stock de Unsplash.
 
 ---
 
 ## 👥 3. Flujo de Reserva como Invitado (Usuario Anónimo)
 
 - [x] **Persistencia en sessionStorage**
-  - *Acción:* Sin loguearse, seleccionar espacio, fechas y acompañantes. Avanzar al paso de pago.
-  - *Resultado esperado:* Redirección automática a la vista de login, guardando el objeto de reserva en la sesión del navegador.
-- [x] **Identificación como Invitado**
-  - *Acción:* En la pestaña *Invitado*, rellenar los datos personales e introducir una Ficha de Socio Patrocinador (ej: `ENP-0078`).
-  - *Resultado esperado:* Inicio de sesión temporal exitoso, redirección directa de vuelta al Paso 3 de la reserva con los datos del Paso 1 y 2 restaurados.
+  - *Acción:* Elegir espacio y fechas sin loguearse y avanzar al checkout.
+  - *Resultado:* Redirección al Login conservando la reserva en sesión.
+- [x] **Identificación como Invitado Patrocinado**
+  - *Acción:* En pestaña Invitado, registrarse ingresando una ficha de socio patrocinador (ej. `ENP-0078`).
+  - *Resultado:* Autenticación exitosa y devolución automática al Paso 3 de pago restaurando la reserva.
 
 ---
 
 ## 🛠️ 4. Panel de Administración (Roles Especiales)
 
 - [x] **Control de Acceso (Guards)**
-  - *Acción:* Intentar ingresar a `/admin` de forma directa con un usuario de rol Socio o Externo.
-  - *Resultado esperado:* Redirección de vuelta a la página principal por falta de permisos.
+  - *Acción:* Intentar entrar a `/admin` con perfil de Socio o Externo.
+  - *Resultado:* Acceso denegado, redirección al Inicio.
 - [x] **Administración de Espacios (`/admin/espacios`)**
-  - [x] Crear un nuevo espacio (ej: *Cabaña El Roble*) completando todos los campos de precios.
-  - [x] Editar precios de un espacio existente y verificar cambios en el flujo de reserva.
-  - [x] Eliminar un espacio sin reservas activas.
+  - [x] Crear un espacio subiendo múltiples fotos de prueba a AWS S3.
+  - [x] Editar tarifas del espacio y validar en el checkout.
+  - [x] Eliminar un espacio libre de reservas.
 - [x] **Administración de Usuarios (`/admin/usuarios`)**
-  - [x] Crear un usuario verificando la generación automática de la contraseña temporal de 6 caracteres, su exposición en el mensaje de éxito (toast) y envío ficticio por correo.
-  - [x] Cambiar el estado de un usuario a **Inactivo** y verificar que no puede iniciar sesión en la app.
+  - [x] Crear un usuario en admin y comprobar generación de contraseña temporal alfanumérica de 6 caracteres.
+  - [x] Activar/Desactivar un usuario impidiendo su ingreso de forma instantánea.
 - [x] **Administración de Avisos (`/admin/avisos`)**
-  - [x] Crear un aviso destacando la publicación (Pinned) e ingresando una URL de imagen opcional (ej: `/images/quincho.jpeg`).
-  - [x] Confirmar que aparece al inicio del muro de noticias en la Home mostrando su respectiva imagen, y que se previsualiza la miniatura en la lista de administración.
-  - [x] Eliminar un aviso y confirmar que desaparece de la Home y del listado de admin.
+  - [x] Crear un aviso subiendo la imagen a AWS S3 y marcarlo como destacado.
+  - [x] Validar que aparece al inicio del muro en el Home con su foto correspondiente.
 - [x] **Aprobación de Comprobantes (`/admin/reservas`)**
-  - [x] Visualizar el enlace `📄 Comprobante` del depósito y abrirlo en pestaña nueva.
-  - [x] Aprobar una reserva y verificar que pasa a estado **Confirmada** (tanto para admin como para el cliente).
-  - [x] Verificar la columna **"Tipo"** en el listado de reservas para comprobar si el solicitante es Socio o No Socio mediante etiquetas legibles.
-- [x] **Rechazo de Comprobantes con Observaciones**
-  - [x] Rechazar una reserva ingresando un comentario de retroalimentación.
-  - [x] Verificar que el cliente ve la reserva en estado **"Sin pago"** y visualiza las notas del admin.
+  - [x] Comprobar enlace `📄 Comprobante` del depósito abriéndose en pestaña nueva.
+  - [x] Aprobar una reserva (estado pasa a **Confirmada**).
+  - [x] Comprobar columna "Tipo" que diferencia si el solicitante es Socio o Externo.
+- [x] **Rechazo de Comprobantes con Comentario**
+  - [x] Rechazar reserva ingresando comentarios de retroalimentación.
+  - [x] Verificar que el cliente ve la reserva en estado "Sin pago" con el motivo expuesto.
 - [x] **Administración de Galería (`/admin/galeria`)**
-  - [x] Agregar una nueva imagen utilizando presets del sistema o ingresando URL y título manuales.
-  - [x] Eliminar una foto de la galería y validar que se quita de la base de datos de manera inmediata.
+  - [x] Subir una foto a la galería asociándola directamente a AWS S3.
+  - [x] Eliminar una foto de la galería del centro.
 
 ---
 
-## 💳 5. Pasarela de Pago de Mercado Pago (Sandbox)
+## 🖼️ 5. Galería Pública "Conoce el Centro"
 
-- [x] **Certificación Sandbox desde la Administración (`/admin/mercadopago`)**
-  - *Acción:* Introducir monto, concepto y hacer clic en generar.
-  - *Resultado esperado:* Retorna un ID de preferencia válido de los servidores de Mercado Pago Sandbox.
-- [x] **Checkout de Prueba Sandbox**
-  - *Acción:* Pulsar en pagar en Sandbox, loguearse con la cuenta de comprador de prueba (`TESTUSER8015616000490342967` / `tBdnrZDT0m`) y pagar con tarjeta Visa aprobada.
-  - *Resultado esperado:* Redirección de vuelta automática a la administración mostrando el banner verde **"¡Pago de Prueba Exitoso!"**.
-- [x] **Checkout desde el Flujo de Reserva del Usuario**
-  - *Acción:* Realizar una reserva de usuario real eligiendo la pestaña **Mercado Pago** y completar el pago Sandbox.
-  - *Resultado esperado:* Redirección de vuelta automática a la página de éxito del frontend, procesado en segundo plano de la confirmación en el backend y actualización instantánea a estado **Confirmada**.
-- [x] **Rutas de Retorno en el Frontend (Éxito, Error, Pendiente)**
-  - *Acción:* Cargar la pasarela de Mercado Pago y permitir la redirección de retorno, o navegar directamente a `/mercadopago/success?payment_id=456&status=approved&external_reference=ENP-123`.
-  - *Resultado esperado:* Visualización de vistas con diseño premium personalizado (verde para éxito, rojo para error, naranja para pendiente) extrayendo dinámicamente el ID de pago, código de reserva y estado.
-
----
-
-## 🖼️ 6. Galería Pública "Conoce el Centro"
-
-- [x] **Acceso y Visualización (`/conoce-el-centro`)**
-  - *Acción:* Entrar a la sección de galería pública desde el menú principal.
-  - *Resultado esperado:* Despliegue correcto de la cuadrícula de fotos con efectos de hover, zoom suave y títulos.
+- [x] **Acceso e Interfaz (`/conoce-el-centro`)**
+  - *Acción:* Entrar al carrusel público.
+  - *Resultado:* Despliegue de cuadrícula moderna.
 - [x] **Visualización en Lightbox**
-  - *Acción:* Hacer clic en cualquier foto de la galería.
-  - *Resultado esperado:* La imagen se abre en una pantalla completa oscura en alta definición, con controles para avanzar, retroceder o cerrar.
+  - *Acción:* Hacer clic en una imagen.
+  - *Resultado:* Imagen se abre en pantalla completa con controles de avanzar/retroceder.
 - [x] **Navegación mediante Teclado**
-  - *Acción:* Usar las flechas direccionales izquierda y derecha para pasar de foto, y la tecla `ESC` para cerrar el visor.
-  - *Resultado esperado:* Comportamiento interactivo de navegación por fotos y cierre de visor correcto.
+  - *Acción:* Usar flechas derechas/izquierdas y tecla `ESC`.
+  - *Resultado:* Comportamiento correcto de cambio y cierre de Lightbox.
 
 ---
 
-## 🧼 7. Nuevas Características (Ajustes de Negocio y Mejoras de Usabilidad)
+## 🌦️ 6. Integración Meteorológica (Open-Meteo & Alertas)
 
-- [x] **Estandarización de Cabañas (1 a 6)**
-  - *Acción:* Navegar por el catálogo de espacios y examinar Cabaña 1 a Cabaña 6.
-  - *Resultado esperado:* Cada cabaña indica capacidad para 6 personas, muestra el equipamiento detallado y despliega la advertencia sobre traer sábanas, fundas y toallas en el formulario de reserva.
-- [x] **Reserva por Jornada Única y Control de Aforo (Quinchos y Piscina)**
-  - *Acción:* Iniciar reserva de un Quincho o Piscina y seleccionar una fecha.
-  - *Resultado esperado:* El sistema presenta un único control "Día de la Jornada" (iguala check-in y check-out). En Quinchos (exclusivo), la fecha se bloquea si hay al menos una reserva activa. En Piscina (compartido), la fecha permanece libre para otros socios, bloqueándose solo si el aforo total acumulado de ese día alcanza los 80 cupos.
-- [x] **Reserva de Socio para un Tercero Ocupante (Patrocinio)**
-  - *Acción:* Iniciar sesión como socio y realizar una reserva de cabaña. En el Paso 2, seleccionar "Para un Tercero Externo (Tarifa General)" e introducir el Nombre, RUT y Teléfono del tercero.
-  - *Resultado esperado:* La tarifa se calcula con el valor base general y la reserva se completa, quedando vinculada al socio.
-- [x] **Visualización Administrativa de Terceros**
-  - *Acción:* Ingresar como Administrador, ir a **Administración ➔ Reservas** y ver la reserva creada por el socio para el tercero.
-  - *Resultado esperado:* Se muestra la insignia destacada "Para Tercero" y se detalla el nombre, RUT y teléfono del tercero ocupante en la columna Titular.
-- [x] **Badges de Precios en Catálogo**
-  - *Acción:* Ver el catálogo de espacios en el sitio público.
-  - *Resultado esperado:* Cada tarjeta muestra dos badges claros ("Socio Sindicato" y "Público / Externo") con sus respectivos valores y la indicación de cobro por día o por jornada.
+- [x] **Pill de Clima en Home**
+  - *Acción:* Cargar página de inicio.
+  - *Resultado:* Badge translúcido junto a "Limache, Chile" muestra la temperatura en vivo.
+- [x] **Pill de Clima en Catálogo**
+  - *Acción:* Cargar catálogo `/espacios`.
+  - *Resultado:* Muestra pill con temperatura y cielo de Limache al lado del título.
+- [x] **Pronóstico a 3 Días (Paso 1)**
+  - *Acción:* Cargar el Paso 1 de reserva y comprobar widget al lado del calendario.
+- [x] **Alerta Climatológica por Fecha Seleccionada**
+  - *Acción:* Reservar Quincho o Piscina y seleccionar un día con lluvia pronosticada.
+  - *Resultado:* Se gatilla el banner preventivo color ámbar recomendando reprogramar por mal clima.
 
 ---
 
-## 8. Comentarios revision
+## 🧼 7. Guía de Estadía & FAQ Interactivo
 
-### Primera revision
+- [x] **Sección Informativa en Home**
+  - *Acción:* Verificar columna de Equipaje/Normas y el Acordeón FAQ.
+- [x] **Poblamiento de Datos Semilla (Seeder)**
+  - *Acción:* Revisar logs del backend al bootear.
+  - *Resultado:* Se insertan 6 FAQs turísticas y sindicales en MySQL de forma automática e independiente si no existen.
+- [x] **Panel CRUD FAQs (`/admin/faqs`)**
+  - *Acción:* Agregar y reordenar FAQs desde la administración.
+  - *Resultado:* Visualización instantánea con el orden correcto en el home del socio.
 
-- El usuario invitado puede no tener codigo de socio
-- En la pagina no existe como concepto el usuario externo, causa confusión con el usuario invitado.
-- Para piscina, los 5 invitados gratis sale como -$17.500, pero el total sale $0. Puede causar confusion si el usuario tiene menos de 5 inivitados, o no invitados.
-- En Identificación como Invitado el codigo de socio que se pide ingresar no queda claro que es un socio "patrocinador" pareciera que aun como invitado te pide codigo de socio.
-- En el registro no usar terminos como Número de Ficha Sindical, cliente solo habla de "codigo de socio".
-- Creacion de usuario en la administracion entrega el error: "QueryFailedError: Field 'full_name' doesn't have a default value".
-- Cuando hay 2 avisos pinned, al parecer estar ordenados desde el mas antiguo primero.
-- Al rechazar una reserva, podria verse el comentario de rechazo en la administracion tambien, para tener claridad.
-- Cuando un usuario ve su reserva rechazada, no sale el motivo en el sitio web "Mis reservas".
-- "Sin pago" al continuar una reserva sin pago, el sistema redirecciona a la seleccion de fechas, sin nada seleccionado, como si fuera una reserva desde cero para el espacio seleccionado.
-- En la adminsitracion, al cambiar de seccion, o realizar una accion no hay indicadores visuales de que el sistema esta procesando, pareciera que está haciendo nada y puede confundir al usuario y hacer que haga click de nuevo generando posibles doble click y mala experiencia.
-- Al registrar un usuario nuevo existosamente, el sistema redirecciona al home con el login ya activo, pero no se le muestra ningun indicador de exito al usuario, lo que puede generar confusión.
-- Al hacer logout el usuario no ve ningun feedback visual, solo cambiar rápidamente la visibilidad de las opciones del menu, pero no es claro para el usuario.
+---
 
-### Segunda revisión (Aseguramiento de Calidad)
+## 💳 8. Pasarela de Pago de Mercado Pago (Sandbox)
 
-- [x] **Columna Socio/No Socio en Reservas**: Verificada la columna "Tipo" en la administración de reservas que discrimina con badges de colores.
-- [x] **Checkbox de Avisos Destacados**: Comprobado que al crear el aviso con el checkbox, se almacena como destacado en DB y se muestra primero en la Home.
-- [x] **Contraseñas Temporales**: Se genera una clave aleatoria de 6 caracteres al crear un usuario desde administración, se notifica al administrador en el toast y se envía por correo al usuario.
-- [x] **Spinner de Carga en Mis Reservas**: El spinner interactivo bloquea flashes de datos obsoletos o vacíos durante la obtención de las reservas.
-- [x] **Galería de Imágenes Administrable**: Sección pública "Conoce el Centro" interactiva con Lightbox y panel CRUD en la administración.
-- [x] **Integración de Imágenes Reales**: Integradas las fotos reales de la carpeta `/images/` en espacios, avisos y Home, con actualización en caliente de registros antiguos.
+- [x] **Test de Credenciales (`/admin/mercadopago`)**
+  - *Acción:* Generar preferencia de prueba y pagar en Sandbox.
+  - *Resultado:* Transacción exitosa reflejada en el banner verde.
+- [x] **Pago de Reservas del Socio**
+  - *Acción:* Pagar una reserva real y comprobar redirecciones a `/mercadopago/success`, `/mercadopago/failure` o `/mercadopago/pending`.
+  - *Resultado:* Acreditación inmediata de la reserva a "Confirmada" por parte de los webhooks del backend en producción.
 
-### Comentarios clientes
+---
 
-- Las cabañas se distribuyen del 1 al 6
-- Los quinchos el arriendo es por jornada, al igual que el acceso de piscina
-- Las cabañas se encuentran equipadas para 6 personas con menaje, servicios, juegos de batería, cocina, refrigerador, hornos, juguera, secador de pelo, televisión satélital e Internet controlado, dos camarotes y una cama matrimonial. Se debe contemplar traer en la estadía: toallas, sábanas y fundas de almohadas.
-- Cuando es arriendo externo, el cliente comunica que el socio realiza el arriendo y selecciona si el que arrienda es socio, conyugue o carga directa o terceros, al ser tercero pide los datos personales de la persona externa. Ademas de registrar los datos del socio. (aunque el flujo puede ser mejorado)
-- Si no es amigo ni conocido de socio, un tercero completamente externo, hoy el cliente lo ingresa, ingresa la reserva y lo deja asociado al administrador. (aunque el flujo puede ser mejorado)
-- A los terceros se les cobra el precio normal, no de socio.
-- Cliente dice que podria haber icono de "externos" para hacerlo por separado, como lo tenemos ya ahora, pero indicar bien los valores.
+## 🚀 9. Certificación de Despliegue en Producción
+
+- [x] **Frontend Desplegado en Vercel**
+  - URL Producción: `https://enap-front-web.vercel.app`
+- [x] **Backend Desplegado en AWS Lambda**
+  - URL Base API: `https://odru0vr5a5.execute-api.us-east-1.amazonaws.com/`
+- [x] **AWS RDS MySQL & S3 Storage**
+  - Base de datos conectada en la nube y subida de archivos real a S3 operativa en producción.
+- [x] **AWS SES Emailing**
+  - Envío automático de notificaciones a socios y administradores operativo desde el servidor de producción.

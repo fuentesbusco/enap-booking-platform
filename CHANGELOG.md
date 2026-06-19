@@ -6,6 +6,19 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.20.0] - 2026-06-19
+### Añadido
+- **Gestión de Perfil de Usuario y Seguridad**: Implementado el componente `/perfil` que permite cambiar correo electrónico y teléfono (validado bajo formato Chile con regex `^(\+56)?9\d{8}$`), además de cambio seguro de contraseña encriptada mediante hashing PBKDF2 SHA-512 en el backend.
+- **Subida de Múltiples Fotos y Carruseles**: Soporte para que los espacios admitan múltiples imágenes cargadas a AWS S3. Los clientes visualizan las fotos mediante carruseles interactivos con controles de navegación e indicadores de página.
+- **Moderación de Opiniones / Feedback**: Los socios pueden valorar su estadía finalizada mediante estrellas (1 a 5) y comentarios escritos en "Mis Reservas" (estado inicial `pending_approval`). Añadido el panel `/admin/opiniones` para que los administradores aprueben o rechacen los comentarios, los cuales actualizan el rating promedio del recinto y se renderizan en el Step 1 del checkout al ser aprobados.
+- **Guía de Estadía & FAQ Interactivo**: Sección de ayuda en el Home con normas críticas (equipaje, carbón, aforos) y un acordeón de Preguntas Frecuentes. Se añadió el panel CRUD `/admin/faqs` para gestionar las preguntas y respuestas.
+- **Poblamiento de Datos Semilla de FAQs**: Configurada la carga automática e idempotente en el backend (`SeedService`) de 6 preguntas frecuentes enfocadas en turismo de Limache, validación de ficha sindical de socios, política de piscina y cancelaciones meteorológicas.
+- **Pronóstico del Clima Local y Alertas**: Integrado el servicio `WeatherService` para consumir datos climatológicos en vivo desde **Open-Meteo** para Limache, con fallback local de contingencia. Renderiza badges y pills en el Hero, en el catálogo `/espacios`, un pronóstico de 3 días en el Step 1 del checkout, y gatilla automáticamente una alerta preventiva ámbar si el socio selecciona una fecha con precipitaciones para un espacio exterior.
+- **Pie de Página Global (Footer)**: Extraído el footer a un componente reutilizable (`FooterComponent`), escapando el carácter `@` como `&#64;` para satisfacer las políticas estrictas de control de flujo del compilador de Angular (`NG5002`). Se incluyó en el pie de todas las pantallas públicas del cliente final, ocultándose del panel administrativo.
+- **Certificación de Despliegue en Producción**:
+  - **Frontend (Vercel)**: Desplegado en `https://enap-front-web.vercel.app`
+  - **Backend (AWS Lambda & API Gateway)**: Desplegado mediante Serverless Framework en us-east-1 en `https://odru0vr5a5.execute-api.us-east-1.amazonaws.com/` con persistencia en AWS RDS MySQL, carga real de archivos a AWS S3 y envío SMTP asíncrono real de notificaciones mediante AWS SES.
+
 ## [1.19.0] - 2026-06-18
 ### Añadido
 - **Infraestructura Serverless en AWS:** Creación del adaptador de entrada [lambda.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/lambda.ts) y de la especificación [serverless.yml](file:///home/daniel/projects/enap-mock-frontend/backend/serverless.yml) para el despliegue del backend en AWS Lambda + API Gateway mediante Serverless Framework, utilizando el perfil `new-account`.

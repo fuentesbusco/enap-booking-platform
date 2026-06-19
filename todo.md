@@ -108,7 +108,18 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 
 ### Automatización de Pagos (Fase 2)
 - [x] Integración de la API de **MercadoPago** en el backend (SDK, inicialización y credenciales).
-- [ ] Integración de la API de **Transbank Webpay** en el backend.
+- [x] Integración de la API de **Transbank Webpay** en el backend (simulado/maquetado).
 - [x] Páginas de Retorno de Mercado Pago (Frontend): Creación de vistas de éxito, fallo y pendiente para validación del retorno.
 - [x] Endpoint de confirmación de pago para recibir notificaciones de transacciones de Mercado Pago y actualizar el estado de la reserva inmediatamente.
+
+---
+
+## 🚀 Despliegue en Producción
+- [x] **Frontend (Vercel)**: Desplegado exitosamente en producción.
+  - Producción: `https://enap-front-web.vercel.app`
+- [x] **Backend (AWS Lambda & API Gateway)**: Desplegado mediante Serverless Framework en us-east-1.
+  - Endpoint Base: `https://odru0vr5a5.execute-api.us-east-1.amazonaws.com/`
+- [x] **Base de Datos (AWS RDS MySQL)**: Conexiones activas con pool optimizado.
+- [x] **Almacenamiento (AWS S3)**: Carga en producción de comprobantes de reserva y fotografías para espacios y galería.
+- [x] **Notificaciones (AWS SES)**: Correos automatizados para titular y administración.
 
