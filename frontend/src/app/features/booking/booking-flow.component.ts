@@ -70,6 +70,51 @@ export class BookingFlowComponent implements OnInit {
     });
   }
 
+  get getSelectedDateWeather() {
+    if (!this.weatherData || !this.checkIn) return null;
+    const selectedDate = this.checkIn;
+    
+    if (selectedDate === this.today) {
+      return {
+        isToday: true,
+        temp: this.weatherData.temp,
+        icon: this.weatherData.icon,
+        text: this.weatherData.text
+      };
+    }
+    
+    const found = this.weatherData.forecast.find((day: any) => day.date === selectedDate);
+    if (found) {
+      return {
+        isToday: false,
+        temp: found.max,
+        icon: found.icon,
+        text: found.text
+      };
+    }
+    
+    const diffTime = new Date(selectedDate + 'T00:00:00').getTime() - new Date(this.today + 'T00:00:00').getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) {
+      const tomorrow = this.weatherData.forecast.find((day: any) => day.date === 'Mañana' || day.date === this.getOffsetDateString(1));
+      if (tomorrow) return { isToday: false, temp: tomorrow.max, icon: tomorrow.icon, text: tomorrow.text };
+    } else if (diffDays === 2) {
+      const dayAfter = this.weatherData.forecast.find((day: any) => day.date === 'Pasado Mañana' || day.date === this.getOffsetDateString(2));
+      if (dayAfter) return { isToday: false, temp: dayAfter.max, icon: dayAfter.icon, text: dayAfter.text };
+    } else if (diffDays === 3) {
+      const thirdDay = this.weatherData.forecast.find((day: any) => day.date === 'Siguiente Día' || day.date === this.getOffsetDateString(3));
+      if (thirdDay) return { isToday: false, temp: thirdDay.max, icon: thirdDay.icon, text: thirdDay.text };
+    }
+    
+    return null;
+  }
+
+  private getOffsetDateString(offset: number): string {
+    const d = new Date(new Date(this.today + 'T00:00:00').getTime() + offset * 24 * 60 * 60 * 1000);
+    return d.toISOString().split('T')[0];
+  }
+
   onJornadaDateChange(val: string) {
     this.checkIn = val;
     this.checkOut = val;

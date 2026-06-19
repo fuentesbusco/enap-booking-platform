@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SpacesService } from '../../core/services/spaces.service';
+import { WeatherService } from '../../core/services/weather.service';
 import { Space, SpaceType } from '../../core/models';
 
 @Component({
@@ -14,10 +15,12 @@ import { Space, SpaceType } from '../../core/models';
 export class SpacesListComponent implements OnInit {
   private spacesService = inject(SpacesService);
   private route = inject(ActivatedRoute);
+  private weatherService = inject(WeatherService);
 
   spaces: Space[] = [];
   filtered: Space[] = [];
   activeType: string = 'all';
+  weatherData: any = null;
 
   // Carrusel index por espacio
   activeIndexes: Record<number, number> = {};
@@ -36,6 +39,10 @@ export class SpacesListComponent implements OnInit {
     this.spacesService.getAll().subscribe((d) => {
       this.spaces = d;
       this.filterSpaces();
+    });
+    this.weatherService.getLimacheWeather().subscribe({
+      next: (data) => this.weatherData = data,
+      error: (err) => console.error('Error fetching weather in spaces list:', err)
     });
   }
 

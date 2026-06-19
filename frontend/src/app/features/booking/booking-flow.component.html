@@ -111,13 +111,15 @@
       </div>
 
       <!-- Clima Local Limache -->
-      <div *ngIf="weatherData" class="bg-gradient-to-r from-forest/5 to-forest/10 border border-forest/15 rounded-xl p-4 mb-6 flex items-center justify-between animate-fadeIn text-sm">
+      <div *ngIf="weatherData" class="bg-gradient-to-r from-forest/5 to-forest/10 border border-forest/15 rounded-xl p-4 mb-4 flex items-center justify-between animate-fadeIn text-sm">
         <div class="flex items-center gap-3">
           <span class="text-3xl filter drop-shadow-xs">{{ weatherData.icon }}</span>
           <div>
-            <h4 class="font-display font-bold text-sm text-forest mb-0.5">Clima local en Limache</h4>
+            <h4 class="font-display font-bold text-sm text-forest mb-0.5">Clima actual en Limache</h4>
             <p class="text-xs text-charcoal/70 leading-relaxed">
-              {{ weatherData.text }} con una temperatura de <strong>{{ weatherData.temp }}°C</strong>. ¡Ideal para planificar tu viaje!
+              {{ weatherData.text }} con una temperatura de <strong>{{ weatherData.temp }}°C</strong>.
+              <span *ngIf="space?.type === 'cabin'">¡Ideal para planificar tu estadía!</span>
+              <span *ngIf="space?.type === 'pool' || space?.type === 'quincho'">¡Excelente para planificar tus actividades al aire libre!</span>
             </p>
           </div>
         </div>
@@ -129,6 +131,20 @@
             <p class="text-[9px] font-mono text-charcoal/40 uppercase font-bold">{{ day.date | date: 'dd/MM' }}</p>
             <p class="text-[10px] text-forest font-semibold font-mono">{{ day.max }}°C</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Pronóstico específico de la fecha elegida -->
+      <div *ngIf="getSelectedDateWeather" class="bg-amber-50 border border-amber-200/50 rounded-xl p-4 mb-6 flex items-start gap-3 animate-fadeIn text-xs text-amber-900">
+        <span class="text-2xl shrink-0 filter drop-shadow-sm">{{ getSelectedDateWeather.icon }}</span>
+        <div>
+          <h5 class="font-bold text-amber-800 mb-0.5">Pronóstico para tu fecha de reserva ({{ checkIn | date: 'dd/MM/yyyy' }})</h5>
+          <p class="leading-relaxed text-amber-800/90">
+            Se espera <strong>{{ getSelectedDateWeather.text }}</strong> con una temperatura máxima de <strong>{{ getSelectedDateWeather.temp }}°C</strong>.
+            <span *ngIf="(space?.type === 'pool' || space?.type === 'quincho') && (getSelectedDateWeather.text.includes('Lluvia') || getSelectedDateWeather.text.includes('Tormenta') || getSelectedDateWeather.text.includes('Chubascos') || getSelectedDateWeather.text.includes('Llovizna'))" class="block mt-1 font-bold text-red-700">
+              ⚠️ Alerta: Este es un espacio al aire libre y hay pronóstico de precipitaciones. Podrías preferir reprogramar o verificar el clima.
+            </span>
+          </p>
         </div>
       </div>
 

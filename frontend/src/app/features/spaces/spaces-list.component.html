@@ -2,11 +2,20 @@
 <div class="pt-16 min-h-screen bg-mist">
   <div class="max-w-6xl mx-auto px-4 py-10">
     <!-- Header -->
-    <div class="mb-8">
-      <p class="text-xs font-mono text-sage uppercase tracking-widest mb-1">
-        Centro Vacacional ENAP
-      </p>
-      <h1 class="font-display text-4xl text-charcoal">Espacios disponibles</h1>
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+      <div>
+        <p class="text-xs font-mono text-sage uppercase tracking-widest mb-1">
+          Centro Vacacional ENAP
+        </p>
+        <h1 class="font-display text-4xl text-charcoal">Espacios disponibles</h1>
+      </div>
+      <div *ngIf="weatherData" class="inline-flex items-center gap-2.5 bg-white border border-charcoal/10 rounded-2xl px-3.5 py-1.5 shadow-sm text-xs text-charcoal shrink-0 animate-fadeIn">
+        <span class="text-xl filter drop-shadow-sm">{{ weatherData.icon }}</span>
+        <div>
+          <p class="font-semibold text-charcoal leading-none mb-0.5">{{ weatherData.temp }}°C · {{ weatherData.text }}</p>
+          <p class="text-[9px] text-charcoal/40 font-mono tracking-wider uppercase leading-none">Clima Limache</p>
+        </div>
+      </div>
     </div>
 
     <!-- Filtros -->
