@@ -6,6 +6,19 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.21.0] - 2026-06-19
+### Añadido
+- **Validaciones de Propuesta Comercial (Hito 2)**:
+  - **Espacio Club House**: Sembrado e incorporado de forma idempotente al catálogo de recintos bajo el tipo `quincho` con capacidad para 50 personas y tarifas correspondientes.
+  - **Autogeneración de Código de Socio**: La ficha sindical se volvió opcional en la creación de usuarios administrativos; si se deja vacía al registrar un socio, se genera y asocia un código aleatorio `ENP-XXXX`.
+  - **Selector de Tipo de Visita**: Se integró en el Paso 2 (Invitados) un selector triple: "Uso Personal", "Carga Familiar" y "Familiares o Amigos (Tercero)".
+  - **Edad de Invitados**: Agregado el campo "Edad" en la tabla dinámica del Paso 2 y persistido en la base de datos de invitados.
+  - **Modal de Reglamento y Términos**: Se implementó una ventana emergente interactiva en el Paso 3 que expone el reglamento del recinto al hacer clic en "términos de arriendo".
+  - **Aviso de Revisión en 48 Horas**: Se detalló explícitamente en el Paso 4 del checkout de transferencias bancarias que la administración validará el comprobante de pago en un plazo máximo de 48 horas.
+  - **Expiración Pasiva de 48 Horas**: Se implementó un limpiador automático en el backend que expira reservas pendientes de pago sin actividad tras 48 horas.
+  - **Cierre los Lunes por Mantención**: Se inhabilitaron y bloquearon automáticamente los días lunes en el calendario y validaciones de reserva por mantención general.
+- **Base de Datos**: Creada y ejecutada la migración `1781898600000-Hito2Enhancements.ts` para agregar las columnas `visit_type` (bookings) y `age` (guests) en MySQL.
+
 ## [1.20.0] - 2026-06-19
 ### Añadido
 - **Gestión de Perfil de Usuario y Seguridad**: Implementado el componente `/perfil` que permite cambiar correo electrónico y teléfono (validado bajo formato Chile con regex `^(\+56)?9\d{8}$`), además de cambio seguro de contraseña encriptada mediante hashing PBKDF2 SHA-512 en el backend.

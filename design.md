@@ -42,7 +42,7 @@ El backend define y persiste las siguientes tablas:
 *   `rut` (varchar, unique): RUT chileno para validación.
 *   `email` (varchar, unique): Correo electrónico.
 *   `role` (enum: `'socio' | 'external' | 'admin'`): Perfil de usuario.
-*   `fichaNumber` (varchar, nullable): Código de ficha sindical (obligatorio para socios).
+*   `fichaNumber` (varchar, nullable): Código de ficha sindical. Se genera automáticamente como `ENP-XXXX` si se registra un socio en la administración sin un código manual.
 *   `isActive` (boolean, default true): Estado de cuenta.
 *   `passwordHash` (varchar): Hash criptográfico de contraseña.
 *   `phone` (varchar, nullable): Teléfono de contacto (validado bajo formato Chile).
@@ -65,20 +65,23 @@ El backend define y persiste las siguientes tablas:
 *   `bookingCode` (varchar, unique): Código legible (ej. `ENP-2026-00004`).
 *   `checkIn` (varchar): Fecha de entrada (`YYYY-MM-DD`).
 *   `checkOut` (varchar): Fecha de salida (`YYYY-MM-DD`).
-*   `status` (varchar): Estados (`pending_payment`, `pending_approval`, `confirmed`, `cancelled`, `rejected`).
+*   `status` (varchar): Estados (`pending_payment`, `pending_approval`, `confirmed`, `cancelled`, `rejected`, `expired`).
 *   `totalAmount` (int): Total calculado.
 *   `receiptUrl` (varchar, nullable): URL de imagen del comprobante de transferencia en S3.
-*   `adminNotes` (text, nullable): Causa del rechazo de reserva.
+*   `adminNotes` (text, nullable): Causa del rechazo de reserva o notas de cobro.
 *   `priceBreakdown` (simple-json): Desglose financiero.
 *   `isForThirdParty` (boolean): Flag de patrocinio de socio a tercero.
 *   `thirdPartyName` / `thirdPartyRut` / `thirdPartyPhone` (nullable): Datos del ocupante externo.
 *   `adminCreatedForExternal` (boolean): Flag de reserva creada por admin.
+*   `termsAccepted` (boolean, default true): Registro de aceptación de los términos del recinto.
+*   `visitType` (varchar, nullable): Declaración del tipo de visita (`personal`, `family`, `friends`).
 
 ### Invitado (`GuestEntity`)
 *   `id` (int, PK): Identificador de invitado.
 *   `fullName` (varchar): Nombre del acompañante.
 *   `rut` (varchar): RUT.
 *   `phone` (varchar, nullable): Teléfono.
+*   `age` (int, nullable): Edad del invitado para el registro dinámico.
 *   `booking` (ManyToOne -> Booking): Vínculo de reserva.
 
 ### Preguntas Frecuentes (`FaqEntity`)
@@ -119,6 +122,12 @@ Los espacios turísticos admiten subir múltiples fotos. La administración las 
 *   La valoración se almacena con estado `pending_approval`.
 *   El administrador cuenta con un panel (`/admin/opiniones`) para aprobar o rechazar comentarios.
 *   Únicamente las opiniones en estado **Aprobado** se despliegan en el catálogo de espacios y promedian la puntuación de estrellas de cada recinto.
+
+### 3.5 Expiración Automática Pasiva (48 Horas)
+Las reservas creadas en estado `pending_payment` que no cuenten con un comprobante de transferencia y que superen las 48 horas de antigüedad desde su creación son marcadas automáticamente como `expired` de manera dinámica bajo demanda (durante consultas de disponibilidad, creación de reservas o carga del dashboard de usuario).
+
+### 3.6 Cierre de Disponibilidades los Lunes (Mantención General)
+Para dar cumplimiento a la mantención general del Centro Vacacional, el backend inyecta de forma dinámica los días lunes del año como bloqueados en la consulta de fechas ocupadas y rechaza preventivamente cualquier solicitud de reserva que abarque un día lunes.
 
 ---
 

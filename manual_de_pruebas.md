@@ -41,11 +41,11 @@ sequenceDiagram
 
 1.  **Iniciar Reserva:** Ingresa con el usuario de Socio (`carlos.munoz@enap.cl`).
 2.  **Seleccionar Espacio y Fechas:** Ve a **Espacios**, elige un recinto (ej: *Cabaña Los Boldos*) e introduce fechas válidas.
-3.  **Añadir Acompañantes (Paso 2):** Agrega invitados. Si el recinto es del tipo **Piscina**, los primeros 5 invitados de un Socio son gratuitos. El desglose calculará el total en tiempo real.
-4.  **Confirmar con Transferencia (Paso 3):** Selecciona la pestaña **"Transferencia Bancaria"**. Copia los datos bancarios, adjunta un comprobante (archivo PDF o imagen) y haz clic en **"Enviar reserva"**.
-5.  **Revisión en Mis Reservas:** Serás redirigido al Paso 4 ("Reserva enviada") con un código único (ej: `ENP-2026-00004`). Haz clic en **"Ver mis reservas"** y confirma que aparece listada en estado **"En revisión"**.
-6.  **Aprobación (Admin):** Cierra sesión e ingresa como Administrador (`admin@sindicatoenap.cl`). Ve a **Administración** ➔ **Reservas** ➔ pestaña **"Por aprobar"**.
-    *   Puedes hacer clic en el enlace `📄 Comprobante` para abrir el documento adjunto (cargado en S3).
+3.  **Añadir Acompañantes y Declarar Visita (Paso 2):** Declara el tipo de visita en el selector ("Uso Personal", "Carga Familiar" o "Familiares o Amigos"). Añade invitados ingresando Nombre, RUT y **Edad** en la tabla dinámica.
+4.  **Aceptar Reglamento y Confirmar Pago (Paso 3):** Marca la casilla de aceptación obligatoria del reglamento. Haz clic en "términos de arriendo" para comprobar que se despliega el modal flotante con las normas de convivencia del centro. Selecciona **"Transferencia Bancaria"**, copia los datos, adjunta tu comprobante y haz clic en **"Enviar reserva"**.
+5.  **Revisión de Notificación (Paso 4):** Valida que se muestra la confirmación de solicitud enviada con un aviso advirtiendo explícitamente que la administración validará el pago en un plazo máximo de 48 horas. Haz clic en **"Ver mis reservas"** para constatar que figura en estado **"En revisión"**.
+6.  **Aprobación (Admin):** Cierra sesión e ingresa como Administrador (`admin@sindicatoenap.cl`). Ve a **Administración ➔ Reservas ➔ Por aprobar**.
+    *   Puedes hacer clic en el enlace `📄 Comprobante` para verificar el documento adjunto.
     *   Haz clic en **"Aprobar"**.
 7.  **Comprobación Final:** Vuelve a loguearte con la cuenta de Carlos Muñoz y verifica en **Mis Reservas** que el estado ha cambiado a **"Confirmada"** (en color verde).
 
@@ -124,10 +124,25 @@ Valida la consulta de soporte dinámico.
 
 ### Flujo H: Socio reserva para un Tercero Ocupante (Patrocinio de Beneficio)
 1.  **Autenticación de Socio:** Ingresa con el usuario de Socio.
-2.  **Selección de Cabaña:** Elige fechas. En acompañantes (Paso 2), selecciona la opción **"Para un Tercero Externo (Tarifa General)"**.
+2.  **Selección de Cabaña:** Elige fechas. En el selector de tipo de visita (Paso 2), selecciona la opción **"Familiares o Amigos (Tarifa General)"**.
 3.  **Datos del Tercero:** Ingresa Nombre Completo, RUT y Teléfono del ocupante tercero.
 4.  **Verificación del Precio:** Observa que la tarifa base habrá cambiado automáticamente a la Tarifa General ($50.000/día).
 5.  **Aprobación Admin:** Completa el pago. El Administrador verá la reserva marcada con la insignia **"Para Tercero"** y la caja con los datos del tercero en la columna Titular.
+
+---
+
+### Flujo I: Cierre de Lunes y Expiración de 48 Horas (Reglas Hito 2)
+Este flujo valida que las reglas automáticas de Hito 2 funcionen correctamente.
+1.  **Verificación de Cierre de Lunes:**
+    *   Navega por la Home o el catálogo de `/espacios`.
+    *   Ingresa a reservar cualquier cabaña, quincho o piscina.
+    *   Intenta seleccionar un día lunes del calendario (ej: cualquier lunes del mes). Verás que la fecha aparece bloqueada y no permite continuar.
+    *   Si intentas forzar el registro de reserva conteniendo un día lunes, el backend rechazará la transacción indicando que el recinto se encuentra cerrado por mantención general.
+2.  **Verificación de Expiración Automática:**
+    *   Genera una reserva con opción de transferencia bancaria y finalízala (sin subir comprobante, quedará en estado `pending_payment`).
+    *   Simula en la base de datos (o espera 48 horas) cambiando la fecha de creación de dicha reserva para que tenga una antigüedad mayor a 48 horas.
+    *   Recarga la pestaña de **Mis Reservas** o consulta la disponibilidad de cualquier espacio.
+    *   El backend detectará la inactividad de pago y actualizará automáticamente el estado de la reserva a **Expirada** (`expired`), liberando los días bloqueados de forma inmediata.
 
 ---
 
@@ -140,7 +155,7 @@ Al ingresar con la cuenta de Administrador, aparecerá el menú **Administració
 *   **CRUD completo:** Permite crear, modificar y eliminar espacios.
 
 ### Gestión de Usuarios (`/admin/usuarios`)
-*   **Registrar Usuario:** Permite crear cuentas directas. Las cuentas se inicializan con una contraseña alfanumérica aleatoria de 6 caracteres que se expone en el toast de éxito.
+*   **Registrar Usuario:** Permite crear cuentas directas de socios, externos u administradores. Al registrar un socio, el Código de Ficha es opcional; si se omite, el sistema generará y asignará automáticamente una ficha única en formato `ENP-XXXX` (4 dígitos aleatorios). Las cuentas creadas se inicializan con una clave de 6 caracteres expuesta en pantalla y enviada por correo.
 *   **Activar/Desactivar:** Permite suspender temporalmente el acceso de un usuario.
 
 ### Gestión de Avisos (`/admin/avisos`)

@@ -49,6 +49,24 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - *Resultado:* Se muestra spinner de carga, previniendo el parpadeo de tablas vacías.
 - [x] **Visualización de Fotos Reales del Centro**
   - *Acción:* Comprobar que se muestran fotos del recinto (`/images/*`) en lugar de stock de Unsplash.
+- [x] **Selector del Tipo de Visita (Paso 2)**
+  - *Acción:* Reservar un espacio e interactuar con el selector triple de visita.
+  - *Resultado:* Se calcula correctamente la tarifa (socio para uso personal/carga familiar, y general para familiares/amigos).
+- [x] **Edad en Registro de Acompañantes (Paso 2)**
+  - *Acción:* Añadir invitados ingresando Nombre, RUT y Edad.
+  - *Resultado:* Se graba e integra la edad en el DTO de envío y se persiste en base de datos.
+- [x] **Reglamento en Modal Flotante (Paso 3)**
+  - *Acción:* Pulsar el enlace de "términos de arriendo" en el consentimiento.
+  - *Resultado:* Se despliega el modal interactivo con las normas del centro vacacional.
+- [x] **Aviso de Revisión en 48 Horas (Paso 4)**
+  - *Acción:* Registrar una reserva con transferencia y revisar el Paso 4.
+  - *Resultado:* Muestra el recordatorio explícito del plazo máximo de 48 horas de validación.
+- [x] **Expiración Pasiva de Reservas Sin Actividad**
+  - *Acción:* Consultar el catálogo o dashboard con reservas "sin pago" creadas hace más de 48 horas.
+  - *Resultado:* Las reservas antiguas pasan automáticamente a estado "Expirado" (`expired`), liberando cupos.
+- [x] **Cierre de Disponibilidad los Lunes**
+  - *Acción:* Intentar seleccionar un día lunes del calendario o enviar una reserva con fecha lunes.
+  - *Resultado:* Las fechas figuran deshabilitadas en gris y el backend impide la confirmación lanzando advertencia de mantención general.
 
 ---
 
@@ -74,6 +92,7 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - [x] Eliminar un espacio libre de reservas.
 - [x] **Administración de Usuarios (`/admin/usuarios`)**
   - [x] Crear un usuario en admin y comprobar generación de contraseña temporal alfanumérica de 6 caracteres.
+  - [x] Crear un usuario socio dejando vacía la Ficha/Código, y validar que se le asigna un código autogenerado `ENP-XXXX`.
   - [x] Activar/Desactivar un usuario impidiendo su ingreso de forma instantánea.
 - [x] **Administración de Avisos (`/admin/avisos`)**
   - [x] Crear un aviso subiendo la imagen a AWS S3 y marcarlo como destacado.

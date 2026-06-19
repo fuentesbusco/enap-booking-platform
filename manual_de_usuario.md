@@ -24,6 +24,7 @@ El Centro Vacacional ubicado en Limache ofrece tres tipos de recintos que puedes
     *   > **Nota de Equipaje:** La estadía **no incluye** sábanas, fundas de almohada ni toallas. Es obligatorio que cada socio las traiga para su estadía.
 *   **Quinchos Centrales:** Espacios techados equipados con parrilla para asados. El arriendo es por **jornada única diaria** (de 09:00 a 19:00 hrs). Debes traer tu propio carbón y utensilios de asado.
 *   **Piscina General:** Acceso al recinto de piscina y reposeras por **jornada única diaria**. Los socios tienen derecho a ingresar con hasta 5 acompañantes de forma gratuita.
+*   **Club House (Sede Social):** Salón de eventos con capacidad para 50 personas. Equipado con cocina completa, salón de reuniones, servicios higiénicos y amplia zona exterior. Ideal para asambleas, reuniones o celebraciones familiares mayores.
 
 ---
 
@@ -32,6 +33,7 @@ El Centro Vacacional ubicado en Limache ofrece tres tipos de recintos que puedes
 En la página principal de la plataforma encontrarás la sección **"Guía de Estadía & FAQ Interactivo"**, pensada para resolver tus dudas antes del viaje:
 *   **Guía de Equipaje:** Cuadro de referencia rápida con recordatorios sobre lo que debes traer y los horarios clave de entrada (Check-in cabañas: 14:00 hrs) y salida (Check-out cabañas: 12:00 hrs).
 *   **Preguntas Frecuentes:** Un acordeón interactivo donde puedes pulsar sobre las dudas más comunes (atractivos turísticos de Limache, viñas cercanas, Parque Nacional La Campana, formas de pago, políticas de invitados) para desplegar sus respuestas detalladas de forma inmediata.
+*   **Cierre por Mantención General los Lunes:** El Centro Vacacional permanece cerrado todos los lunes del año para labores generales de mantención preventiva de piscinas y áreas verdes. El sistema bloquea automáticamente estos días para evitar registros.
 
 ---
 
@@ -54,10 +56,14 @@ Realizar una reserva consta de 4 sencillos pasos interactivos:
 *   El calendario te mostrará de forma visual las fechas bloqueadas por mantenimiento o ya ocupadas por otros usuarios.
 
 ### Paso 2: Acompañantes e Invitados
-*   Registra el nombre, RUT y teléfono de las personas que te acompañarán. El sistema validará que no excedas el aforo permitido del espacio.
-*   **Reserva para Terceros (Socios):** Si eres socio y estás reservando para que asistan familiares o conocidos externos sin tu presencia, marca la casilla **"Para un Tercero Externo"** e introduce sus datos de contacto. El desglose se recalculará automáticamente con la tarifa general correspondiente.
+*   Registra el nombre, RUT y la **Edad** de las personas que te acompañarán en la tabla dinámica. El sistema validará que no excedas el aforo permitido del espacio.
+*   **Declaración de Tipo de Visita:** Si eres socio, deberás declarar bajo qué modalidad asistes:
+    1. **Uso Personal (Tarifa Socio):** Asistencia del socio titular.
+    2. **Carga Familiar (Tarifa Socio):** Para cargas familiares del socio.
+    3. **Familiares o Amigos (Tarifa General):** Si arriendas para un tercero externo sin la presencia del socio titular. Requiere completar los datos del ocupante principal (Nombre, RUT, Teléfono). El desglose se recalculará automáticamente con la tarifa general correspondiente.
 
 ### Paso 3: Confirmación y Pago
+*   **Aceptación de Términos y Condiciones:** Es obligatorio aceptar las condiciones y el reglamento de arriendo. Al pulsar el enlace "términos de arriendo", emergerá un modal informativo que detalla las normas de convivencia, equipamiento y penalidades del centro.
 *   **Transferencia Bancaria:** Copia los datos de la cuenta bancaria del sindicato expuestos en pantalla, realiza la transferencia desde tu aplicación bancaria, adjunta el comprobante (PDF o imagen de tu celular) y haz clic en enviar.
 *   **Mercado Pago (Tarjeta/Saldo):** Selecciona esta pestaña para pagar al instante con tarjetas de crédito, débito o dinero de tu cuenta.
     *   *Nota Comercial:* En producción, la pasarela de Mercado Pago opera mediante confirmación automatizada. (Si se encuentra en modo Sandbox/Pruebas, requiere credenciales de simulación provistas en la guía de pruebas).
@@ -65,6 +71,7 @@ Realizar una reserva consta de 4 sencillos pasos interactivos:
 
 ### Paso 4: Reserva Recibida
 *   El sistema generará tu código de reserva (ej: `ENP-2026-00004`) y te enviará un correo con el desglose y las condiciones.
+*   *Nota de Revisión:* El sistema te advertirá explícitamente en esta pantalla que la administración validará tu comprobante de pago en un plazo máximo de 48 horas.
 
 ---
 
@@ -72,8 +79,8 @@ Realizar una reserva consta de 4 sencillos pasos interactivos:
 
 ### Mis Reservas (`/mis-reservas`)
 Al iniciar sesión, puedes ingresar a "Mis Reservas" en la barra superior para consultar el historial de tus solicitudes y sus estados:
-*   **En revisión (pendiente de aprobación):** Subiste tu comprobante de transferencia y la administración lo está validando.
-*   **Sin pago (pago pendiente):** Tu reserva se guardó pero falta el pago, o tu comprobante anterior fue rechazado por el administrador. Puedes pulsar **"Completar Pago"** para volver a cargar un comprobante válido.
+*   **En revisión (pendiente de aprobación):** Subiste tu comprobante de transferencia y la administración lo está validando en un plazo de hasta 48 horas.
+*   **Sin pago (pago pendiente):** Tu reserva se guardó pero falta el pago, o tu comprobante anterior fue rechazado por el administrador. Puedes pulsar **"Completar Pago"** para volver a cargar un comprobante válido. Las reservas que permanezcan en este estado por más de **48 horas de inactividad** serán automáticamente marcadas como **Expiradas** para liberar las fechas.
 *   **Confirmada:** Tu pago fue validado y tu espacio está reservado. Recibirás las instrucciones de ingreso a tu correo.
 
 ### Dejar Opinión y Valoraciones
