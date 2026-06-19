@@ -1,0 +1,134 @@
+<div class="p-6 animate-fadeIn">
+  <!-- Cabecera -->
+  <div class="mb-6">
+    <h1 class="font-display text-3xl text-charcoal font-semibold">Moderación de Opiniones y Feedback</h1>
+    <p class="text-charcoal/45 text-sm mt-1">
+      Modera las valoraciones de los socios antes de que se publiquen en el catálogo de espacios.
+    </p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="flex gap-2 mb-6 border-b border-charcoal/5 pb-4 flex-wrap">
+    <button
+      (click)="changeFilter('all')"
+      class="text-xs px-4 py-2 rounded-full border transition-all cursor-pointer font-medium"
+      [class.bg-forest]="activeFilter === 'all'"
+      [class.text-white]="activeFilter === 'all'"
+      [class.border-forest]="activeFilter === 'all'"
+      [class.border-charcoal]="activeFilter !== 'all'"
+      [class.opacity-40]="activeFilter !== 'all'"
+    >
+      Todas ({{ feedbacks.length }})
+    </button>
+    <button
+      (click)="changeFilter('pending_approval')"
+      class="text-xs px-4 py-2 rounded-full border transition-all cursor-pointer font-medium"
+      [class.bg-forest]="activeFilter === 'pending_approval'"
+      [class.text-white]="activeFilter === 'pending_approval'"
+      [class.border-forest]="activeFilter === 'pending_approval'"
+      [class.border-charcoal]="activeFilter !== 'pending_approval'"
+      [class.opacity-40]="activeFilter !== 'pending_approval'"
+    >
+      Pendientes ({{ countByStatus('pending_approval') }})
+    </button>
+    <button
+      (click)="changeFilter('approved')"
+      class="text-xs px-4 py-2 rounded-full border transition-all cursor-pointer font-medium"
+      [class.bg-forest]="activeFilter === 'approved'"
+      [class.text-white]="activeFilter === 'approved'"
+      [class.border-forest]="activeFilter === 'approved'"
+      [class.border-charcoal]="activeFilter !== 'approved'"
+      [class.opacity-40]="activeFilter !== 'approved'"
+    >
+      Aprobadas ({{ countByStatus('approved') }})
+    </button>
+    <button
+      (click)="changeFilter('rejected')"
+      class="text-xs px-4 py-2 rounded-full border transition-all cursor-pointer font-medium"
+      [class.bg-forest]="activeFilter === 'rejected'"
+      [class.text-white]="activeFilter === 'rejected'"
+      [class.border-forest]="activeFilter === 'rejected'"
+      [class.border-charcoal]="activeFilter !== 'rejected'"
+      [class.opacity-40]="activeFilter !== 'rejected'"
+    >
+      Rechazadas ({{ countByStatus('rejected') }})
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="loading && feedbacks.length === 0" class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-charcoal/5">
+    <span class="animate-spin rounded-full h-10 w-10 border-4 border-forest border-t-transparent mb-3"></span>
+    <p class="text-charcoal/40 text-sm font-medium">Cargando comentarios...</p>
+  </div>
+
+  <!-- Lista de Opiniones -->
+  <div *ngIf="filtered.length === 0 && !loading" class="card p-12 text-center bg-white border border-charcoal/5">
+    <span class="text-4xl block mb-3">📝</span>
+    <p class="text-charcoal/50">No hay opiniones en esta categoría.</p>
+  </div>
+
+  <div *ngIf="filtered.length > 0" class="space-y-4">
+    <div *ngFor="let f of filtered" class="card p-5 hover:shadow-card-hover transition-all duration-300 border border-charcoal/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="space-y-2 max-w-xl">
+        <!-- Metadata -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-bold text-charcoal">{{ f.space?.name }}</span>
+          <span class="text-charcoal/20">|</span>
+          <span class="font-mono text-[10px] text-charcoal/40">Reserva: {{ f.booking?.bookingCode }}</span>
+          <span class="text-charcoal/20">|</span>
+          <span class="text-[10px] text-charcoal/50 font-medium">Socio: {{ f.user?.fullName }} (RUT: {{ f.user?.rut }})</span>
+          <span class="text-charcoal/20">|</span>
+          <span [class]="badgeClass(f.status)">{{ statusLabel(f.status) }}</span>
+        </div>
+
+        <!-- Rating & Comment -->
+        <div>
+          <div class="flex items-center gap-0.5 mb-1">
+            <span *ngFor="let star of [1,2,3,4,5]" class="text-base" [class.text-amber-400]="star <= f.rating" [class.text-charcoal]="star > f.rating" [class.opacity-20]="star > f.rating">★</span>
+            <span class="text-xs text-charcoal/40 font-mono ml-2">({{ f.rating }} de 5)</span>
+          </div>
+          <p class="text-sm text-charcoal/70 leading-relaxed italic bg-mist/20 rounded-xl p-3.5 border border-charcoal/5">
+            "{{ f.comment }}"
+          </p>
+        </div>
+        <span class="text-[10px] text-charcoal/30 block font-mono">
+          Enviado el: {{ f.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+
+      <!-- Acciones de moderación -->
+      <div class="flex gap-2 shrink-0 md:self-center" *ngIf="f.status === 'pending_approval'">
+        <button
+          (click)="approve(f.id)"
+          class="text-xs bg-forest hover:bg-forest/90 text-white px-4 py-2 rounded-xl font-semibold active:scale-95 transition-all cursor-pointer shadow-sm"
+        >
+          Aprobar / Publicar
+        </button>
+        <button
+          (click)="reject(f.id)"
+          class="text-xs bg-white hover:bg-red-50 text-red-600 px-4 py-2 rounded-xl font-semibold border border-red-200 hover:border-red-300 active:scale-95 transition-all cursor-pointer shadow-xs"
+        >
+          Rechazar
+        </button>
+      </div>
+
+      <!-- Acciones reversibles para ya moderados -->
+      <div class="flex gap-2 shrink-0 md:self-center" *ngIf="f.status !== 'pending_approval'">
+        <button
+          *ngIf="f.status === 'rejected'"
+          (click)="approve(f.id)"
+          class="text-xs text-forest hover:bg-forest/5 px-3 py-1.5 rounded-lg border border-forest/10 active:scale-95 transition-all cursor-pointer"
+        >
+          Cambiar a Aprobada
+        </button>
+        <button
+          *ngIf="f.status === 'approved'"
+          (click)="reject(f.id)"
+          class="text-xs text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-200/50 active:scale-95 transition-all cursor-pointer"
+        >
+          Rechazar / Ocultar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

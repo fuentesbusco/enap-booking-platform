@@ -19,6 +19,9 @@ export class SpacesListComponent implements OnInit {
   filtered: Space[] = [];
   activeType: string = 'all';
 
+  // Carrusel index por espacio
+  activeIndexes: Record<number, number> = {};
+
   filters = [
     { value: 'all', emoji: '🏠', label: 'Todos' },
     { value: 'cabin', emoji: '🏡', label: 'Cabañas' },
@@ -47,5 +50,26 @@ export class SpacesListComponent implements OnInit {
     return ({ cabin: 'Cabaña', quincho: 'Quincho', pool: 'Piscina' } as any)[
       type
     ];
+  }
+
+  getActiveImage(space: Space): string {
+    const idx = this.activeIndexes[space.id] || 0;
+    return space.images[idx] || 'https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80';
+  }
+
+  prevImage(event: Event, space: Space) {
+    event.stopPropagation();
+    const current = this.activeIndexes[space.id] || 0;
+    const len = space.images.length;
+    if (len <= 1) return;
+    this.activeIndexes[space.id] = (current - 1 + len) % len;
+  }
+
+  nextImage(event: Event, space: Space) {
+    event.stopPropagation();
+    const current = this.activeIndexes[space.id] || 0;
+    const len = space.images.length;
+    if (len <= 1) return;
+    this.activeIndexes[space.id] = (current + 1) % len;
   }
 }

@@ -1,22 +1,25 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { BookingsService } from '../../core/services/bookings.service';
 import { MercadoPagoService } from '../../core/services/mercadopago.service';
 import { ToastService } from '../../core/services/toast.service';
+import { FeedbackService } from '../../core/services/feedback.service';
 import { Booking, BookingStatus } from '../../core/models';
 
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent],
   templateUrl: './my-bookings.component.html',
 })
 export class MyBookingsComponent implements OnInit {
   private bookingsService = inject(BookingsService);
   private mpService = inject(MercadoPagoService);
   private toastService = inject(ToastService);
+  private feedbackService = inject(FeedbackService);
   private route = inject(ActivatedRoute);
   
   bookings: Booking[] = [];
@@ -29,6 +32,13 @@ export class MyBookingsComponent implements OnInit {
   selectedFiles: Record<number, File> = {};
   uploading: Record<number, boolean> = {};
   paying: Record<number, boolean> = {};
+
+  // Feedback Modal state
+  showFeedbackModal = false;
+  selectedBookingForFeedback: Booking | null = null;
+  feedbackRating = 5;
+  feedbackComment = '';
+  submittingFeedback = false;
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -60,11 +70,62 @@ export class MyBookingsComponent implements OnInit {
     this.loading = true;
     this.bookingsService.getMyBookings().subscribe({
       next: (d) => {
-        this.bookings = d;
+        // Ordenar desde las reservas más nuevas (por id) a las más antiguas
+        this.bookings = d.sort((a, b) => b.id - a.id);
         this.loading = false;
       },
       error: (err) => {
         this.loading = false;
+        console.error(err);
+      }
+    });
+  }
+
+  isEligibleForFeedback(b: Booking): boolean {
+    if (b.status !== 'confirmed') return false;
+    if (b.feedback) return false;
+    const today = new Date().toISOString().split('T')[0];
+    return b.check_out <= today;
+  }
+
+  openFeedbackModal(b: Booking) {
+    this.selectedBookingForFeedback = b;
+    this.feedbackRating = 5;
+    this.feedbackComment = '';
+    this.showFeedbackModal = true;
+  }
+
+  closeFeedbackModal() {
+    this.showFeedbackModal = false;
+    this.selectedBookingForFeedback = null;
+  }
+
+  setFeedbackRating(rating: number) {
+    this.feedbackRating = rating;
+  }
+
+  submitFeedback() {
+    if (!this.selectedBookingForFeedback) return;
+    if (!this.feedbackComment.trim()) {
+      this.toastService.warning('Por favor escribe un comentario.');
+      return;
+    }
+
+    this.submittingFeedback = true;
+    this.feedbackService.submitFeedback(
+      this.selectedBookingForFeedback.id,
+      this.feedbackRating,
+      this.feedbackComment.trim()
+    ).subscribe({
+      next: (res) => {
+        this.submittingFeedback = false;
+        this.toastService.success('¡Gracias por tu opinión! Quedará publicada una vez sea moderada.');
+        this.closeFeedbackModal();
+        this.loadBookings();
+      },
+      error: (err) => {
+        this.submittingFeedback = false;
+        this.toastService.error(err.error?.message || 'Error al enviar la opinión.');
         console.error(err);
       }
     });

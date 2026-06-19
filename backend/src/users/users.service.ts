@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { UserRole } from '../models';
-import { hashPassword } from '../auth/hash.util';
+import { hashPassword, verifyPassword } from '../auth/hash.util';
 import { NotificationsService } from '../notifications/notifications.service';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -112,6 +113,35 @@ export class UsersService {
   async toggleStatus(id: number): Promise<boolean> {
     const user = await this.getById(id);
     user.isActive = !user.isActive;
+    await this.userRepository.save(user);
+    return true;
+  }
+
+  async updateProfile(id: number, data: { email?: string; phone?: string }): Promise<UserEntity> {
+    const user = await this.getById(id);
+    if (data.email && data.email.toLowerCase() !== user.email.toLowerCase()) {
+      const existing = await this.getByEmail(data.email);
+      if (existing) {
+        throw new ConflictException('El correo electrónico ya está registrado por otro usuario');
+      }
+      user.email = data.email.toLowerCase();
+    }
+    if (data.phone !== undefined) {
+      user.phone = data.phone;
+    }
+    return this.userRepository.save(user);
+  }
+
+  async changePassword(id: number, oldPassword: string, newPassword: string): Promise<boolean> {
+    const user = await this.getById(id);
+    if (!user.passwordHash) {
+      throw new BadRequestException('El usuario no posee una contraseña configurada');
+    }
+    const isMatch = verifyPassword(oldPassword, user.passwordHash);
+    if (!isMatch) {
+      throw new BadRequestException('La contraseña actual es incorrecta');
+    }
+    user.passwordHash = hashPassword(newPassword);
     await this.userRepository.save(user);
     return true;
   }

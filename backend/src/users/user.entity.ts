@@ -28,6 +28,9 @@ export class UserEntity {
   @Column({ name: 'password_hash', nullable: true })
   passwordHash?: string;
 
+  @Column({ nullable: true })
+  phone?: string;
+
   @OneToMany(() => Booking, (booking) => booking.user)
   bookings: Booking[];
 }

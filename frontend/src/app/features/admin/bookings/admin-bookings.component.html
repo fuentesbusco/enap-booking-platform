@@ -25,6 +25,41 @@
     </div>
   </div>
 
+  <!-- Widget Clima Limache -->
+  <div *ngIf="weatherData" class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 animate-fadeIn">
+    <!-- Tiempo actual -->
+    <div class="card p-4 bg-gradient-to-br from-forest to-forest/90 text-white flex items-center justify-between shadow-sm">
+      <div>
+        <p class="text-[9px] font-mono uppercase tracking-wider text-white/60">Clima Limache (Actual)</p>
+        <h3 class="font-display text-2xl font-bold mt-1 font-sans">{{ weatherData.temp }}°C</h3>
+        <p class="text-xs text-white/80 font-medium mt-0.5">{{ weatherData.text }}</p>
+        <div class="flex items-center gap-3 mt-3 text-[10px] text-white/60">
+          <span>💧 Hum: {{ weatherData.humidity }}%</span>
+          <span>💨 Viento: {{ weatherData.wind }} km/h</span>
+        </div>
+      </div>
+      <span class="text-4xl filter drop-shadow-sm">{{ weatherData.icon }}</span>
+    </div>
+
+    <!-- Pronóstico días siguientes -->
+    <div 
+      *ngFor="let day of weatherData.forecast; let i = index" 
+      class="card p-4 bg-white border border-charcoal/5 flex items-center justify-between shadow-xs"
+    >
+      <div>
+        <p class="text-[9px] font-mono uppercase tracking-wider text-charcoal/40">
+          {{ i === 0 ? 'Mañana' : i === 1 ? 'Pasado Mañana' : (day.date | date: 'EEEE' | titlecase) }}
+        </p>
+        <div class="flex items-baseline gap-2 mt-1.5">
+          <span class="text-sm font-bold text-charcoal font-mono">Max: {{ day.max }}°C</span>
+          <span class="text-xs text-charcoal/45 font-mono">Min: {{ day.min }}°C</span>
+        </div>
+        <p class="text-[10px] text-charcoal/50 mt-1 font-medium">{{ day.text }}</p>
+      </div>
+      <span class="text-3xl">{{ day.icon }}</span>
+    </div>
+  </div>
+
   <div class="bg-white rounded-2xl shadow-card overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-sm">

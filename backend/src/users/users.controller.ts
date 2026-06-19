@@ -48,6 +48,36 @@ export class UsersController {
     return user;
   }
 
+  @Patch('profile')
+  async updateProfile(
+    @Headers() headers: Record<string, string>,
+    @Body() body: { email?: string; phone?: string },
+  ) {
+    const user = await this.getAuthenticatedUser(headers);
+    const updated = await this.usersService.updateProfile(user.id, body);
+    return {
+      success: true,
+      user: updated,
+    };
+  }
+
+  @Patch('change-password')
+  async changePassword(
+    @Headers() headers: Record<string, string>,
+    @Body() body: { currentPassword?: string; oldPassword?: string; newPassword: string },
+  ) {
+    const user = await this.getAuthenticatedUser(headers);
+    const oldPassword = body.oldPassword ?? body.currentPassword;
+    if (!oldPassword) {
+      throw new UnauthorizedException('Debe proporcionar la contraseña actual');
+    }
+    await this.usersService.changePassword(user.id, oldPassword, body.newPassword);
+    return {
+      success: true,
+      message: 'Contraseña actualizada con éxito',
+    };
+  }
+
   private async getAuthenticatedUser(headers: Record<string, string>): Promise<UserEntity> {
     const authHeader = headers['authorization'] || headers['Authorization'];
     if (!authHeader) {

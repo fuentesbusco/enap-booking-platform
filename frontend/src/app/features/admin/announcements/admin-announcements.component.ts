@@ -27,12 +27,37 @@ export class AdminAnnouncementsComponent implements OnInit {
   formImageUrl = '';
   formIsPinned = false;
 
+  uploadingImage = false;
+
   ngOnInit() {
     this.loadAnnouncements();
   }
 
   loadAnnouncements() {
     this.service.getAll().subscribe((d) => (this.announcements = d));
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    this.uploadingImage = true;
+    this.service.uploadPhoto(file).subscribe({
+      next: (res) => {
+        this.uploadingImage = false;
+        if (res.success) {
+          this.formImageUrl = res.photoUrl;
+          this.toastService.success('Imagen subida correctamente.');
+        } else {
+          this.toastService.error('Error al subir la imagen.');
+        }
+      },
+      error: (err) => {
+        this.uploadingImage = false;
+        this.toastService.error(err.error?.message || 'Error al conectar con el servidor.');
+        console.error(err);
+      }
+    });
   }
 
   openCreateModal() {

@@ -7,6 +7,7 @@ import { SpacesService } from '../../core/services/spaces.service';
 import { BookingsService } from '../../core/services/bookings.service';
 import { AuthService } from '../../core/services/auth.service';
 import { MercadoPagoService } from '../../core/services/mercadopago.service';
+import { FeedbackService } from '../../core/services/feedback.service';
 import { Space, Guest, PriceBreakdown } from '../../core/models';
 
 @Component({
@@ -21,11 +22,15 @@ export class BookingFlowComponent implements OnInit {
   private spacesService = inject(SpacesService);
   private bookingsService = inject(BookingsService);
   private mpService = inject(MercadoPagoService);
+  private feedbackService = inject(FeedbackService);
   auth = inject(AuthService);
 
   space: Space | undefined;
   currentStep = 1;
   steps = ['Fechas', 'Invitados', 'Pago', 'Confirmación'];
+
+  activeImageIndex = 0;
+  feedbacks: any[] = [];
 
   checkIn = '';
   checkOut = '';
@@ -68,6 +73,16 @@ export class BookingFlowComponent implements OnInit {
     this.recalculate();
   }
 
+  prevImage() {
+    if (!this.space || !this.space.images.length) return;
+    this.activeImageIndex = (this.activeImageIndex - 1 + this.space.images.length) % this.space.images.length;
+  }
+
+  nextImage() {
+    if (!this.space || !this.space.images.length) return;
+    this.activeImageIndex = (this.activeImageIndex + 1) % this.space.images.length;
+  }
+
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('spaceId'));
     this.spacesService.getById(id).subscribe((s) => {
@@ -81,6 +96,14 @@ export class BookingFlowComponent implements OnInit {
       this.spacesService
         .getBlockedDates(id)
         .subscribe((d) => (this.blockedDates = d));
+
+      // Load feedbacks
+      this.feedbackService.getApprovedBySpace(id).subscribe({
+        next: (res) => {
+          this.feedbacks = res.feedbacks || [];
+        },
+        error: (err) => console.error('Error fetching feedbacks:', err)
+      });
 
       // Restore pending booking state if returning from authentication redirect
       const pending = sessionStorage.getItem('pending_booking_flow');

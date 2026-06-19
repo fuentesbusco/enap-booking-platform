@@ -12,6 +12,7 @@ export interface User {
   is_active?: boolean;
   passwordHash?: string;
   tempPassword?: string;
+  phone?: string;
 }
 
 export interface GalleryItem {
@@ -34,6 +35,8 @@ export interface Space {
   free_guests_for_socio: number;
   images: string[];
   amenities: string[];
+  rating_average?: number;
+  rating_count?: number;
 }
 
 export interface Guest {
@@ -62,6 +65,7 @@ export interface Booking {
   third_party_rut?: string;
   third_party_phone?: string;
   admin_created_for_external?: boolean;
+  feedback?: any;
 }
 
 export interface PriceBreakdown {
@@ -94,6 +98,7 @@ export function mapUserToFrontend(user: any): User {
     ficha_number: user.fichaNumber || user.ficha_number,
     is_active: user.isActive !== undefined ? user.isActive : user.is_active,
     tempPassword: user.tempPassword,
+    phone: user.phone,
   };
 }
 
@@ -118,6 +123,7 @@ export function mapUserToBackend(user: any): any {
     role: user.role,
     fichaNumber: user.ficha_number,
     isActive: user.is_active,
+    phone: user.phone,
   };
 }
 
@@ -135,6 +141,8 @@ export function mapSpaceToFrontend(space: any): Space {
     free_guests_for_socio: space.freeGuestsForSocio !== undefined ? space.freeGuestsForSocio : space.free_guests_for_socio,
     images: space.images || [],
     amenities: space.amenities || [],
+    rating_average: space.ratingAverage !== undefined ? space.ratingAverage : space.rating_average,
+    rating_count: space.ratingCount !== undefined ? space.ratingCount : space.rating_count,
   };
 }
 
@@ -152,6 +160,8 @@ export function mapSpaceToBackend(space: any): any {
     freeGuestsForSocio: space.free_guests_for_socio,
     images: space.images,
     amenities: space.amenities,
+    ratingAverage: space.rating_average,
+    ratingCount: space.rating_count,
   };
 }
 
@@ -196,6 +206,7 @@ export function mapBookingToFrontend(booking: any): Booking {
     third_party_rut: booking.thirdPartyRut || booking.third_party_rut,
     third_party_phone: booking.thirdPartyPhone || booking.third_party_phone,
     admin_created_for_external: booking.adminCreatedForExternal !== undefined ? booking.adminCreatedForExternal : booking.admin_created_for_external,
+    feedback: booking.feedback,
   };
 }
 

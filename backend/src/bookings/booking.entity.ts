@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, OneToOne, CreateDateColumn } from 'typeorm';
 import type { BookingStatus, PriceBreakdown } from '../models';
 import { UserEntity } from '../users/user.entity';
 import { SpaceEntity } from '../spaces/space.entity';
@@ -59,4 +59,7 @@ export class Booking {
 
   @Column({ name: 'admin_created_for_external', type: 'boolean', default: false })
   adminCreatedForExternal: boolean;
+
+  @OneToOne('FeedbackEntity', 'booking', { eager: true })
+  feedback?: any;
 }

@@ -27,4 +27,12 @@ export class UsersService {
       map((res) => res.success)
     );
   }
+
+  updateProfile(email: string, phone: string): Observable<any> {
+    return this.http.patch<any>(`${environment.apiUrl}/users/profile`, { email, phone });
+  }
+
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.http.patch<any>(`${environment.apiUrl}/users/change-password`, { oldPassword, newPassword });
+  }
 }

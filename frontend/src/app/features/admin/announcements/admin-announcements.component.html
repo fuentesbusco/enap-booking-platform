@@ -82,13 +82,26 @@
           <textarea name="body" [(ngModel)]="formBody" placeholder="Escribe el contenido detallado del aviso..." required rows="4" class="input py-2.5"></textarea>
         </div>
 
-        <!-- URL de Imagen -->
+        <!-- Imagen del aviso -->
         <div>
-          <label class="block text-xs font-semibold text-charcoal/60 uppercase tracking-wider mb-1">URL de Imagen (Opcional)</label>
-          <input type="text" name="imageUrl" [(ngModel)]="formImageUrl" placeholder="Ej: /images/quincho.jpeg o URL externa" class="input" />
-          <p class="text-[10px] text-charcoal/40 mt-1">
-            Ejemplos locales: /images/aerea-piscinas.jpeg, /images/quincho.jpeg, etc.
-          </p>
+          <label class="block text-xs font-semibold text-charcoal/60 uppercase tracking-wider mb-1">Imagen del aviso (Opcional)</label>
+          
+          <div class="flex items-center gap-3">
+            <!-- Vista previa si existe -->
+            <img *ngIf="formImageUrl" [src]="formImageUrl" alt="Vista previa" class="w-16 h-16 object-cover rounded-lg border border-charcoal/10 shrink-0" />
+            
+            <div class="flex-1">
+              <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" #fileInput />
+              <button type="button" (click)="fileInput.click()" [disabled]="uploadingImage" class="btn-secondary text-xs py-2.5 w-full flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>📁</span> 
+                {{ uploadingImage ? 'Subiendo...' : (formImageUrl ? 'Cambiar Imagen' : 'Subir Imagen') }}
+              </button>
+            </div>
+            
+            <button type="button" *ngIf="formImageUrl" (click)="formImageUrl = ''" class="text-red-500 hover:text-red-700 text-xs shrink-0 cursor-pointer" title="Eliminar imagen">
+              ❌
+            </button>
+          </div>
         </div>
 
         <!-- Destacado -->

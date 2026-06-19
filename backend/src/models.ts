@@ -25,6 +25,8 @@ export interface Space {
   free_guests_for_socio: number;
   images: string[];
   amenities: string[];
+  rating_average?: number;
+  rating_count?: number;
 }
 
 export interface Guest {

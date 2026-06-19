@@ -32,8 +32,10 @@ export class AdminSpacesComponent implements OnInit {
   formSocioPrice = 20000;
   formGuestPrice = 3500;
   formFreeGuestsForSocio = 0;
-  formImage = '';
+  formImages: string[] = [];
   formAmenities = '';
+
+  uploadingImage = false;
 
   ngOnInit() {
     this.loadSpaces();
@@ -43,6 +45,33 @@ export class AdminSpacesComponent implements OnInit {
     this.spacesService.getAll().subscribe((list) => {
       this.spaces = list;
     });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    this.uploadingImage = true;
+    this.spacesService.uploadPhoto(file).subscribe({
+      next: (res) => {
+        this.uploadingImage = false;
+        if (res.success) {
+          this.formImages.push(res.photoUrl);
+          this.toastService.success('Imagen subida correctamente.');
+        } else {
+          this.toastService.error('Error al subir la imagen.');
+        }
+      },
+      error: (err) => {
+        this.uploadingImage = false;
+        this.toastService.error(err.error?.message || 'Error al conectar con el servidor.');
+        console.error(err);
+      }
+    });
+  }
+
+  removeImage(index: number) {
+    this.formImages.splice(index, 1);
   }
 
   openCreateModal() {
@@ -57,7 +86,7 @@ export class AdminSpacesComponent implements OnInit {
     this.formSocioPrice = 20000;
     this.formGuestPrice = 3500;
     this.formFreeGuestsForSocio = 0;
-    this.formImage = 'https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80';
+    this.formImages = ['https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80'];
     this.formAmenities = 'Cocina equipada, TV, Parrilla, Estacionamiento';
     
     this.showModal = true;
@@ -75,7 +104,7 @@ export class AdminSpacesComponent implements OnInit {
     this.formSocioPrice = space.socio_price;
     this.formGuestPrice = space.guest_price;
     this.formFreeGuestsForSocio = space.free_guests_for_socio;
-    this.formImage = space.images[0] || '';
+    this.formImages = space.images ? [...space.images] : [];
     this.formAmenities = space.amenities.join(', ');
     
     this.showModal = true;
@@ -107,7 +136,7 @@ export class AdminSpacesComponent implements OnInit {
       socio_price: Number(this.formSocioPrice),
       guest_price: Number(this.formGuestPrice),
       free_guests_for_socio: Number(this.formFreeGuestsForSocio),
-      images: [this.formImage || 'https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80'],
+      images: this.formImages.length > 0 ? this.formImages : ['https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80'],
       amenities: amenitiesList,
     };
 

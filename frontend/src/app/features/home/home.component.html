@@ -134,6 +134,96 @@
   </div>
 </section>
 
+<!-- GUÍA DE ESTADÍA Y PREGUNTAS FRECUENTES -->
+<section class="py-16 bg-white border-t border-charcoal/5">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="mb-10 text-center animate-fadeIn">
+      <p class="text-xs font-mono text-sage uppercase tracking-widest mb-1">Preparando tu viaje</p>
+      <h2 class="font-display text-3xl text-charcoal font-semibold">Guía de Estadía & FAQ Interactivo</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Guía de Estadía (Col 5) -->
+      <div class="lg:col-span-5 bg-mist/30 border border-charcoal/5 rounded-2xl p-6 shadow-xs">
+        <h3 class="font-display text-lg text-charcoal mb-4 flex items-center gap-2 font-semibold">
+          <span>🎒</span> Guía de Equipaje y Normas
+        </h3>
+        
+        <div class="space-y-4 text-sm text-charcoal/70">
+          <div class="flex gap-3">
+            <span class="text-base shrink-0">🛏️</span>
+            <div>
+              <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">¿Qué debes traer?</p>
+              <p class="mt-0.5 text-xs leading-relaxed">Es fundamental traer tus propias <strong>sábanas, toallas y fundas de almohada</strong> ya que el centro no las provee en sus cabañas.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <span class="text-base shrink-0">⏰</span>
+            <div>
+              <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">Horarios clave</p>
+              <p class="mt-0.5 text-xs leading-relaxed">Check-in Cabañas: <strong>14:00 hrs</strong>. Check-out: <strong>12:00 hrs</strong>. Quinchos/Piscina: de 09:00 a 19:00 hrs.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <span class="text-base shrink-0">🥩</span>
+            <div>
+              <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">Quinchos y Asados</p>
+              <p class="mt-0.5 text-xs leading-relaxed">El centro cuenta con parrillas pero debes traer tu propio carbón y utensilios de asado.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <span class="text-base shrink-0">🚙</span>
+            <div>
+              <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">Estacionamiento</p>
+              <p class="mt-0.5 text-xs leading-relaxed">Estacionamiento gratuito habilitado en el recinto para un máximo de 2 vehículos por cabaña.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Accordion (Col 7) -->
+      <div class="lg:col-span-7 space-y-3">
+        <h3 class="font-display text-lg text-charcoal mb-4 flex items-center gap-2 font-semibold">
+          <span>💡</span> Preguntas Frecuentes
+        </h3>
+
+        <div *ngIf="faqs.length === 0" class="text-center py-8 text-charcoal/40 text-sm">
+          No hay preguntas registradas por el momento.
+        </div>
+
+        <div 
+          *ngFor="let faq of faqs" 
+          class="border border-charcoal/10 rounded-xl overflow-hidden bg-white hover:border-forest/20 transition-all duration-300 shadow-xs"
+        >
+          <button 
+            type="button" 
+            (click)="toggleFaq(faq.id)" 
+            class="w-full text-left px-5 py-4 font-semibold text-charcoal hover:text-forest transition-colors flex justify-between items-center text-sm focus:outline-none cursor-pointer"
+          >
+            <span>{{ faq.question }}</span>
+            <span class="text-lg transition-transform duration-300 font-mono" [class.rotate-180]="openFaqId === faq.id">
+              {{ openFaqId === faq.id ? '−' : '+' }}
+            </span>
+          </button>
+          
+          <div 
+            class="overflow-hidden transition-all duration-300"
+            [class.max-h-0]="openFaqId !== faq.id"
+            [class.max-h-96]="openFaqId === faq.id"
+          >
+            <div class="px-5 pb-4 text-xs text-charcoal/65 leading-relaxed border-t border-charcoal/5 pt-3 bg-mist/5">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- BENEFICIOS SOCIOS -->
 <section class="py-16 bg-forest text-white">
   <div class="max-w-6xl mx-auto px-4">

@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { AnnouncementsService } from '../../core/services/announcements.service';
+import { FaqService } from '../../core/services/faq.service';
 import { Space, Announcement } from '../../core/models';
 
 @Component({
@@ -15,9 +16,12 @@ import { Space, Announcement } from '../../core/models';
 export class HomeComponent implements OnInit {
   private spacesService = inject(SpacesService);
   private announcementsService = inject(AnnouncementsService);
+  private faqService = inject(FaqService);
 
   spaces: Space[] = [];
   announcements: Announcement[] = [];
+  faqs: any[] = [];
+  openFaqId: number | null = null;
 
   tiposEspacio = [
     {
@@ -63,6 +67,13 @@ export class HomeComponent implements OnInit {
     this.announcementsService
       .getPublic()
       .subscribe((d) => (this.announcements = d));
+    this.faqService.getAll().subscribe((d) => {
+      this.faqs = (d || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+    });
+  }
+
+  toggleFaq(id: number) {
+    this.openFaqId = this.openFaqId === id ? null : id;
   }
 
   spaceLabel(type: string) {

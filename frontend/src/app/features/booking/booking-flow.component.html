@@ -42,12 +42,35 @@
       </h2>
       <p class="text-charcoal/50 text-sm mb-6">{{ space?.description }}</p>
 
-      <!-- <img
-        *ngIf="space?.images[0]"
-        [src]="space!.images[0]"
-        [alt]="space!.name"
-        class="w-full h-48 object-cover rounded-xl mb-6"
-      /> -->
+      <!-- Carrusel de fotos -->
+      <div class="relative w-full h-64 overflow-hidden rounded-xl mb-6 group/carousel shadow-sm" *ngIf="space && space.images && space.images.length > 0">
+        <img
+          [src]="space.images[activeImageIndex]"
+          [alt]="space.name"
+          class="w-full h-full object-cover transition-all duration-500"
+        />
+        <!-- Indicador de página -->
+        <span class="absolute bottom-3 right-3 bg-charcoal/80 text-white text-[10px] px-2 py-0.5 rounded-md font-mono" *ngIf="space.images.length > 1">
+          {{ activeImageIndex + 1 }} / {{ space.images.length }}
+        </span>
+        <!-- Botones de control -->
+        <button
+          type="button"
+          *ngIf="space.images.length > 1"
+          (click)="prevImage()"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/95 hover:bg-white text-charcoal flex items-center justify-center shadow transition-all opacity-0 group-hover/carousel:opacity-100 cursor-pointer font-bold z-10"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          *ngIf="space.images.length > 1"
+          (click)="nextImage()"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/95 hover:bg-white text-charcoal flex items-center justify-center shadow transition-all opacity-0 group-hover/carousel:opacity-100 cursor-pointer font-bold z-10"
+        >
+          ›
+        </button>
+      </div>
 
       <!-- Selector de fechas condicional -->
       <div *ngIf="space?.type === 'cabin'" class="grid grid-cols-2 gap-4 mb-6">
@@ -143,6 +166,33 @@
         >
           Continuar
         </button>
+      </div>
+    </div>
+
+    <!-- Opiniones Recientes de Socios -->
+    <div *ngIf="currentStep === 1 && feedbacks && feedbacks.length > 0" class="card p-6 mt-6 animate-fadeIn">
+      <h3 class="font-display text-lg text-charcoal mb-4 flex items-center gap-1.5">
+        <span>💬</span> Opiniones de otros Socios
+      </h3>
+
+      <div class="space-y-4">
+        <!-- Renderizar feedbacks -->
+        <div *ngFor="let f of feedbacks.slice(0, 3)" class="border-b border-charcoal/5 pb-4 last:border-b-0 last:pb-0">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-semibold text-charcoal text-sm">
+              {{ f.user?.fullName }}
+            </span>
+            <div class="flex items-center gap-0.5">
+              <span *ngFor="let star of [1,2,3,4,5]" class="text-xs" [class.text-amber-400]="star <= f.rating" [class.text-charcoal]="star > f.rating" [class.opacity-20]="star > f.rating">★</span>
+            </div>
+          </div>
+          <p class="text-xs text-charcoal/60 leading-relaxed italic">
+            "{{ f.comment }}"
+          </p>
+          <span class="text-[9px] text-charcoal/30 block mt-1 font-mono">
+            {{ f.createdAt | date: 'dd/MM/yyyy' }}
+          </span>
+        </div>
       </div>
     </div>
 

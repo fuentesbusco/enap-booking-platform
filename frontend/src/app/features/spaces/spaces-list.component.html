@@ -32,12 +32,35 @@
         class="card overflow-hidden group cursor-pointer hover:shadow-card-hover transition-all"
         [routerLink]="['/reservar', s.id]"
       >
-        <div class="relative h-48 overflow-hidden">
+        <div class="relative h-48 overflow-hidden group/carousel">
           <img
-            [src]="s.images[0]"
+            [src]="getActiveImage(s)"
             [alt]="s.name"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            class="w-full h-full object-cover transition-all duration-500"
           />
+          <!-- Botones del carrusel -->
+          <button
+            *ngIf="s.images.length > 1"
+            (click)="prevImage($event, s)"
+            class="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/95 hover:bg-white text-charcoal flex items-center justify-center shadow transition-all opacity-0 group-hover/carousel:opacity-100 cursor-pointer z-10 font-bold"
+          >
+            ‹
+          </button>
+          <button
+            *ngIf="s.images.length > 1"
+            (click)="nextImage($event, s)"
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/95 hover:bg-white text-charcoal flex items-center justify-center shadow transition-all opacity-0 group-hover/carousel:opacity-100 cursor-pointer z-10 font-bold"
+          >
+            ›
+          </button>
+          <!-- Indicador de página -->
+          <span
+            *ngIf="s.images.length > 1"
+            class="absolute bottom-2 right-2 bg-charcoal/80 text-white text-[9px] px-1.5 py-0.5 rounded-md font-mono"
+          >
+            {{ (activeIndexes[s.id] || 0) + 1 }} / {{ s.images.length }}
+          </span>
+
           <span
             class="absolute top-3 left-3 badge bg-forest/80 text-white backdrop-blur-sm"
           >
@@ -48,9 +71,17 @@
           </span>
         </div>
         <div class="p-5">
-          <h3 class="font-semibold text-charcoal text-lg mb-1">
-            {{ s.name }}
-          </h3>
+          <div class="flex justify-between items-start mb-1 gap-2">
+            <h3 class="font-semibold text-charcoal text-lg leading-tight">
+              {{ s.name }}
+            </h3>
+            <!-- Promedio de estrellas -->
+            <div class="flex items-center gap-1 shrink-0 bg-amber-50 border border-amber-200/50 rounded-lg px-2 py-0.5 animate-fadeIn" *ngIf="s.rating_count && s.rating_count > 0">
+              <span class="text-amber-500 text-xs">⭐</span>
+              <span class="text-xs font-bold text-amber-800 font-mono">{{ s.rating_average }}</span>
+              <span class="text-[9px] text-charcoal/40 font-mono">({{ s.rating_count }})</span>
+            </div>
+          </div>
           <p class="text-charcoal/55 text-sm leading-relaxed mb-4">
             {{ s.description }}
           </p>

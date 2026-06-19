@@ -32,4 +32,13 @@ export class AnnouncementsService {
       map((res) => res.success)
     );
   }
+
+  uploadPhoto(file: File): Observable<{ success: boolean; photoUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ success: boolean; photoUrl: string }>(
+      `${environment.apiUrl}/announcements/upload-photo`,
+      formData
+    );
+  }
 }

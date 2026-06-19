@@ -5,6 +5,8 @@ import { SpaceEntity } from './spaces/space.entity';
 import { GuestEntity } from './bookings/guest.entity';
 import { Booking } from './bookings/booking.entity';
 import { AnnouncementEntity } from './announcements/announcement.entity';
+import { FeedbackEntity } from './feedback/feedback.entity';
+import { FaqEntity } from './faq/faq.entity';
 
 dotenv.config();
 
@@ -15,7 +17,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_DATABASE || 'enap_booking',
-  entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity],
+  entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity, FeedbackEntity, FaqEntity],
   synchronize: false, // Sincronización desactivada para manejo por migraciones
   logging: true,
   migrations: [__dirname + '/migrations/*{.ts,.js}'],

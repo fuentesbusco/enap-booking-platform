@@ -12,6 +12,8 @@
       <a routerLink="/conoce-el-centro" routerLinkActive="text-white" class="hover:text-white transition-colors">Conoce el Centro</a>
       <a *ngIf="auth.isLoggedIn()" routerLink="/mis-reservas" routerLinkActive="text-white"
         class="hover:text-white transition-colors">Mis Reservas</a>
+      <a *ngIf="auth.isLoggedIn()" routerLink="/perfil" routerLinkActive="text-white"
+        class="hover:text-white transition-colors">Mi Perfil</a>
       <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="text-white"
         class="hover:text-white transition-colors">Administración</a>
     </div>

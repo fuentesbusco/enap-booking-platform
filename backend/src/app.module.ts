@@ -26,6 +26,13 @@ import { MercadoPagoController } from './mercadopago/mercadopago.controller';
 import { GalleryController } from './gallery/gallery.controller';
 import { GalleryService } from './gallery/gallery.service';
 
+// Feedback & FAQ
+import { FeedbackEntity } from './feedback/feedback.entity';
+import { FaqEntity } from './faq/faq.entity';
+import { FeedbackController } from './feedback/feedback.controller';
+import { FeedbackService } from './feedback/feedback.service';
+import { FaqController } from './faq/faq.controller';
+import { FaqService } from './faq/faq.service';
 
 // Entities
 import { UserEntity } from './users/user.entity';
@@ -50,7 +57,7 @@ import { GalleryEntity } from './gallery/gallery.entity';
         username: config.get<string>('DB_USERNAME', 'root'),
         password: config.get<string>('DB_PASSWORD', ''),
         database: config.get<string>('DB_DATABASE', 'enap_booking'),
-        entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity, GalleryEntity],
+        entities: [UserEntity, SpaceEntity, GuestEntity, Booking, AnnouncementEntity, GalleryEntity, FeedbackEntity, FaqEntity],
         synchronize: String(config.get('DB_SYNCHRONIZE', 'false')) === 'true',
         migrations: [__dirname + '/migrations/*{.ts,.js}'],
         migrationsRun: String(config.get('DB_MIGRATIONS_RUN', 'true')) === 'true',
@@ -66,6 +73,8 @@ import { GalleryEntity } from './gallery/gallery.entity';
       Booking,
       AnnouncementEntity,
       GalleryEntity,
+      FeedbackEntity,
+      FaqEntity,
     ]),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -99,6 +108,8 @@ import { GalleryEntity } from './gallery/gallery.entity';
     UsersController,
     MercadoPagoController,
     GalleryController,
+    FeedbackController,
+    FaqController,
   ],
   providers: [
     AppService,
@@ -109,6 +120,8 @@ import { GalleryEntity } from './gallery/gallery.entity';
     UsersService,
     SeedService,
     GalleryService,
+    FeedbackService,
+    FaqService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

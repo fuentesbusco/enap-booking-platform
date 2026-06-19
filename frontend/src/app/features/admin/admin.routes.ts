@@ -26,6 +26,14 @@ export const adminRoutes: Routes = [
         loadComponent: () => import('./announcements/admin-announcements.component').then(m => m.AdminAnnouncementsComponent),
       },
       {
+        path: 'faqs',
+        loadComponent: () => import('./faqs/admin-faqs.component').then(m => m.AdminFaqsComponent),
+      },
+      {
+        path: 'opiniones',
+        loadComponent: () => import('./feedback/admin-feedback.component').then(m => m.AdminFeedbackComponent),
+      },
+      {
         path: 'tesoreria',
         loadComponent: () => import('./treasury/admin-treasury.component').then(m => m.AdminTreasuryComponent),
       },
