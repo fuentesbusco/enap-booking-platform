@@ -34,6 +34,18 @@ export const adminRoutes: Routes = [
         loadComponent: () => import('./mercadopago/admin-mercadopago.component').then(m => m.AdminMercadoPagoComponent),
       },
       {
+        path: 'mercadopago/success',
+        loadComponent: () => import('./mercadopago/admin-mercadopago.component').then(m => m.AdminMercadoPagoComponent),
+      },
+      {
+        path: 'mercadopago/failure',
+        loadComponent: () => import('./mercadopago/admin-mercadopago.component').then(m => m.AdminMercadoPagoComponent),
+      },
+      {
+        path: 'mercadopago/pending',
+        loadComponent: () => import('./mercadopago/admin-mercadopago.component').then(m => m.AdminMercadoPagoComponent),
+      },
+      {
         path: 'galeria',
         loadComponent: () => import('./gallery/admin-gallery.component').then(m => m.AdminGalleryComponent),
       },

@@ -25,9 +25,35 @@ export class AdminMercadoPagoComponent implements OnInit {
   errorMessage = '';
   testStatus: string | null = null;
 
+  // Parámetros devueltos por Mercado Pago
+  paymentId: string | null = null;
+  statusParam: string | null = null;
+  externalReference: string | null = null;
+  merchantOrderId: string | null = null;
+  preferenceIdParam: string | null = null;
+  paymentType: string | null = null;
+
   ngOnInit() {
+    const url = window.location.pathname;
+    if (url.includes('/mercadopago/success')) {
+      this.testStatus = 'success';
+    } else if (url.includes('/mercadopago/failure')) {
+      this.testStatus = 'failure';
+    } else if (url.includes('/mercadopago/pending')) {
+      this.testStatus = 'pending';
+    } else {
+      this.route.queryParams.subscribe((params) => {
+        this.testStatus = params['status'] || null;
+      });
+    }
+
     this.route.queryParams.subscribe((params) => {
-      this.testStatus = params['status'] || null;
+      this.paymentId = params['payment_id'] || params['collection_id'] || null;
+      this.statusParam = params['status'] || params['collection_status'] || null;
+      this.externalReference = params['external_reference'] || null;
+      this.merchantOrderId = params['merchant_order_id'] || null;
+      this.preferenceIdParam = params['preference_id'] || null;
+      this.paymentType = params['payment_type'] || null;
     });
   }
 
@@ -43,11 +69,11 @@ export class AdminMercadoPagoComponent implements OnInit {
     this.initPoint = '';
     this.sandboxInitPoint = '';
 
-    // Retorno a la misma página administrativa con queryParams para simular flujo
+    // Retorno a la misma página administrativa con rutas limpias para simular flujo
     const backUrls = {
-      success: `${window.location.origin}/admin/mercadopago?status=success`,
-      failure: `${window.location.origin}/admin/mercadopago?status=failure`,
-      pending: `${window.location.origin}/admin/mercadopago?status=pending`
+      success: `${window.location.origin}/admin/mercadopago/success`,
+      failure: `${window.location.origin}/admin/mercadopago/failure`,
+      pending: `${window.location.origin}/admin/mercadopago/pending`
     };
 
     this.mpService.createPreference(this.title, this.quantity, this.unitPrice, backUrls).subscribe({
