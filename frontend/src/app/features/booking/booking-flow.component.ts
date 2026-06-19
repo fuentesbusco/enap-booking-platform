@@ -157,10 +157,11 @@ export class BookingFlowComponent implements OnInit {
       this.currentStep = 3;
       return;
     }
-
     // Step 3 -> Confirm/Submit booking
     if (this.currentStep === 3) {
-      if (this.paymentMethod === 'transfer' && !this.selectedFile) {
+      const isFree = this.breakdown?.total === 0;
+
+      if (!isFree && this.paymentMethod === 'transfer' && !this.selectedFile) {
         alert('Debe adjuntar el comprobante de transferencia.');
         return;
       }
@@ -181,7 +182,10 @@ export class BookingFlowComponent implements OnInit {
           next: (b) => {
             this.createdBookingCode = b.booking_code;
             
-            if (this.paymentMethod === 'transfer') {
+            if (isFree) {
+              this.loading = false;
+              this.currentStep = 4;
+            } else if (this.paymentMethod === 'transfer') {
               if (this.selectedFile) {
                 this.bookingsService.uploadReceipt(b.id, this.selectedFile).subscribe({
                   next: () => {

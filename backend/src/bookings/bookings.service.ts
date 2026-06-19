@@ -125,7 +125,7 @@ export class BookingsService {
       space,
       checkIn,
       checkOut,
-      status: 'pending_payment',
+      status: breakdown.total === 0 ? 'confirmed' : 'pending_payment',
       totalAmount: breakdown.total,
       priceBreakdown: breakdown,
       isForThirdParty: !!options?.isForThirdParty,
@@ -154,11 +154,18 @@ export class BookingsService {
 
     // Send confirmation email in the background to prevent SMTP latency or failures from blocking the API response
     if (fullBooking.user?.email) {
-      const emailHtml = getBookingConfirmationEmailTemplate(fullBooking);
+      const isConfirmed = fullBooking.status === 'confirmed';
+      const emailHtml = isConfirmed
+        ? getBookingPaymentConfirmedEmailTemplate(fullBooking)
+        : getBookingConfirmationEmailTemplate(fullBooking);
+      const emailSubject = isConfirmed
+        ? `Reserva Confirmada - Código: ${fullBooking.bookingCode}`
+        : `Confirmación de reserva realizada - Código: ${fullBooking.bookingCode}`;
+
       this.notificationsService
         .sendEmail(
           fullBooking.user.email,
-          `Confirmación de reserva realizada - Código: ${fullBooking.bookingCode}`,
+          emailSubject,
           emailHtml,
         )
         .catch((error) => {

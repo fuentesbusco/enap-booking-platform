@@ -14,6 +14,9 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 - **Bypass de Mock en S3 (`AWS_S3_MOCK`):** Soporte en [aws.service.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/aws/aws.service.ts) para el parámetro `AWS_S3_MOCK=false` y optimización de inicialización del `S3Client` para delegar automáticamente las firmas a Roles de IAM cuando no hay claves `AKIA` estáticas presentes.
 - **Optimización de Conexiones de DB (RDS):** Configurada la variable `DB_CONNECTION_LIMIT` en [app.module.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/app.module.ts) para evitar la saturación de conexiones a MySQL (RDS) por el escalado horizontal de contenedores Lambda.
 - **Trazabilidad y Logs Estructurados en CloudWatch:** Integrado el `Logger` de NestJS en `AuthService`, `BookingsService`, `MercadoPagoController` y `MercadoPagoService` para reportar advertencias, flujos financieros, errores de API y cambios de estado directamente a AWS CloudWatch.
+- **Auto-Confirmación de Reservas de Costo Cero ($0):** Implementada lógica para reservas gratuitas (ej. piscina para socio con menos de 5 invitados, o quinchos por convenio de costo $0):
+  - **Backend**: Guarda la reserva con estado inicial `confirmed` (en vez de `pending_payment`) y envía directamente la plantilla de correo de confirmación de pago aprobado.
+  - **Frontend**: Adapta de forma dinámica los Pasos 3 y 4 del flujo de reserva ocultando formularios de pago y cargadores de comprobantes bancarios, permitiendo la confirmación inmediata y mostrando mensajes de éxito con aprobación directa sin transferencias pendientes.
 
 ## [1.18.0] - 2026-06-18
 ### Añadido

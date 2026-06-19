@@ -326,8 +326,8 @@
         Selecciona tu medio de pago preferido para completar la reserva.
       </p>
 
-      <!-- Selección del Método de Pago -->
-      <div class="flex gap-3 mb-6 bg-mist p-1 rounded-xl">
+      <!-- Selección del Método de Pago (solo si el costo es mayor a 0) -->
+      <div *ngIf="breakdown && breakdown.total > 0" class="flex gap-3 mb-6 bg-mist p-1 rounded-xl">
         <button
           (click)="paymentMethod = 'transfer'"
           class="flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all"
@@ -353,7 +353,7 @@
       </div>
 
       <!-- VISTA TRANSFERENCIA -->
-      <div *ngIf="paymentMethod === 'transfer'">
+      <div *ngIf="breakdown && breakdown.total > 0 && paymentMethod === 'transfer'">
         <!-- Datos bancarios -->
         <div class="bg-forest/5 border border-forest/15 rounded-xl p-5 mb-6">
           <p
@@ -442,7 +442,7 @@
       </div>
 
       <!-- VISTA MERCADO PAGO -->
-      <div *ngIf="paymentMethod === 'mercadopago'" class="bg-forest/5 border border-forest/15 rounded-xl p-5 mb-6 text-sm">
+      <div *ngIf="breakdown && breakdown.total > 0 && paymentMethod === 'mercadopago'" class="bg-forest/5 border border-forest/15 rounded-xl p-5 mb-6 text-sm">
         <div class="flex justify-between border-b border-charcoal/10 pb-2 mb-3">
           <span class="font-semibold text-charcoal">Monto a pagar</span>
           <span class="font-bold text-forest text-lg">{{
@@ -459,17 +459,28 @@
         </div>
       </div>
 
+      <!-- VISTA COSTO CERO / GRATUITO -->
+      <div *ngIf="breakdown && breakdown.total === 0" class="bg-forest/5 border border-forest/15 rounded-xl p-5 mb-6 text-sm">
+        <div class="flex justify-between border-b border-charcoal/10 pb-2 mb-3">
+          <span class="font-semibold text-charcoal">Monto a pagar</span>
+          <span class="font-bold text-forest text-lg">$0 (Gratuito / Convenio)</span>
+        </div>
+        <p class="text-charcoal/65 leading-relaxed">
+          Esta reserva no tiene costo asociado (beneficio de Socio o tarifa de convenio). Puedes confirmar tu reserva directamente sin necesidad de transferir ni subir comprobantes de pago.
+        </p>
+      </div>
+
       <div class="flex gap-3">
         <button (click)="prevStep()" [disabled]="loading" class="btn-secondary flex-1">
           Volver
         </button>
         <button
           (click)="nextStep()"
-          [disabled]="(paymentMethod === 'transfer' && !selectedFile) || loading"
+          [disabled]="(breakdown && breakdown.total > 0 && paymentMethod === 'transfer' && !selectedFile) || loading"
           class="btn-primary flex-1 flex justify-center items-center gap-2"
         >
           <span *ngIf="loading" class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-          {{ paymentMethod === 'transfer' ? 'Enviar reserva' : 'Pagar con Mercado Pago' }}
+          {{ breakdown && breakdown.total === 0 ? 'Confirmar reserva' : (paymentMethod === 'transfer' ? 'Enviar reserva' : 'Pagar con Mercado Pago') }}
         </button>
       </div>
     </div>
@@ -482,16 +493,19 @@
         <span class="text-3xl">✅</span>
       </div>
       <h2 class="font-display text-3xl text-charcoal mb-2">
-        ¡Reserva enviada!
+        {{ breakdown && breakdown.total === 0 ? '¡Reserva confirmada!' : '¡Reserva enviada!' }}
       </h2>
       <p class="text-charcoal/55 mb-2">
-        Tu solicitud fue recibida correctamente.
+        {{ breakdown && breakdown.total === 0 ? 'Tu reserva ha sido registrada y confirmada de forma inmediata.' : 'Tu solicitud fue recibida correctamente.' }}
       </p>
       <p class="text-charcoal/55 mb-6 text-sm">
-        La administración validará el comprobante de pago y confirmará tu
-        reserva. Te notificaremos por correo a
-        <strong>{{ auth.currentUser()?.email }}</strong
-        >.
+        <span *ngIf="breakdown && breakdown.total > 0">
+          La administración validará el comprobante de pago y confirmará tu reserva.
+        </span>
+        <span *ngIf="breakdown && breakdown.total === 0">
+          No requiere validación de transferencia.
+        </span>
+        Te notificaremos por correo a <strong>{{ auth.currentUser()?.email }}</strong>.
       </p>
 
       <div class="bg-mist rounded-xl p-5 text-left mb-8">
