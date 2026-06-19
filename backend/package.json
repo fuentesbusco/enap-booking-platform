@@ -22,7 +22,7 @@
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts",
-    "deploy": "cross-env SLS_TELEMETRY_DISABLED=1 SLS_INTERACTIVE_SETUP_ENABLE=0 serverless deploy",
+    "deploy": "npm run build && cross-env SLS_TELEMETRY_DISABLED=1 SLS_INTERACTIVE_SETUP_ENABLE=0 serverless deploy",
     "remove": "cross-env SLS_TELEMETRY_DISABLED=1 SLS_INTERACTIVE_SETUP_ENABLE=0 serverless remove"
   },
   "dependencies": {
