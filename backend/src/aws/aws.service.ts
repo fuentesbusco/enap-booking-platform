@@ -14,7 +14,10 @@ export class AwsService {
     const region = this.configService.get<string>('AWS_REGION', 'us-east-1');
     this.bucketName = this.configService.get<string>('AWS_S3_BUCKET', 'enap-booking-bucket');
 
+    // Solo consideramos credenciales estáticas reales si comienzan con 'AKIA' (llaves permanentes de IAM)
+    // para evitar interceptar y romper las credenciales temporales 'ASIA' que inyecta AWS Lambda.
     const hasRealCredentials = accessKeyId && secretAccessKey && 
+                               accessKeyId.startsWith('AKIA') &&
                                accessKeyId.trim() !== '' && secretAccessKey.trim() !== '' &&
                                !accessKeyId.includes('YOUR_') && !secretAccessKey.includes('YOUR_') &&
                                !accessKeyId.includes('mock_') && !secretAccessKey.includes('mock_');
