@@ -26,4 +26,13 @@ export class GalleryService {
       map((res) => res.success)
     );
   }
+
+  uploadPhoto(file: File): Observable<{ success: boolean; photoUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ success: boolean; photoUrl: string }>(
+      `${environment.apiUrl}/gallery/upload-photo`,
+      formData
+    );
+  }
 }

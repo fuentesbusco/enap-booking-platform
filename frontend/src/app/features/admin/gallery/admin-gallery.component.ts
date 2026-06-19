@@ -26,6 +26,8 @@ export class AdminGalleryComponent implements OnInit {
   formDescription = '';
   formImageUrl = '';
 
+  uploadingImage = false;
+
   // Preset Images for Quick Selection
   presetImages = [
     { label: 'Vista Aérea General', value: '/images/aerea-centro.jpeg' },
@@ -42,6 +44,29 @@ export class AdminGalleryComponent implements OnInit {
 
   ngOnInit() {
     this.loadGallery();
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    this.uploadingImage = true;
+    this.service.uploadPhoto(file).subscribe({
+      next: (res) => {
+        this.uploadingImage = false;
+        if (res.success) {
+          this.formImageUrl = res.photoUrl;
+          this.toastService.success('Imagen subida correctamente.');
+        } else {
+          this.toastService.error('Error al subir la imagen.');
+        }
+      },
+      error: (err) => {
+        this.uploadingImage = false;
+        this.toastService.error(err.error?.message || 'Error al conectar con el servidor.');
+        console.error(err);
+      }
+    });
   }
 
   loadGallery() {
