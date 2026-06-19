@@ -95,10 +95,10 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Certificación Sandbox desde la Administración (`/admin/mercadopago`)**
   - *Acción:* Introducir monto, concepto y hacer clic en generar.
   - *Resultado esperado:* Retorna un ID de preferencia válido de los servidores de Mercado Pago Sandbox.
-- [ ] **Checkout de Prueba Sandbox**
+- [x] **Checkout de Prueba Sandbox**
   - *Acción:* Pulsar en pagar en Sandbox, loguearse con la cuenta de comprador de prueba (`TESTUSER8015616000490342967` / `tBdnrZDT0m`) y pagar con tarjeta Visa aprobada.
   - *Resultado esperado:* Redirección de vuelta automática a la administración mostrando el banner verde **"¡Pago de Prueba Exitoso!"**.
-- [ ] **Checkout desde el Flujo de Reserva del Usuario**
+- [x] **Checkout desde el Flujo de Reserva del Usuario**
   - *Acción:* Realizar una reserva de usuario real eligiendo la pestaña **Mercado Pago** y completar el pago Sandbox.
   - *Resultado esperado:* Redirección de vuelta automática a la página de éxito del frontend, procesado en segundo plano de la confirmación en el backend y actualización instantánea a estado **Confirmada**.
 - [x] **Rutas de Retorno en el Frontend (Éxito, Error, Pendiente)**

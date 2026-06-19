@@ -102,13 +102,13 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
 - [x] Notificación de correo al administrador: Nueva reserva realizada (aviso para revisión y aprobación).
 
 ### Infraestructura Cloud & Despliegue
-- [ ] Configuración de una instancia **AWS EC2** para el backend NestJS con PM2 o Docker.
-- [ ] Configuración de **AWS RDS** para la base de datos MySQL de producción.
-- [ ] Configuración de reglas de seguridad (Security Groups) y DNS.
+- [x] Configuración de infraestructura Serverless en **AWS Lambda + API Gateway** mediante Serverless Framework.
+- [x] Configuración de **AWS RDS** para la base de datos MySQL de producción con pool de conexiones optimizado para Lambda.
+- [x] Configuración de reglas de seguridad (Security Groups, CORS, roles de IAM) y DNS.
 
 ### Automatización de Pagos (Fase 2)
 - [x] Integración de la API de **MercadoPago** en el backend (SDK, inicialización y credenciales).
 - [ ] Integración de la API de **Transbank Webpay** en el backend.
 - [x] Páginas de Retorno de Mercado Pago (Frontend): Creación de vistas de éxito, fallo y pendiente para validación del retorno.
-- [ ] Endpoint de Webhook para recibir notificaciones asincrónicas de confirmación de pago y actualizar el estado de la reserva inmediatamente.
+- [x] Endpoint de confirmación de pago para recibir notificaciones de transacciones de Mercado Pago y actualizar el estado de la reserva inmediatamente.
 

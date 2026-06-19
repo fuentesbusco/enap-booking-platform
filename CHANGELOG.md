@@ -6,6 +6,15 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.19.0] - 2026-06-18
+### Añadido
+- **Infraestructura Serverless en AWS:** Creación del adaptador de entrada [lambda.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/lambda.ts) y de la especificación [serverless.yml](file:///home/daniel/projects/enap-mock-frontend/backend/serverless.yml) para el despliegue del backend en AWS Lambda + API Gateway mediante Serverless Framework, utilizando el perfil `new-account`.
+- **Automatización de Despliegues en package.json:** Añadido soporte multiplataforma con `cross-env` para forzar la desactivación de telemetría y prompts de login interactivos, y automatización del compilado (`npm run build`) previo al despliegue.
+- **Configuración de Permisos S3 con IAM:** Integradas políticas de IAM en el archivo de infraestructura para otorgar permisos nativos de lectura/escritura a la Lambda sobre el bucket de S3, eliminando la necesidad de almacenar llaves de acceso en texto plano.
+- **Bypass de Mock en S3 (`AWS_S3_MOCK`):** Soporte en [aws.service.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/aws/aws.service.ts) para el parámetro `AWS_S3_MOCK=false` y optimización de inicialización del `S3Client` para delegar automáticamente las firmas a Roles de IAM cuando no hay claves `AKIA` estáticas presentes.
+- **Optimización de Conexiones de DB (RDS):** Configurada la variable `DB_CONNECTION_LIMIT` en [app.module.ts](file:///home/daniel/projects/enap-mock-frontend/backend/src/app.module.ts) para evitar la saturación de conexiones a MySQL (RDS) por el escalado horizontal de contenedores Lambda.
+- **Trazabilidad y Logs Estructurados en CloudWatch:** Integrado el `Logger` de NestJS en `AuthService`, `BookingsService`, `MercadoPagoController` y `MercadoPagoService` para reportar advertencias, flujos financieros, errores de API y cambios de estado directamente a AWS CloudWatch.
+
 ## [1.18.0] - 2026-06-18
 ### Añadido
 - **Estandarización de Cabañas (1 a 6):** Configuración estricta de 6 cabañas con capacidad máxima de 6 personas, equipamiento completo y advertencias de traer sábanas y toallas.
