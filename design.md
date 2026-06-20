@@ -126,8 +126,18 @@ Los espacios turísticos admiten subir múltiples fotos. La administración las 
 ### 3.5 Expiración Automática Pasiva (48 Horas)
 Las reservas creadas en estado `pending_payment` que no cuenten con un comprobante de transferencia y que superen las 48 horas de antigüedad desde su creación son marcadas automáticamente como `expired` de manera dinámica bajo demanda (durante consultas de disponibilidad, creación de reservas o carga del dashboard de usuario).
 
-### 3.6 Cierre de Disponibilidades los Lunes (Mantención General)
-Para dar cumplimiento a la mantención general del Centro Vacacional, el backend inyecta de forma dinámica los días lunes del año como bloqueados en la consulta de fechas ocupadas y rechaza preventivamente cualquier solicitud de reserva que abarque un día lunes.
+### 3.7 Menú de Navegación Móvil (Hamburguesa)
+*   **Visibilidad Condicional:** En resoluciones de pantalla reducidas (menores a `md`), el listado horizontal de la barra superior se contrae y es reemplazado por un botón hamburguesa interactivo.
+*   **Gestión de Estado:** Administrado mediante la propiedad reactiva `isMobileMenuOpen` en el componente. Al activarse, despliega verticalmente un cajón de opciones que incluye todas las rutas principales y botones de inicio/cierre de sesión ajustados al estado del token JWT actual.
+*   **Accesibilidad y Animaciones:** Enlace nativo con `[attr.aria-expanded]` para lectores de pantalla, y transiciones fluidas de slide vertical.
+
+### 3.8 Tarjeta de Datos del Titular en Checkout
+*   **Paso 2 (Invitados):** Si el socio o usuario general está autenticado en la plataforma, el Step 2 renderiza una tarjeta de datos del titular antes de la lista de invitados.
+*   **Restricciones de Identidad:** Nombre Completo, RUT y Ficha Sindical se cargan desde el perfil del usuario activo en modo deshabilitado/solo lectura para salvaguardar la veracidad de la reserva.
+*   **Edición y Sincronización:** El correo electrónico y el teléfono de contacto se muestran como campos editables pre-llenados. Si el usuario modifica estas entradas y continúa en el checkout, el sistema realiza en segundo plano un llamado a la API de perfil (`PATCH /users/profile`) para guardar los cambios de contacto de forma permanente en la base de datos.
+
+### 3.9 Instrucciones de Prueba Sandbox en Mercado Pago
+*   **Aviso Contextual en Paso 3:** Al seleccionar Mercado Pago en el Step 3, se muestra un banner descriptivo que informa al probador cómo evitar el error de "ambientes mezclados" de la pasarela (Sandbox vs. Producción). Detalla los pasos para abrir la pasarela en una pestaña de incógnito, evitar el inicio de sesión con cuentas reales, y usar las credenciales de comprador de prueba y tarjetas de prueba de Mercado Pago.
 
 ---
 
@@ -136,7 +146,8 @@ Para dar cumplimiento a la mantención general del Centro Vacacional, el backend
 *   `GET /health`: Salud del sistema.
 *   `POST /auth/login`: Autenticación real con JWT seguro.
 *   `POST /auth/register`: Registro de nuevos usuarios y hashing PBKDF2.
-*   `PATCH /users/profile/update`: Edición de perfil de usuario (Email, Teléfono Chile, Cambio de Clave).
+*   `PATCH /users/profile`: Edición de perfil del usuario logueado (Email, Teléfono Chile).
+*   `PATCH /users/change-password`: Cambio de contraseña validando la clave actual.
 *   `POST /gallery/upload-photo` / `POST /spaces/upload-photo` / `POST /announcements/upload-photo`: Subida multipart de archivos a S3.
 *   `GET /faqs`, `POST /faqs`, `PUT /faqs/:id`, `DELETE /faqs/:id`: CRUD administrativo de FAQ.
 *   `GET /feedbacks`, `GET /feedbacks/space/:spaceId`, `POST /feedbacks`: Flujo de opiniones.

@@ -27,10 +27,23 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Actualización Segura de Contraseña**
   - *Acción:* Digitar contraseña actual, nueva contraseña y confirmarla en `/perfil`.
   - *Resultado:* Actualización exitosa en el backend con derivación criptográfica PBKDF2 hash.
+- [x] **Menú de Navegación Responsivo (Móvil)**
+  - *Acción:* Simular tamaño de pantalla móvil y hacer clic en el botón de hamburguesa `☰`.
+  - *Resultado:* Despliegue del cajón vertical con todas las rutas y de cierre de sesión.
+- [x] **Logotipo en Hero Destacado**
+  - *Acción:* Cargar la Home en móvil y escritorio.
+  - *Resultado:* El logotipo oficial se despliega de forma muy visible en una tarjeta blanca destacada a la izquierda del texto principal.
 
 ---
 
 ## 🏦 2. Flujo de Reserva y Pagos
+
+- [x] **Tarjeta de Datos del Titular (Paso 2)**
+  - *Acción:* Iniciar reserva estando logueado y avanzar al paso de invitados.
+  - *Resultado:* Visualización de tarjeta de datos oficiales en modo solo lectura con correo y teléfono editables. Al continuar se guardan los cambios en el perfil.
+- [x] **Instrucciones Sandbox de Mercado Pago (Paso 3)**
+  - *Acción:* Seleccionar Mercado Pago en el Paso 3.
+  - *Resultado:* Despliegue de un recuadro de ayuda ámbar detallando cómo simular pagos sin el error de "ambientes mezclados".
 
 - [x] **Cálculo de Precios Dinámico (Paso 2)**
   - *Acción:* Elegir fechas de arriendo e invitados.

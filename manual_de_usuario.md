@@ -2,6 +2,11 @@
 
 Bienvenido al manual de usuario oficial de la Plataforma de Reservas del **Centro Vacacional ENAP** (Sindicato de Trabajadores ENAP Refinería Bío Bío). Este documento te guiará detalladamente en el uso de todas las herramientas del sitio, desde la reserva de recintos hasta el panel de administración.
 
+### 🌐 Navegación e Interfaz Adaptable (Móvil/Escritorio)
+La plataforma cuenta con un diseño completamente adaptable (responsive) para facilitar su uso tanto desde computadoras como desde celulares:
+*   **Menú de Navegación Móvil:** En teléfonos y pantallas táctiles pequeñas, la barra de navegación superior se contrae en un botón tipo **Hamburguesa (☰)** en la esquina superior derecha. Al presionarlo, se despliega verticalmente el cajón de navegación para acceder a todas las opciones (Inicio, Espacios, Mis Reservas, Mi Perfil, Administración) e iniciar o cerrar sesión cómodamente.
+*   **Menú de Escritorio:** En computadoras se muestra la barra superior completa con accesos directos tradicionales.
+
 ---
 
 ## 📅 1. Tipos de Cuentas y Perfiles de Acceso

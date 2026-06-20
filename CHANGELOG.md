@@ -6,6 +6,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.22.0] - 2026-06-20
+### Añadido
+- **Mejoras de Navegación y Usabilidad (Hito 2)**:
+  - **Tarjeta de Datos del Titular**: Implementación de una tarjeta interactiva en el Paso 2 (Invitados) que muestra la información oficial del socio (Nombre, RUT, Ficha code) en formato de sólo lectura y permite la edición y guardado automático en base de datos de los datos de contacto (Teléfono y Correo electrónico) durante el checkout.
+  - **Logotipo de Mayor Visibilidad en el Hero**: Rediseño de la sección Hero en la página de inicio para destacar el logotipo oficial en una tarjeta blanca con sombras, posicionada a la izquierda del texto principal en pantallas grandes para darle mayor jerarquía.
+  - **Menú de Navegación Móvil (Hamburguesa)**: Implementación de un menú responsivo con botón de hamburguesa (`md:hidden`) y cajón vertical para todas las rutas y acciones rápidas de la plataforma.
+  - **Instrucciones para Sandbox de Mercado Pago**: Adición de un cuadro de advertencia y guía de pruebas directamente en el Step 3 (Pago) para facilitar las pruebas con tarjetas y credenciales simuladas en modo incógnito, previniendo el error de "ambientes mezclados".
+
 ## [1.21.0] - 2026-06-19
 ### Añadido
 - **Validaciones de Propuesta Comercial (Hito 2)**:

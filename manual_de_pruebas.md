@@ -58,7 +58,8 @@ Valida la edición de datos personales del usuario y la actualización de contra
     *   Intenta cambiar tu correo o teléfono.
     *   Ingresa un teléfono erróneo (ej: `12345`). Verás una alerta de error de formato. El sistema exige formato telefónico chileno: `^(\+56)?9\d{8}$` (ej: `912345678` o `+56912345678`).
     *   Modifica el teléfono a un formato válido y presiona **"Guardar cambios"**. El toast confirmará la actualización.
-3.  **Actualizar Contraseña:**
+3.  **Confirmar en Checkout (Paso 2):** Inicia una reserva y avanza al Paso 2 (Invitados). Verifica que se despliega una tarjeta con tus datos oficiales (Nombre, RUT, Ficha code). Cambia tu correo o teléfono desde esta tarjeta, haz clic en continuar y verifica en tu página de perfil (`/perfil`) que los cambios se guardaron automáticamente.
+4.  **Actualizar Contraseña:**
     *   En la sección de seguridad, digita tu contraseña actual (`password123`), escribe tu nueva contraseña (ej. `nuevaClave12`) y confírmala.
     *   Presiona **"Actualizar Contraseña"**.
     *   Haz logout de la plataforma e inicia sesión nuevamente usando tu nueva contraseña para confirmar que quedó almacenada mediante hashing seguro PBKDF2 en el backend.
@@ -85,7 +86,7 @@ Valida la subida de retroalimentación de los socios y la posterior aprobación 
 
 ### Flujo D: Pronóstico del Clima Local y Alertas Preventivas
 Valida cómo influye el clima en la experiencia del usuario de manera inteligente.
-1.  **Clima en Portada:** En el Hero del Home, revisa el badge translúcido al lado de "Limache, Chile" que muestra las condiciones meteorológicas y temperatura en vivo.
+1.  **Logotipo y Clima en Portada:** En el Hero del Home, revisa que el logotipo oficial del Centro Vacacional aparece prominentemente destacado a la izquierda de los textos en una tarjeta blanca con sombras. Al lado de "Limache, Chile", verifica el badge translúcido que muestra el clima en vivo.
 2.  **Clima en Catálogo:** En `/espacios`, verifica el pill climatológico al lado del título "Espacios disponibles" que sirve para orientar al usuario antes de reservar.
 3.  **Previsión en Reserva (Paso 1):** Inicia el checkout de un Quincho o Cabaña. Al lado del selector de fechas verás una previsión compacta para los siguientes 3 días (máxima y mínima).
 4.  **Alerta Preventiva de Lluvia:**
@@ -143,6 +144,15 @@ Este flujo valida que las reglas automáticas de Hito 2 funcionen correctamente.
     *   Simula en la base de datos (o espera 48 horas) cambiando la fecha de creación de dicha reserva para que tenga una antigüedad mayor a 48 horas.
     *   Recarga la pestaña de **Mis Reservas** o consulta la disponibilidad de cualquier espacio.
     *   El backend detectará la inactividad de pago y actualizará automáticamente el estado de la reserva a **Expirada** (`expired`), liberando los días bloqueados de forma inmediata.
+
+---
+
+### Flujo J: Menú de Navegación Móvil (Hamburguesa)
+Valida que la barra de navegación se adapte y funcione correctamente en smartphones.
+1.  **Simular Pantalla Móvil:** Activa la simulación de vista de dispositivo móvil en las herramientas de desarrollador del navegador (tecla `F12` y haz clic en el icono de celular/tablet) o ingresa directamente desde un teléfono.
+2.  **Verificar Ocultación:** Constata que el menú superior horizontal de navegación tradicional desaparece por completo y es sustituido por el botón de hamburguesa (`☰`) en la esquina derecha de la Navbar.
+3.  **Desplegar Menú:** Haz clic en el botón de hamburguesa `☰`. Se debe deslizar un cajón vertical de color verde que lista todos los accesos principales de la plataforma (Inicio, Espacios, etc.) y botones de ingreso/cierre de sesión.
+4.  **Navegación e Interacción:** Haz clic en el icono `✕` para cerrar el cajón, o pulsa sobre cualquier enlace (ej: *Espacios*) para comprobar que te redirige a la ruta correcta y que el cajón se cierra automáticamente tras la pulsación.
 
 ---
 
