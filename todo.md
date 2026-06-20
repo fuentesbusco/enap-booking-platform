@@ -30,6 +30,7 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
 - [x] **Validaciones y Ajustes Hito 2 (Semana 4):**
   - [x] Selector triple del Tipo de Visita (Uso Personal, Carga Familiar, Tercero) en Paso 2.
   - [x] Edad de los invitados en la tabla dinámica de invitados del Paso 2.
+  - [x] Tarjeta visual y editable con los datos del socio titular (Nombre, RUT, Ficha, Teléfono, Correo ENAP) en Paso 2.
   - [x] Modal emergente detallado con el Reglamento y Condiciones de arriendo en Paso 3.
   - [x] Mensaje advirtiendo validación de transferencia bancaria en un plazo máximo de 48 horas en Paso 4.
 
@@ -88,6 +89,7 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
   - [x] Generación automática de número de ficha (`ENP-XXXX`) para socios registrados sin código manual.
   - [x] Almacenamiento de la declaración de **Tipo de Visita** en el registro de reservas.
   - [x] Almacenamiento de la **Edad** de invitados en tabla dinámica y base de datos.
+  - [x] API para la actualización de datos de perfil (Email, Teléfono) y guardado automático durante el flujo.
   - [x] Expiración pasiva dinámica de reservas sin pago tras 48 horas de inactividad.
   - [x] Cierre automático de disponibilidades los días lunes (mantención general).
 

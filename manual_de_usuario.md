@@ -56,6 +56,7 @@ Realizar una reserva consta de 4 sencillos pasos interactivos:
 *   El calendario te mostrará de forma visual las fechas bloqueadas por mantenimiento o ya ocupadas por otros usuarios.
 
 ### Paso 2: Acompañantes e Invitados
+*   **Confirmación y Edición de Datos del Titular:** Si el usuario está autenticado, la plataforma desplegará una tarjeta con la información personal del titular de la reserva (Nombre, RUT y N° de Ficha Sindical en caso de ser socio). Desde esta misma tarjeta, se puede revisar y editar el **Correo electrónico** y el **Teléfono de contacto**. Al presionar continuar, cualquier cambio realizado se guardará automáticamente en el perfil del usuario para futuras notificaciones.
 *   Registra el nombre, RUT y la **Edad** de las personas que te acompañarán en la tabla dinámica. El sistema validará que no excedas el aforo permitido del espacio.
 *   **Declaración de Tipo de Visita:** Si eres socio, deberás declarar bajo qué modalidad asistes:
     1. **Uso Personal (Tarifa Socio):** Asistencia del socio titular.

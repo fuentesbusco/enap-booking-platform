@@ -7,6 +7,7 @@ import { FooterComponent } from '../../shared/components/footer.component';
 import { SpacesService } from '../../core/services/spaces.service';
 import { BookingsService } from '../../core/services/bookings.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UsersService } from '../../core/services/users.service';
 import { MercadoPagoService } from '../../core/services/mercadopago.service';
 import { FeedbackService } from '../../core/services/feedback.service';
 import { WeatherService } from '../../core/services/weather.service';
@@ -23,6 +24,7 @@ export class BookingFlowComponent implements OnInit {
   private router = inject(Router);
   private spacesService = inject(SpacesService);
   private bookingsService = inject(BookingsService);
+  private usersService = inject(UsersService);
   private mpService = inject(MercadoPagoService);
   private feedbackService = inject(FeedbackService);
   private weatherService = inject(WeatherService);
@@ -46,6 +48,9 @@ export class BookingFlowComponent implements OnInit {
   visitType = 'personal'; // 'personal' | 'family' | 'friends'
   showTermsModal = false;
   
+  userEmail = '';
+  userPhone = '';
+
   selectedFile: File | null = null;
   createdBookingCode = '';
   today = new Date().toISOString().split('T')[0];
@@ -194,6 +199,12 @@ export class BookingFlowComponent implements OnInit {
           console.error('Error restoring pending booking flow state', e);
         }
       }
+
+      const user = this.auth.currentUser();
+      if (user) {
+        this.userEmail = user.email || '';
+        this.userPhone = user.phone || '';
+      }
     });
   }
 
@@ -228,6 +239,11 @@ export class BookingFlowComponent implements OnInit {
 
   nextStep() {
     if (this.currentStep === 1) {
+      const user = this.auth.currentUser();
+      if (user) {
+        this.userEmail = user.email || '';
+        this.userPhone = user.phone || '';
+      }
       this.recalculate();
       this.currentStep = 2;
       return;
@@ -249,6 +265,22 @@ export class BookingFlowComponent implements OnInit {
         });
         return;
       }
+
+      // Save user profile edits in the database if they changed
+      const user = this.auth.currentUser();
+      if (user && (this.userEmail !== user.email || this.userPhone !== user.phone)) {
+        this.usersService.updateProfile(this.userEmail, this.userPhone).subscribe({
+          next: (res) => {
+            if (res.success && res.user) {
+              const updatedUser = { ...user, email: this.userEmail, phone: this.userPhone };
+              this.auth.currentUser.set(updatedUser);
+              sessionStorage.setItem('user', JSON.stringify(updatedUser));
+            }
+          },
+          error: (err) => console.error('Error updating user profile in booking flow:', err)
+        });
+      }
+
       this.recalculate();
       this.currentStep = 3;
       return;

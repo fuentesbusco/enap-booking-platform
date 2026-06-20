@@ -242,6 +242,76 @@
         si no los tienes ahora.
       </p>
 
+      <!-- Tarjeta de Datos del Socio Titular (si está autenticado) -->
+      <div *ngIf="auth.isLoggedIn()" class="bg-forest/[0.03] border border-forest/15 rounded-xl p-5 mb-6 shadow-xs animate-fadeIn">
+        <div class="flex items-center gap-2 mb-4 border-b border-forest/10 pb-2.5">
+          <span class="text-lg">👤</span>
+          <div>
+            <h4 class="font-display font-bold text-sm text-forest leading-none">Datos del Titular de la Reserva</h4>
+            <p class="text-[10px] text-charcoal/40 font-mono mt-0.5 uppercase tracking-wide">
+              {{ isSocio ? 'Socio Activo del Sindicato' : 'Cliente General / Externo' }}
+            </p>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Nombre (Solo Lectura) -->
+          <div>
+            <label class="text-[10px] font-mono text-charcoal/40 uppercase tracking-widest block mb-1">Nombre Completo</label>
+            <div class="flex items-center gap-2 bg-charcoal5/5 border border-charcoal/10 rounded-lg py-2 px-3 text-xs text-charcoal/70 cursor-not-allowed">
+              <span>👤</span>
+              <span class="font-medium truncate">{{ auth.currentUser()?.full_name }}</span>
+            </div>
+          </div>
+          
+          <!-- RUT (Solo Lectura) -->
+          <div>
+            <label class="text-[10px] font-mono text-charcoal/40 uppercase tracking-widest block mb-1">RUT</label>
+            <div class="flex items-center gap-2 bg-charcoal5/5 border border-charcoal/10 rounded-lg py-2 px-3 text-xs text-charcoal/70 cursor-not-allowed">
+              <span>🆔</span>
+              <span class="font-medium font-mono">{{ auth.currentUser()?.rut }}</span>
+            </div>
+          </div>
+
+          <!-- N° Ficha (Solo Lectura, visible solo si es socio) -->
+          <div *ngIf="isSocio">
+            <label class="text-[10px] font-mono text-charcoal/40 uppercase tracking-widest block mb-1">N° Ficha Sindical</label>
+            <div class="flex items-center gap-2 bg-charcoal5/5 border border-charcoal/10 rounded-lg py-2 px-3 text-xs text-charcoal/70 cursor-not-allowed">
+              <span>🔑</span>
+              <span class="font-medium font-mono text-forest">{{ auth.currentUser()?.ficha_number || 'Autogenerado al confirmar' }}</span>
+            </div>
+          </div>
+
+          <!-- Email (Editable) -->
+          <div [class.sm:col-span-2]="!isSocio">
+            <label class="text-[10px] font-mono text-charcoal/40 uppercase tracking-widest block mb-1">Correo Electrónico</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/40 text-xs">✉️</span>
+              <input
+                type="email"
+                [(ngModel)]="userEmail"
+                placeholder="correo@enap.cl"
+                class="input pl-8 text-xs py-2 w-full bg-white text-charcoal border-charcoal/20 focus:border-forest/50 focus:ring-1 focus:ring-forest/20"
+              />
+            </div>
+          </div>
+
+          <!-- Teléfono (Editable) -->
+          <div class="sm:col-span-2">
+            <label class="text-[10px] font-mono text-charcoal/40 uppercase tracking-widest block mb-1">Teléfono de Contacto</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/40 text-xs">📞</span>
+              <input
+                type="text"
+                [(ngModel)]="userPhone"
+                placeholder="Ej: +56 9 1234 5678"
+                class="input pl-8 text-xs py-2 w-full bg-white text-charcoal border-charcoal/20 focus:border-forest/50 focus:ring-1 focus:ring-forest/20"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Selector para quién es la reserva -->
       <div *ngIf="isSocio" class="bg-mist rounded-xl p-4 mb-5 border border-charcoal/10">
         <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2">
