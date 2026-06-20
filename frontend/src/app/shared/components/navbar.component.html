@@ -1,10 +1,11 @@
-<nav class="fixed top-0 left-0 right-0 z-50 bg-forest/95 backdrop-blur-sm">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-forest/95 backdrop-blur-sm shadow-md">
   <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
     <a routerLink="/" class="flex items-center gap-2.5 shrink-0">
       <img src="/logos/logo-centro-vacacional-enap.svg" alt="Centro Vacacional Sindicato ENAP"
         class="h-[64px] w-auto" />
     </a>
 
+    <!-- Desktop Navigation Links -->
     <div class="hidden md:flex items-center gap-6 text-sm text-white/70">
       <a routerLink="/" routerLinkActive="text-white" [routerLinkActiveOptions]="{ exact: true }"
         class="hover:text-white transition-colors">Inicio</a>
@@ -18,22 +19,145 @@
         class="hover:text-white transition-colors">Administración</a>
     </div>
 
+    <!-- Right-side Buttons (Desktop & Mobile) -->
     <div class="flex items-center gap-2">
+      <!-- Desktop Authenticated Buttons -->
       <ng-container *ngIf="!auth.isLoggedIn()">
         <a routerLink="/ingresar" class="text-white/70 hover:text-white text-sm transition-colors hidden md:block">
           Ingresar
         </a>
-        <a routerLink="/espacios" class="btn-sand text-sm py-2 px-4">Reservar</a>
+        <a routerLink="/espacios" class="btn-sand text-sm py-2 px-4 hidden md:block">Reservar</a>
       </ng-container>
 
       <ng-container *ngIf="auth.isLoggedIn()">
-        <span class="text-white/60 text-sm hidden md:block">
-          <!-- {{ auth.currentUser()?.full_name?.split(" ")[0] }} -->
-        </span>
-        <button (click)="auth.logout()" class="btn-secondary text-sm py-2 px-4">
+        <button (click)="auth.logout()" class="btn-secondary text-sm py-2 px-4 hidden md:block">
           Salir
         </button>
       </ng-container>
+
+      <!-- Hamburger menu toggle button (visible on mobile only) -->
+      <button
+        type="button"
+        (click)="toggleMobileMenu()"
+        class="md:hidden p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-all cursor-pointer"
+        aria-controls="mobile-menu"
+        [attr.aria-expanded]="isMobileMenuOpen"
+      >
+        <span class="sr-only">Abrir menú</span>
+        <!-- Menu Icon (Hamburger) when closed -->
+        <svg
+          *ngIf="!isMobileMenuOpen"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        <!-- Close Icon when open -->
+        <svg
+          *ngIf="isMobileMenuOpen"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Dropdown (visible when open) -->
+  <div
+    *ngIf="isMobileMenuOpen"
+    class="md:hidden bg-forest border-t border-white/10 shadow-lg transition-all duration-300 animate-slideDown"
+    id="mobile-menu"
+  >
+    <div class="px-2 pt-2 pb-4 space-y-1">
+      <a
+        routerLink="/"
+        (click)="isMobileMenuOpen = false"
+        routerLinkActive="bg-white/10 text-white"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="block px-3 py-2.5 rounded-lg text-base font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Inicio
+      </a>
+      <a
+        routerLink="/espacios"
+        (click)="isMobileMenuOpen = false"
+        routerLinkActive="bg-white/10 text-white"
+        class="block px-3 py-2.5 rounded-lg text-base font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Espacios
+      </a>
+      <a
+        routerLink="/conoce-el-centro"
+        (click)="isMobileMenuOpen = false"
+        routerLinkActive="bg-white/10 text-white"
+        class="block px-3 py-2.5 rounded-lg text-base font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Conoce el Centro
+      </a>
+      <a
+        *ngIf="auth.isLoggedIn()"
+        routerLink="/mis-reservas"
+        (click)="isMobileMenuOpen = false"
+        routerLinkActive="bg-white/10 text-white"
+        class="block px-3 py-2.5 rounded-lg text-base font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Mis Reservas
+      </a>
+      <a
+        *ngIf="auth.isLoggedIn()"
+        routerLink="/perfil"
+        (click)="isMobileMenuOpen = false"
+        routerLinkActive="bg-white/10 text-white"
+        class="block px-3 py-2.5 rounded-lg text-base font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Mi Perfil
+      </a>
+      <a
+        *ngIf="auth.isAdmin()"
+        routerLink="/admin"
+        (click)="isMobileMenuOpen = false"
+        routerLinkActive="bg-white/10 text-white"
+        class="block px-3 py-2.5 rounded-lg text-base font-medium text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Administración
+      </a>
+
+      <!-- Buttons at the bottom of the mobile drawer -->
+      <div class="border-t border-white/10 mt-3 pt-3 px-3 flex flex-col gap-2">
+        <ng-container *ngIf="!auth.isLoggedIn()">
+          <a
+            routerLink="/ingresar"
+            (click)="isMobileMenuOpen = false"
+            class="w-full text-center py-2.5 rounded-lg text-sm font-semibold text-white bg-white/10 hover:bg-white/20 transition-all"
+          >
+            Ingresar
+          </a>
+          <a
+            routerLink="/espacios"
+            (click)="isMobileMenuOpen = false"
+            class="w-full text-center py-2.5 rounded-lg text-sm font-semibold text-charcoal bg-sand hover:bg-sand/90 transition-all shadow-sm"
+          >
+            Reservar Ahora
+          </a>
+        </ng-container>
+
+        <ng-container *ngIf="auth.isLoggedIn()">
+          <button
+            (click)="auth.logout(); isMobileMenuOpen = false"
+            class="w-full text-center py-2.5 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition-all shadow-sm"
+          >
+            Cerrar Sesión
+          </button>
+        </ng-container>
+      </div>
     </div>
   </div>
 </nav>

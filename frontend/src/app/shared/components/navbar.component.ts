@@ -11,4 +11,9 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class NavbarComponent {
   auth = inject(AuthService);
+  isMobileMenuOpen = false;
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 }
