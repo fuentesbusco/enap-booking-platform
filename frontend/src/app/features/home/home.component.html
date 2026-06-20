@@ -8,26 +8,36 @@
   </div>
 
   <div class="relative z-10 max-w-6xl mx-auto px-4 w-full">
-    <div class="max-w-lg mb-10">
-      <div class="flex items-center gap-2 flex-wrap mb-5">
-        <span
-          class="inline-flex items-center gap-1.5 bg-sand/20 border border-sand/30 text-sand text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full">
-          <span class="w-1.5 h-1.5 bg-sand rounded-full"></span>
-          Limache, Chile
-        </span>
-        <span *ngIf="weatherData"
-          class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white text-xs font-mono tracking-wide px-3 py-1 rounded-full backdrop-blur-xs animate-fadeIn">
-          <span>{{ weatherData.icon }}</span>
-          <span>{{ weatherData.temp }}°C · {{ weatherData.text }}</span>
-        </span>
+    <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 mb-10">
+      <!-- Logo a la izquierda -->
+      <div
+        class="shrink-0 w-32 h-32 md:w-[15rem] md:h-[15rem] p-3.5 rounded-2xl shadow-xl flex items-center justify-center animate-fadeIn ">
+        <img src="/logos/logo-centro-vacacional-enap.svg" alt="Logo Centro Vacacional ENAP"
+          class="max-w-full max-h-full object-contain" />
       </div>
-      <h1 class="text-white font-display text-5xl md:text-6xl leading-tight mb-5">
-        Tu descanso<br />te está esperando
-      </h1>
-      <p class="text-white/65 text-lg leading-relaxed">
-        Cabañas, quinchos y piscina para socios y sus familias. Disponibilidad
-        en tiempo real, sin formularios complicados.
-      </p>
+
+      <!-- Textos Principales -->
+      <div class="max-w-lg text-center md:text-left">
+        <div class="flex items-center justify-center md:justify-start gap-2 flex-wrap mb-5">
+          <span
+            class="inline-flex items-center gap-1.5 bg-sand/20 border border-sand/30 text-sand text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full">
+            <span class="w-1.5 h-1.5 bg-sand rounded-full"></span>
+            Limache, Chile
+          </span>
+          <span *ngIf="weatherData"
+            class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-white text-xs font-mono tracking-wide px-3 py-1 rounded-full backdrop-blur-xs animate-fadeIn">
+            <span>{{ weatherData.icon }}</span>
+            <span>{{ weatherData.temp }}°C · {{ weatherData.text }}</span>
+          </span>
+        </div>
+        <h1 class="text-white font-display text-4xl md:text-6xl leading-tight mb-5">
+          Tu descanso<br />te está esperando
+        </h1>
+        <p class="text-white/65 text-base md:text-lg leading-relaxed">
+          Cabañas, quinchos y piscina para socios y sus familias. Disponibilidad
+          en tiempo real, sin formularios complicados.
+        </p>
+      </div>
     </div>
 
     <!-- Tarjeta búsqueda flotante -->
@@ -155,13 +165,14 @@
         <h3 class="font-display text-lg text-charcoal mb-4 flex items-center gap-2 font-semibold">
           <span>🎒</span> Guía de Equipaje y Normas
         </h3>
-        
+
         <div class="space-y-4 text-sm text-charcoal/70">
           <div class="flex gap-3">
             <span class="text-base shrink-0">🛏️</span>
             <div>
               <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">¿Qué debes traer?</p>
-              <p class="mt-0.5 text-xs leading-relaxed">Es fundamental traer tus propias <strong>sábanas, toallas y fundas de almohada</strong> ya que el centro no las provee en sus cabañas.</p>
+              <p class="mt-0.5 text-xs leading-relaxed">Es fundamental traer tus propias <strong>sábanas, toallas y
+                  fundas de almohada</strong> ya que el centro no las provee en sus cabañas.</p>
             </div>
           </div>
 
@@ -169,7 +180,9 @@
             <span class="text-base shrink-0">⏰</span>
             <div>
               <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">Horarios clave</p>
-              <p class="mt-0.5 text-xs leading-relaxed">Check-in Cabañas: <strong>14:00 hrs</strong>. Check-out: <strong>12:00 hrs</strong>. Quinchos/Piscina: de 09:00 a 19:00 hrs.</p>
+              <p class="mt-0.5 text-xs leading-relaxed">Check-in Cabañas: <strong>14:00 hrs</strong>. Check-out:
+                <strong>12:00 hrs</strong>. Quinchos/Piscina: de 09:00 a 19:00 hrs.
+              </p>
             </div>
           </div>
 
@@ -177,7 +190,8 @@
             <span class="text-base shrink-0">🥩</span>
             <div>
               <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">Quinchos y Asados</p>
-              <p class="mt-0.5 text-xs leading-relaxed">El centro cuenta con parrillas pero debes traer tu propio carbón y utensilios de asado.</p>
+              <p class="mt-0.5 text-xs leading-relaxed">El centro cuenta con parrillas pero debes traer tu propio carbón
+                y utensilios de asado.</p>
             </div>
           </div>
 
@@ -185,7 +199,8 @@
             <span class="text-base shrink-0">🚙</span>
             <div>
               <p class="font-semibold text-charcoal text-xs uppercase tracking-wider font-mono">Estacionamiento</p>
-              <p class="mt-0.5 text-xs leading-relaxed">Estacionamiento gratuito habilitado en el recinto para un máximo de 2 vehículos por cabaña.</p>
+              <p class="mt-0.5 text-xs leading-relaxed">Estacionamiento gratuito habilitado en el recinto para un máximo
+                de 2 vehículos por cabaña.</p>
             </div>
           </div>
         </div>
@@ -201,26 +216,18 @@
           No hay preguntas registradas por el momento.
         </div>
 
-        <div 
-          *ngFor="let faq of faqs" 
-          class="border border-charcoal/10 rounded-xl overflow-hidden bg-white hover:border-forest/20 transition-all duration-300 shadow-xs"
-        >
-          <button 
-            type="button" 
-            (click)="toggleFaq(faq.id)" 
-            class="w-full text-left px-5 py-4 font-semibold text-charcoal hover:text-forest transition-colors flex justify-between items-center text-sm focus:outline-none cursor-pointer"
-          >
+        <div *ngFor="let faq of faqs"
+          class="border border-charcoal/10 rounded-xl overflow-hidden bg-white hover:border-forest/20 transition-all duration-300 shadow-xs">
+          <button type="button" (click)="toggleFaq(faq.id)"
+            class="w-full text-left px-5 py-4 font-semibold text-charcoal hover:text-forest transition-colors flex justify-between items-center text-sm focus:outline-none cursor-pointer">
             <span>{{ faq.question }}</span>
             <span class="text-lg transition-transform duration-300 font-mono" [class.rotate-180]="openFaqId === faq.id">
               {{ openFaqId === faq.id ? '−' : '+' }}
             </span>
           </button>
-          
-          <div 
-            class="overflow-hidden transition-all duration-300"
-            [class.max-h-0]="openFaqId !== faq.id"
-            [class.max-h-96]="openFaqId === faq.id"
-          >
+
+          <div class="overflow-hidden transition-all duration-300" [class.max-h-0]="openFaqId !== faq.id"
+            [class.max-h-96]="openFaqId === faq.id">
             <div class="px-5 pb-4 text-xs text-charcoal/65 leading-relaxed border-t border-charcoal/5 pt-3 bg-mist/5">
               {{ faq.answer }}
             </div>
