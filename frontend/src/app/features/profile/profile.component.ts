@@ -65,6 +65,14 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
+    const user = this.authService.currentUser();
+    const emailLower = this.email.toLowerCase().trim();
+    const isValidDomain = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+    if (!isValidDomain && user?.role !== 'admin') {
+      this.toastService.error('El correo electrónico debe pertenecer al dominio @enap.cl o @enaprefinerias.cl.');
+      return;
+    }
+
     if (this.phone.trim() && !this.validateChileanPhone(this.phone)) {
       this.toastService.error('El formato de teléfono no es válido para Chile. Ejemplo válido: +56 9 1234 5678 o 912345678.');
       return;

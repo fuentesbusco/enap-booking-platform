@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../models';
@@ -34,6 +34,12 @@ export class AuthController {
       fichaNumber?: string;
     },
   ) {
+    const emailLower = body.email.toLowerCase();
+    const domainMatch = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+    if (!domainMatch) {
+      throw new BadRequestException('El correo electrónico de registro debe pertenecer al dominio @enap.cl o @enaprefinerias.cl.');
+    }
+
     const role = body.role ?? 'external';
     const newUser = await this.usersService.create({
       full_name: body.fullName,

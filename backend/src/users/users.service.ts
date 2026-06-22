@@ -126,11 +126,17 @@ export class UsersService {
   async updateProfile(id: number, data: { email?: string; phone?: string }): Promise<UserEntity> {
     const user = await this.getById(id);
     if (data.email && data.email.toLowerCase() !== user.email.toLowerCase()) {
+      const emailLower = data.email.toLowerCase();
+      const domainMatch = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+      if (!domainMatch && user.role !== 'admin') {
+        throw new BadRequestException('El correo electrónico debe pertenecer al dominio @enap.cl o @enaprefinerias.cl.');
+      }
+
       const existing = await this.getByEmail(data.email);
       if (existing) {
         throw new ConflictException('El correo electrónico ya está registrado por otro usuario');
       }
-      user.email = data.email.toLowerCase();
+      user.email = emailLower;
     }
     if (data.phone !== undefined) {
       user.phone = data.phone;

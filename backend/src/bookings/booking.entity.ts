@@ -68,4 +68,7 @@ export class Booking {
 
   @OneToOne('FeedbackEntity', 'booking', { eager: true })
   feedback?: any;
+
+  @Column({ name: 'additional_email', type: 'varchar', nullable: true })
+  additionalEmail?: string;
 }

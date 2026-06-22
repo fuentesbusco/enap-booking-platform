@@ -50,6 +50,7 @@ export class BookingFlowComponent implements OnInit {
   
   userEmail = '';
   userPhone = '';
+  additionalEmail = '';
 
   selectedFile: File | null = null;
   createdBookingCode = '';
@@ -269,6 +270,13 @@ export class BookingFlowComponent implements OnInit {
       // Save user profile edits in the database if they changed
       const user = this.auth.currentUser();
       if (user && (this.userEmail !== user.email || this.userPhone !== user.phone)) {
+        const emailLower = this.userEmail.toLowerCase().trim();
+        const isValidDomain = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+        if (!isValidDomain && user.role !== 'admin') {
+          alert('El correo electrónico del titular debe pertenecer al dominio @enap.cl o @enaprefinerias.cl.');
+          return;
+        }
+
         this.usersService.updateProfile(this.userEmail, this.userPhone).subscribe({
           next: (res) => {
             if (res.success && res.user) {
@@ -294,6 +302,14 @@ export class BookingFlowComponent implements OnInit {
         return;
       }
 
+      if (this.additionalEmail.trim()) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(this.additionalEmail.trim())) {
+          alert('El correo electrónico adicional ingresado no es válido.');
+          return;
+        }
+      }
+
       this.loading = true;
       this.bookingsService
         .createBooking({
@@ -306,6 +322,7 @@ export class BookingFlowComponent implements OnInit {
           thirdPartyRut: this.isForThirdParty ? this.thirdPartyRut : undefined,
           thirdPartyPhone: this.isForThirdParty ? this.thirdPartyPhone : undefined,
           visitType: this.visitType,
+          additional_email: this.additionalEmail.trim() || undefined,
         })
         .subscribe({
           next: (b) => {

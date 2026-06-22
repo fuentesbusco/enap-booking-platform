@@ -15,6 +15,15 @@ export class AuthService {
 
   async validateUser(email: string, password?: string): Promise<UserEntity> {
     this.logger.log(`[Auth] Validando credenciales para: ${email}`);
+    
+    // Enforce ENAP domain restriction on login, except for the admin user
+    const emailLower = email.toLowerCase();
+    const isEnapDomain = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+    if (!isEnapDomain && emailLower !== 'admin@sindicatoenap.cl') {
+      this.logger.warn(`[Auth] Intento de login fallido para ${email}: correo no pertenece a ENAP.`);
+      throw new UnauthorizedException('El inicio de sesión está restringido a correos con dominio @enap.cl o @enaprefinerias.cl.');
+    }
+
     const user = await this.usersService.getByEmail(email);
     if (!user) {
       this.logger.warn(`[Auth] Intento de login fallido: correo ${email} no está registrado.`);

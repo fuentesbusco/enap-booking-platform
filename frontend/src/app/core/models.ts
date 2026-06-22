@@ -68,6 +68,7 @@ export interface Booking {
   admin_created_for_external?: boolean;
   feedback?: any;
   visit_type?: string;
+  additional_email?: string;
 }
 
 export interface PriceBreakdown {
@@ -212,6 +213,7 @@ export function mapBookingToFrontend(booking: any): Booking {
     admin_created_for_external: booking.adminCreatedForExternal !== undefined ? booking.adminCreatedForExternal : booking.admin_created_for_external,
     feedback: booking.feedback,
     visit_type: booking.visitType || booking.visit_type,
+    additional_email: booking.additionalEmail || booking.additional_email,
   };
 }
 

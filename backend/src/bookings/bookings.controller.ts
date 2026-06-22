@@ -54,6 +54,7 @@ export class BookingsController {
       thirdPartyPhone?: string;
       adminCreatedForExternal?: boolean;
       visitType?: string;
+      additionalEmail?: string;
     },
   ) {
     const user = await this.getAuthenticatedUser(headers);
@@ -70,6 +71,7 @@ export class BookingsController {
         thirdPartyPhone: body.thirdPartyPhone,
         adminCreatedForExternal: body.adminCreatedForExternal,
         visitType: body.visitType,
+        additionalEmail: body.additionalEmail,
       },
     );
   }

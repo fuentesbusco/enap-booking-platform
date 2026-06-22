@@ -56,6 +56,13 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    const emailLower = this.loginEmail.toLowerCase().trim();
+    const isValidDomain = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+    if (!isValidDomain && emailLower !== 'admin@sindicatoenap.cl') {
+      this.errorMessage = 'El inicio de sesión está restringido a correos con dominio @enap.cl o @enaprefinerias.cl.';
+      return;
+    }
+
     this.loading = true;
     this.errorMessage = '';
 
@@ -74,6 +81,13 @@ export class LoginComponent implements OnInit {
   onRegister() {
     if (!this.regFullName || !this.regRut || !this.regEmail || !this.regPassword || !this.regFichaNumber) {
       this.errorMessage = 'Todos los campos son obligatorios para el registro de socios.';
+      return;
+    }
+
+    const emailLower = this.regEmail.toLowerCase().trim();
+    const isValidDomain = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+    if (!isValidDomain) {
+      this.errorMessage = 'El correo electrónico de registro debe pertenecer al dominio @enap.cl o @enaprefinerias.cl.';
       return;
     }
 
@@ -102,6 +116,13 @@ export class LoginComponent implements OnInit {
   onGuestSubmit() {
     if (!this.guestFullName || !this.guestRut || !this.guestEmail) {
       this.errorMessage = 'Por favor complete todos sus datos personales (Nombre, RUT y Correo).';
+      return;
+    }
+
+    const emailLower = this.guestEmail.toLowerCase().trim();
+    const isValidDomain = emailLower.endsWith('@enap.cl') || emailLower.endsWith('@enaprefinerias.cl');
+    if (!isValidDomain) {
+      this.errorMessage = 'El correo electrónico de registro debe pertenecer al dominio @enap.cl o @enaprefinerias.cl.';
       return;
     }
 

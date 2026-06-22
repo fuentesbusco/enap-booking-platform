@@ -94,6 +94,7 @@ export class BookingsService {
       thirdPartyPhone?: string;
       adminCreatedForExternal?: boolean;
       visitType?: string;
+      additionalEmail?: string;
     },
   ): Promise<Booking> {
     await this.expireOldBookings();
@@ -142,6 +143,7 @@ export class BookingsService {
       adminCreatedForExternal: !!options?.adminCreatedForExternal,
       termsAccepted: true,
       visitType: options?.visitType,
+      additionalEmail: options?.additionalEmail,
     });
 
     const savedBooking = await this.bookingRepository.save(newBooking);
@@ -181,6 +183,18 @@ export class BookingsService {
         .catch((error) => {
           this.logger.error(`Error al enviar correo de confirmación de reserva ${fullBooking.bookingCode}:`, error);
         });
+
+      if (fullBooking.additionalEmail) {
+        this.notificationsService
+          .sendEmail(
+            fullBooking.additionalEmail,
+            emailSubject,
+            emailHtml,
+          )
+          .catch((error) => {
+            this.logger.error(`Error al enviar copia de confirmación de reserva ${fullBooking.bookingCode} al correo adicional:`, error);
+          });
+      }
     }
 
     // Send admin notification in the background
@@ -208,15 +222,28 @@ export class BookingsService {
 
     if (savedBooking.user?.email) {
       const emailHtml = getBookingPaymentConfirmedEmailTemplate(savedBooking);
+      const emailSubject = `Reserva Confirmada y Pago Aprobado - Código: ${savedBooking.bookingCode}`;
       this.notificationsService
         .sendEmail(
           savedBooking.user.email,
-          `Reserva Confirmada y Pago Aprobado - Código: ${savedBooking.bookingCode}`,
+          emailSubject,
           emailHtml,
         )
         .catch((error) => {
           this.logger.error(`Error al enviar correo de aprobación de pago para reserva ${savedBooking.bookingCode}:`, error);
         });
+
+      if (savedBooking.additionalEmail) {
+        this.notificationsService
+          .sendEmail(
+            savedBooking.additionalEmail,
+            emailSubject,
+            emailHtml,
+          )
+          .catch((error) => {
+            this.logger.error(`Error al enviar copia de aprobación de pago para reserva ${savedBooking.bookingCode} al correo adicional:`, error);
+          });
+      }
     }
 
     return savedBooking;
@@ -232,15 +259,28 @@ export class BookingsService {
 
     if (savedBooking.user?.email) {
       const emailHtml = getBookingPaymentRejectedEmailTemplate(savedBooking);
+      const emailSubject = `Observaciones en comprobante de pago - Código: ${savedBooking.bookingCode}`;
       this.notificationsService
         .sendEmail(
           savedBooking.user.email,
-          `Observaciones en comprobante de pago - Código: ${savedBooking.bookingCode}`,
+          emailSubject,
           emailHtml,
         )
         .catch((error) => {
           this.logger.error(`Error al enviar correo de rechazo de pago para reserva ${savedBooking.bookingCode}:`, error);
         });
+
+      if (savedBooking.additionalEmail) {
+        this.notificationsService
+          .sendEmail(
+            savedBooking.additionalEmail,
+            emailSubject,
+            emailHtml,
+          )
+          .catch((error) => {
+            this.logger.error(`Error al enviar copia de rechazo de pago para reserva ${savedBooking.bookingCode} al correo adicional:`, error);
+          });
+      }
     }
 
     return savedBooking;
@@ -274,15 +314,28 @@ export class BookingsService {
 
       if (savedBooking.user?.email) {
         const emailHtml = getBookingPaymentConfirmedEmailTemplate(savedBooking);
+        const emailSubject = `Reserva Confirmada y Pago Aprobado - Código: ${savedBooking.bookingCode}`;
         this.notificationsService
           .sendEmail(
             savedBooking.user.email,
-            `Reserva Confirmada y Pago Aprobado - Código: ${savedBooking.bookingCode}`,
+            emailSubject,
             emailHtml,
           )
           .catch((error) => {
             this.logger.error(`Error al enviar correo de aprobación de pago para reserva ${savedBooking.bookingCode}:`, error);
           });
+
+        if (savedBooking.additionalEmail) {
+          this.notificationsService
+            .sendEmail(
+              savedBooking.additionalEmail,
+              emailSubject,
+              emailHtml,
+            )
+            .catch((error) => {
+              this.logger.error(`Error al enviar copia de aprobación de pago para reserva ${savedBooking.bookingCode} al correo adicional:`, error);
+            });
+        }
       }
 
       return savedBooking;
