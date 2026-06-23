@@ -55,6 +55,9 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.redirectTo = params['redirectTo'] || '';
+      if (params['tab'] === 'guest') {
+        this.activeTab = 'guest';
+      }
     });
   }
 
