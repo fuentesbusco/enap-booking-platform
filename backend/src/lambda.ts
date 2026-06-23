@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { configure as serverlessExpress } from '@codegenie/serverless-express';
 import helmet from 'helmet';
 import { Callback, Context, Handler } from 'aws-lambda';
+import { BookingsService } from './bookings/bookings.service';
 
 let cachedServer: Handler;
 
@@ -44,4 +45,14 @@ export const handler: Handler = async (
   }
   const server = await bootstrapServer();
   return server(event, context, callback);
+};
+
+export const cronHandler: Handler = async (event: any, context: Context) => {
+  console.log('Cron event received: expiring old bookings...');
+  const nestApp = await NestFactory.createApplicationContext(AppModule);
+  const bookingsService = nestApp.get(BookingsService);
+  await bookingsService.expireOldBookings();
+  await nestApp.close();
+  console.log('Cron event finished successfully.');
+  return { success: true };
 };
