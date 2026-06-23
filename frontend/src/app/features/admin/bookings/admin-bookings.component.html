@@ -141,7 +141,24 @@
                 </span>
               </div>
             </td>
-            <td class="px-5 py-3.5 text-charcoal/65">{{ b.space.name }}</td>
+            <td class="px-5 py-3.5 text-charcoal/65">
+              <div *ngIf="b.space.type === 'cabin' && b.status !== 'cancelled' && b.status !== 'rejected' && b.status !== 'expired'; else staticSpace">
+                <select 
+                  [value]="b.space.id" 
+                  (change)="changeCabin(b, selectCabinField.value)" 
+                  #selectCabinField
+                  [disabled]="loading"
+                  class="text-xs bg-mist text-charcoal border border-charcoal/10 rounded-xl px-2 py-1 focus:outline-none focus:border-forest/50 font-medium cursor-pointer"
+                >
+                  <option *ngFor="let cab of cabins" [value]="cab.id">
+                    {{ cab.name }}
+                  </option>
+                </select>
+              </div>
+              <ng-template #staticSpace>
+                {{ b.space.name }}
+              </ng-template>
+            </td>
             <td class="px-5 py-3.5 font-mono text-xs text-charcoal/50">
               {{ b.check_in | date: "dd/MM" }} →
               {{ b.check_out | date: "dd/MM/yy" }}

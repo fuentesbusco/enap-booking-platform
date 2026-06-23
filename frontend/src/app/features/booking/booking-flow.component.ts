@@ -34,9 +34,6 @@ export class BookingFlowComponent implements OnInit {
   currentStep = 1;
   steps = ['Fechas', 'Invitados', 'Pago', 'Confirmación'];
 
-  cabins: Space[] = [];
-  selectedCabinId = 0;
-
   activeImageIndex = 0;
   feedbacks: any[] = [];
   weatherData: any = null;
@@ -169,9 +166,14 @@ export class BookingFlowComponent implements OnInit {
       }
 
       if (s.type === 'cabin') {
-        this.selectedCabinId = s.id;
         this.spacesService.getAll().subscribe((all) => {
-          this.cabins = all.filter((x) => x.type === 'cabin');
+          const cabins = all.filter((x) => x.type === 'cabin');
+          this.space = {
+            ...s,
+            name: 'Cabañas Familiares (1 al 6)',
+            description: 'Seis acogedoras cabañas totalmente equipadas para 6 personas con menaje completo, cocina, TV satelital y parrilla exterior. Las cabañas 1 y 2 son del tipo A y las del 3 al 6 son del tipo B (idénticas).',
+            images: Array.from(new Set(cabins.flatMap((c) => c.images))),
+          };
         });
       }
       
@@ -219,26 +221,7 @@ export class BookingFlowComponent implements OnInit {
     });
   }
 
-  selectCabin(id: number) {
-    this.selectedCabinId = id;
-    const found = this.cabins.find((c) => c.id === id);
-    if (found) {
-      this.space = found;
-      this.activeImageIndex = 0;
-      this.loading = true;
-      this.spacesService.getBlockedDates(id).subscribe({
-        next: (d) => {
-          this.blockedDates = d;
-          this.loading = false;
-          this.recalculate();
-        },
-        error: (err) => {
-          this.loading = false;
-          console.error(err);
-        }
-      });
-    }
-  }
+
 
   recalculate() {
     if (this.space && this.checkIn && this.checkOut) {

@@ -44,28 +44,6 @@
         {{ space?.type === 'cabin' ? 'Seis cabañas totalmente equipadas para 6 personas. Cuentan con cocina, TV satelital, menaje completo y parrilla exterior. Traer sábanas y toallas.' : space?.description }}
       </p>
 
-      <!-- Selector de Cabañas (solo si es tipo cabaña) -->
-      <div *ngIf="space?.type === 'cabin' && cabins.length > 0" class="mb-6 bg-mist/50 border border-charcoal/5 p-4 rounded-2xl animate-fadeIn">
-        <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2.5">
-          Seleccione una Cabaña para ver su disponibilidad:
-        </label>
-        <div class="flex flex-wrap gap-2">
-          <button
-            *ngFor="let cab of cabins"
-            type="button"
-            (click)="selectCabin(cab.id)"
-            class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer focus:outline-none"
-            [class.bg-forest]="selectedCabinId === cab.id"
-            [class.text-white]="selectedCabinId === cab.id"
-            [class.border-forest]="selectedCabinId === cab.id"
-            [class.bg-white]="selectedCabinId !== cab.id"
-            [class.text-charcoal]="selectedCabinId !== cab.id"
-            [ngClass]="{ 'border-charcoal/15': selectedCabinId !== cab.id }"
-          >
-            {{ cab.name }}
-          </button>
-        </div>
-      </div>
 
       <!-- Carrusel de fotos -->
       <div class="relative w-full h-64 overflow-hidden rounded-xl mb-6 group/carousel shadow-sm" *ngIf="space && space.images && space.images.length > 0">

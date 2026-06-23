@@ -122,6 +122,12 @@ export class BookingsService {
     return this.http.post<any>(`${environment.apiUrl}/bookings/external-request`, data);
   }
 
+  assignSpace(bookingId: number, spaceId: number): Observable<any> {
+    return this.http.patch<any>(`${environment.apiUrl}/bookings/${bookingId}/assign-space`, { spaceId }).pipe(
+      map(mapBookingToFrontend)
+    );
+  }
+
   private daysDiff(a: string, b: string): number {
     return Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
   }

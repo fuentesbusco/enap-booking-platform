@@ -147,6 +147,18 @@ export class BookingsController {
     return { success: true };
   }
 
+  @Patch(':id/assign-space')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async assignSpace(
+    @Headers() headers: Record<string, string>,
+    @Param('id') id: string,
+    @Body() body: { spaceId: number },
+  ) {
+    await this.getAdminUser(headers);
+    return this.bookingsService.assignSpace(Number(id), body.spaceId);
+  }
+
   @Patch(':id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

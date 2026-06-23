@@ -35,7 +35,8 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
   - [x] Mensaje advirtiendo validación de transferencia bancaria en un plazo máximo de 48 horas en Paso 4.
   - [x] Restricción de registro y login de socios exclusivamente a dominios `@enap.cl` y `@enaprefinerias.cl` en frontend y backend.
   - [x] Campo opcional de Correo Adicional en el checkout para duplicar notificaciones de reserva.
-  - [x] Consolidación de cabañas en catálogo y selector de cabaña específica (1 al 6) mediante botones interactivos.
+  - [x] Consolidación de cabañas en catálogo y disponibilidad a nivel de conjunto de cabañas (sin selección de cabaña específica por el usuario).
+  - [x] Asignación automática de cabaña libre en backend y reasignación/validación administrativa de cabaña (1 al 6) en el panel de control.
   - [x] Formulario de solicitud de reserva para externos con despacho SMTP estructurado al administrador y soporte `replyTo` directo.
 
 ### Panel de Administración
