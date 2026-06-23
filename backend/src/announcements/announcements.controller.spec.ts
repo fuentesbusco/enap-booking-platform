@@ -3,6 +3,7 @@ import { AnnouncementsController } from './announcements.controller';
 import { AnnouncementsService } from './announcements.service';
 import { AnnouncementEntity } from './announcement.entity';
 import { AuthService } from '../auth/auth.service';
+import { AwsService } from '../aws/aws.service';
 
 describe('AnnouncementsController', () => {
   let controller: AnnouncementsController;
@@ -25,11 +26,16 @@ describe('AnnouncementsController', () => {
       verifyToken: jest.fn(),
     };
 
+    const mockAwsService = {
+      uploadFile: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AnnouncementsController],
       providers: [
         { provide: AnnouncementsService, useValue: mockService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: AwsService, useValue: mockAwsService },
       ],
     }).compile();
 

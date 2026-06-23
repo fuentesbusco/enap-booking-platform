@@ -76,6 +76,7 @@ describe('BookingsService', () => {
 
     const mockSpacesService = {
       getById: jest.fn(),
+      getAll: jest.fn().mockResolvedValue([mockSpace]),
     };
 
     const mockNotificationsService = {
@@ -105,7 +106,7 @@ describe('BookingsService', () => {
 
   describe('calculatePriceBreakdown', () => {
     it('should calculate breakdown correctly for socio with applied free guests', () => {
-      const breakdown = service.calculatePriceBreakdown(mockSpace, '2025-12-15', '2025-12-18', 3, 'socio');
+      const breakdown = service.calculatePriceBreakdown(mockSpace, '2025-12-16', '2025-12-19', 3, 'socio');
       expect(breakdown.days).toBe(3);
       expect(breakdown.base).toBe(105000); // 35000 * 3
       expect(breakdown.free_guests_applied).toBe(2); // max 2 free guests
@@ -114,7 +115,7 @@ describe('BookingsService', () => {
     });
 
     it('should calculate breakdown correctly for external user with zero free guests', () => {
-      const breakdown = service.calculatePriceBreakdown(mockSpace, '2025-12-15', '2025-12-18', 3, 'external');
+      const breakdown = service.calculatePriceBreakdown(mockSpace, '2025-12-16', '2025-12-19', 3, 'external');
       expect(breakdown.days).toBe(3);
       expect(breakdown.base).toBe(150000); // 50000 * 3
       expect(breakdown.free_guests_applied).toBe(0);
@@ -142,7 +143,7 @@ describe('BookingsService', () => {
       const guests = Array(7).fill({ full_name: 'Guest', rut: '1-1' });
 
       await expect(
-        service.createBooking(mockUser, mockSpace.id, '2025-12-15', '2025-12-18', guests),
+        service.createBooking(mockUser, mockSpace.id, '2025-12-16', '2025-12-19', guests),
       ).rejects.toThrow(new BadRequestException(`El espacio supera la capacidad máxima permitida de ${mockSpace.maxCapacity} personas.`));
     });
 
@@ -150,7 +151,7 @@ describe('BookingsService', () => {
       spacesService.getById.mockResolvedValue(mockSpace);
       // '2025-12-20' is statically blocked in models.ts BLOCKED_DATES for space 1
       await expect(
-        service.createBooking(mockUser, mockSpace.id, '2025-12-20', '2025-12-22', []),
+        service.createBooking(mockUser, mockSpace.id, '2025-12-20', '2025-12-21', []),
       ).rejects.toThrow(new BadRequestException('Las fechas seleccionadas no están disponibles.'));
     });
 
@@ -170,7 +171,7 @@ describe('BookingsService', () => {
       bookingRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
 
       const guests = [{ full_name: 'Juan Perez', rut: '18.888.888-8' }];
-      const result = await service.createBooking(mockUser, mockSpace.id, '2025-12-15', '2025-12-18', guests);
+      const result = await service.createBooking(mockUser, mockSpace.id, '2025-12-16', '2025-12-19', guests);
 
       expect(spacesService.getById).toHaveBeenCalledWith(mockSpace.id);
       expect(bookingRepository.save).toHaveBeenCalled();
@@ -209,7 +210,7 @@ describe('BookingsService', () => {
       notificationsService.sendEmail.mockRejectedValue(new Error('SMTP error'));
 
       const guests = [{ full_name: 'Juan Perez', rut: '18.888.888-8' }];
-      const result = await service.createBooking(mockUser, mockSpace.id, '2025-12-15', '2025-12-18', guests);
+      const result = await service.createBooking(mockUser, mockSpace.id, '2025-12-16', '2025-12-19', guests);
 
       expect(result).toEqual(mockBooking);
       expect(notificationsService.sendEmail).toHaveBeenCalled();
@@ -222,8 +223,8 @@ describe('BookingsService', () => {
       const existingBookingForPool = {
         ...mockBooking,
         space: poolSpace,
-        checkIn: '2025-12-15',
-        checkOut: '2025-12-15',
+        checkIn: '2025-12-16',
+        checkOut: '2025-12-16',
         guests: Array(75).fill({ id: 1, fullName: 'Guest', rut: '1-1' }),
       };
 
@@ -238,7 +239,7 @@ describe('BookingsService', () => {
       // Attempt to book with 10 guests (total occupants = 11), exceeding remaining capacity of 4 (80 - 76)
       const guests = Array(10).fill({ full_name: 'New Guest', rut: '2-2' });
       await expect(
-        service.createBooking(mockUser, poolSpace.id, '2025-12-15', '2025-12-15', guests),
+        service.createBooking(mockUser, poolSpace.id, '2025-12-16', '2025-12-16', guests),
       ).rejects.toThrow(BadRequestException);
     });
   });

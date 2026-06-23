@@ -123,7 +123,7 @@ export class BookingsService {
         }
       }
       if (!foundCabin) {
-        throw new BadRequestException('No hay cabañas disponibles en las fechas seleccionadas.');
+        throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
       }
       resolvedSpace = foundCabin;
     } else {
