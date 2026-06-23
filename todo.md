@@ -33,6 +33,10 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
   - [x] Tarjeta visual y editable con los datos del socio titular (Nombre, RUT, Ficha, Teléfono, Correo ENAP) en Paso 2.
   - [x] Modal emergente detallado con el Reglamento y Condiciones de arriendo en Paso 3.
   - [x] Mensaje advirtiendo validación de transferencia bancaria en un plazo máximo de 48 horas en Paso 4.
+  - [x] Restricción de registro y login de socios exclusivamente a dominios `@enap.cl` y `@enaprefinerias.cl` en frontend y backend.
+  - [x] Campo opcional de Correo Adicional en el checkout para duplicar notificaciones de reserva.
+  - [x] Consolidación de cabañas en catálogo y selector de cabaña específica (1 al 6) mediante botones interactivos.
+  - [x] Formulario de solicitud de reserva para externos con despacho SMTP estructurado al administrador y soporte `replyTo` directo.
 
 ### Panel de Administración
 - [x] **Vista de Control de Reservas:** Tablas con filtros de estado y visualización rápida de comprobantes.

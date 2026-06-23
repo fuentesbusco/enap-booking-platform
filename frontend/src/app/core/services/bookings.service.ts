@@ -109,6 +109,19 @@ export class BookingsService {
     });
   }
 
+  sendExternalRequest(data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    spaceName: string;
+    checkIn: string;
+    checkOut: string;
+    guestsCount: number;
+    message?: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/bookings/external-request`, data);
+  }
+
   private daysDiff(a: string, b: string): number {
     return Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
   }

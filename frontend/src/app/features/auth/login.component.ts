@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { FooterComponent } from '../../shared/components/footer.component';
 import { AuthService } from '../../core/services/auth.service';
+import { BookingsService } from '../../core/services/bookings.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ export class LoginComponent implements OnInit {
   auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private bookingsService = inject(BookingsService);
 
   activeTab: 'login' | 'register' | 'guest' = 'login';
   errorMessage = '';
@@ -38,6 +40,17 @@ export class LoginComponent implements OnInit {
   guestRut = '';
   guestEmail = '';
   guestFichaNumber = '';
+
+  // External request fields
+  extFullName = '';
+  extEmail = '';
+  extPhone = '';
+  extSpaceName = 'Cabaña';
+  extCheckIn = '';
+  extCheckOut = '';
+  extGuestsCount = 1;
+  extMessage = '';
+  extSuccess = false;
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -177,6 +190,59 @@ export class LoginComponent implements OnInit {
         this.errorMessage = 'Fallo en quick login.';
       }
     });
+  }
+
+  onExternalSubmit() {
+    if (!this.extFullName || !this.extEmail || !this.extPhone || !this.extSpaceName || !this.extCheckIn || !this.extCheckOut) {
+      this.errorMessage = 'Por favor complete todos los campos obligatorios del formulario.';
+      return;
+    }
+
+    if (this.extGuestsCount < 1) {
+      this.errorMessage = 'La cantidad de personas debe ser al menos 1.';
+      return;
+    }
+
+    const emailLower = this.extEmail.toLowerCase().trim();
+    if (!emailLower.includes('@')) {
+      this.errorMessage = 'Por favor ingrese un correo electrónico válido.';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.bookingsService.sendExternalRequest({
+      fullName: this.extFullName,
+      email: this.extEmail,
+      phone: this.extPhone,
+      spaceName: this.extSpaceName,
+      checkIn: this.extCheckIn,
+      checkOut: this.extCheckOut,
+      guestsCount: this.extGuestsCount,
+      message: this.extMessage || undefined,
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.extSuccess = true;
+        this.resetExternalForm();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Error al enviar la solicitud. Intente nuevamente.';
+      },
+    });
+  }
+
+  resetExternalForm() {
+    this.extFullName = '';
+    this.extEmail = '';
+    this.extPhone = '';
+    this.extSpaceName = 'Cabaña';
+    this.extCheckIn = '';
+    this.extCheckOut = '';
+    this.extGuestsCount = 1;
+    this.extMessage = '';
   }
 
   private navigateAfterAuth(role: string) {

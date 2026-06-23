@@ -129,6 +129,24 @@ export class BookingsController {
     };
   }
 
+  @Post('external-request')
+  @HttpCode(HttpStatus.OK)
+  async createExternalRequest(
+    @Body() body: {
+      fullName: string;
+      email: string;
+      phone: string;
+      spaceName: string;
+      checkIn: string;
+      checkOut: string;
+      guestsCount: number;
+      message?: string;
+    },
+  ) {
+    await this.bookingsService.sendExternalRequestEmail(body);
+    return { success: true };
+  }
+
   @Patch(':id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

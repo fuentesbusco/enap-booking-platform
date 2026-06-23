@@ -21,7 +21,7 @@ export class NotificationsService {
     });
   }
 
-  async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+  async sendEmail(to: string, subject: string, html: string, replyTo?: string): Promise<boolean> {
     const from = this.configService.get<string>('SMTP_FROM', 'no-reply@sindicatoenap.cl');
     const host = this.configService.get<string>('SMTP_HOST');
     const user = this.configService.get<string>('SMTP_USER');
@@ -35,7 +35,7 @@ export class NotificationsService {
                    pass.includes('YOUR_');
 
     if (isMock) {
-      this.logger.warn(`SMTP credentials not configured (mock values detected). Simulated sending email to: ${to} - Subject: "${subject}"`);
+      this.logger.warn(`SMTP credentials not configured (mock values detected). Simulated sending email to: ${to} - Subject: "${subject}"${replyTo ? ` - ReplyTo: "${replyTo}"` : ''}`);
       return true;
     }
 
@@ -47,6 +47,7 @@ export class NotificationsService {
         to,
         subject,
         html,
+        replyTo,
       });
       this.logger.log(`Email sent successfully to ${to}.`);
       return true;

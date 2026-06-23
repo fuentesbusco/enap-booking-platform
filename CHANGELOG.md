@@ -6,6 +6,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.23.0] - 2026-06-23
+### Añadido
+- **Restricciones de Acceso y Solicitudes para Externos (Hito 2)**:
+  - **Restricción de Dominios de Correo**: Limitación de registro e inicio de sesión de socios en la plataforma exclusivamente a direcciones con dominio `&#64;enap.cl` o `&#64;enaprefinerias.cl` en el frontend y backend.
+  - **Correo Adicional para Reservas**: Campo opcional de correo de contacto adicional durante el flujo de reserva que replica todas las notificaciones transaccionales (confirmaciones de pago, aprobaciones, etc.) para mayor comodidad del socio.
+  - **Consolidación del Catálogo de Cabañas**: Reducción de la vista del catálogo a una única tarjeta descriptiva ("Cabañas Familiares 1 al 6") con selector interactivo de cabaña específica en el checkout.
+  - **Formulario de Solicitud de Reserva para Externos**: Formulario web dinámico y premium para usuarios externos en el login, que envía la solicitud directamente por correo electrónico al administrador con cabecera `replyTo` para respuesta directa.
+
 ## [1.22.0] - 2026-06-20
 ### Añadido
 - **Mejoras de Navegación y Usabilidad (Hito 2)**:

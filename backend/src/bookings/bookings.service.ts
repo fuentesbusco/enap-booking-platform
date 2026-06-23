@@ -498,4 +498,74 @@ export class BookingsService {
   private daysDiff(a: string, b: string): number {
     return Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
   }
+
+  async sendExternalRequestEmail(data: {
+    fullName: string;
+    email: string;
+    phone: string;
+    spaceName: string;
+    checkIn: string;
+    checkOut: string;
+    guestsCount: number;
+    message?: string;
+  }): Promise<void> {
+    this.logger.log(`[Solicitud Externa] Recibida solicitud de ${data.fullName} para ${data.spaceName} (${data.checkIn} a ${data.checkOut})`);
+    
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@sindicatoenap.cl';
+    const emailHtml = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 12px;">
+        <h2 style="color: #1b4332; border-bottom: 2px solid #1b4332; padding-bottom: 8px;">Nueva Solicitud de Reserva (Público General)</h2>
+        <p>Se ha recibido una nueva solicitud de reserva desde el formulario web de público externo:</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px;">
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold; width: 180px;">Nombre Solicitante:</td>
+            <td style="padding: 6px 0; color: #111;">${data.fullName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold;">Correo Electrónico:</td>
+            <td style="padding: 6px 0; color: #111;"><a href="mailto:${data.email}">${data.email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold;">Teléfono de Contacto:</td>
+            <td style="padding: 6px 0; color: #111;">${data.phone}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold;">Recinto de Interés:</td>
+            <td style="padding: 6px 0; color: #111;"><strong>${data.spaceName}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold;">Fecha de Check-in:</td>
+            <td style="padding: 6px 0; color: #111; font-family: monospace;">${data.checkIn}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold;">Fecha de Check-out:</td>
+            <td style="padding: 6px 0; color: #111; font-family: monospace;">${data.checkOut}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #666; font-weight: bold;">Cantidad de Huéspedes:</td>
+            <td style="padding: 6px 0; color: #111;">${data.guestsCount} personas</td>
+          </tr>
+        </table>
+        
+        ${data.message ? `
+          <div style="background-color: #f4f6f5; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 13px; border-left: 4px solid #1b4332;">
+            <strong style="color: #1b4332; display: block; margin-bottom: 5px;">Mensaje o Comentarios del Cliente:</strong>
+            <p style="margin: 0; color: #444; font-style: italic; line-height: 1.5;">"${data.message}"</p>
+          </div>
+        ` : ''}
+        
+        <p style="color: #666; font-size: 12px; margin-top: 25px;">Puedes responder a este correo para coordinar directamente con el solicitante, o ingresar su reserva de forma manual en el panel de administración si hay disponibilidad.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 10px; color: #999; text-align: center;">Centro Vacacional Sindicato ENAP - Refinería Bío Bío</p>
+      </div>
+    `;
+
+    await this.notificationsService.sendEmail(
+      adminEmail,
+      `[Solicitud Reserva] ${data.fullName} - Recinto: ${data.spaceName}`,
+      emailHtml,
+      data.email
+    );
+  }
 }

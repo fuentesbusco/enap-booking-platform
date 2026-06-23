@@ -104,19 +104,88 @@
 
       <!-- TAB 3: GUEST BOOKING (Público General / Externo) -->
       <div *ngIf="activeTab === 'guest'" class="space-y-4 animate-fadeIn">
-        <div class="bg-forest/5 border border-forest/15 rounded-2xl p-5 text-center">
-          <span class="text-3xl block mb-3">📞</span>
-          <h3 class="font-display font-semibold text-sm text-forest mb-2">Reservas para Público General</h3>
-          <p class="text-xs text-charcoal/70 leading-relaxed mb-4">
-            El acceso y auto-registro en esta plataforma está restringido exclusivamente a <strong>funcionarios activos y socios del Sindicato ENAP</strong> con correo institucional.
+        <!-- Success State -->
+        <div *ngIf="extSuccess" class="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 text-center animate-scaleIn">
+          <span class="text-4xl block mb-3">✉️</span>
+          <h3 class="font-display font-semibold text-lg text-emerald-800 mb-2">¡Solicitud Enviada!</h3>
+          <p class="text-xs text-emerald-950/70 leading-relaxed mb-6">
+            Tu solicitud de reserva ha sido enviada directamente a la administración. Nos pondremos en contacto contigo a la brevedad para confirmar la disponibilidad y coordinar el pago.
           </p>
-          <p class="text-xs text-charcoal/70 leading-relaxed mb-4">
-            Si eres un cliente externo o jubilado, puedes solicitar y coordinar tu reserva contactando directamente al administrador del recinto, quien gestionará tu reserva en el sistema.
-          </p>
-          <div class="bg-white border border-charcoal/10 rounded-xl p-3 text-xs font-mono text-charcoal">
-            <strong>Contacto Administrador:</strong><br>
-            <a href="mailto:admin&#64;sindicatoenap.cl" class="text-forest hover:underline font-bold">admin&#64;sindicatoenap.cl</a>
+          <button type="button" (click)="extSuccess = false"
+            class="btn-primary w-full py-3 text-sm font-medium">
+            Nueva Solicitud
+          </button>
+        </div>
+
+        <!-- Form State -->
+        <div *ngIf="!extSuccess" class="space-y-4">
+          <div class="bg-forest/5 border border-forest/10 rounded-2xl p-4 text-center">
+            <h3 class="font-display font-semibold text-xs text-forest uppercase tracking-wider mb-1">Solicitud de Reserva para Externos</h3>
+            <p class="text-xxs text-charcoal/60 leading-relaxed">
+              Completa los datos a continuación para enviar tu solicitud directamente al administrador del recinto.
+            </p>
           </div>
+
+          <form (ngSubmit)="onExternalSubmit()" class="space-y-4">
+            <div>
+              <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre Completo</label>
+              <input type="text" [(ngModel)]="extFullName" name="extFullName" placeholder="Ej. Juan Pérez"
+                class="input w-full" required />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo</label>
+                <input type="email" [(ngModel)]="extEmail" name="extEmail" placeholder="juan&#64;correo.com"
+                  class="input w-full" required />
+              </div>
+              <div>
+                <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Teléfono</label>
+                <input type="tel" [(ngModel)]="extPhone" name="extPhone" placeholder="+56912345678"
+                  class="input w-full" required />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Recinto de Interés</label>
+              <select [(ngModel)]="extSpaceName" name="extSpaceName" class="input w-full" required>
+                <option value="Cabañas Familiares (1 al 6)">Cabañas Familiares (1 al 6)</option>
+                <option value="Quincho">Quincho</option>
+                <option value="Club House">Club House</option>
+                <option value="Piscina">Piscina</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Check-in</label>
+                <input type="date" [(ngModel)]="extCheckIn" name="extCheckIn" class="input w-full" required />
+              </div>
+              <div>
+                <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Check-out</label>
+                <input type="date" [(ngModel)]="extCheckOut" name="extCheckOut" class="input w-full" required />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Cantidad de Personas</label>
+              <input type="number" [(ngModel)]="extGuestsCount" name="extGuestsCount" min="1"
+                class="input w-full" required />
+            </div>
+
+            <div>
+              <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Mensaje o Comentarios (Opcional)</label>
+              <textarea [(ngModel)]="extMessage" name="extMessage" rows="2" placeholder="Indica detalles adicionales..."
+                class="input w-full py-2 h-auto"></textarea>
+            </div>
+
+            <button type="submit" [disabled]="loading"
+              class="btn-primary w-full py-3.5 text-sm font-medium mt-2 flex justify-center items-center gap-2">
+              <span *ngIf="loading"
+                class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+              Enviar Solicitud
+            </button>
+          </form>
         </div>
       </div>
 
