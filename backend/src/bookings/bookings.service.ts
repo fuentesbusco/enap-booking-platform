@@ -367,6 +367,26 @@ export class BookingsService {
     return booking;
   }
 
+  getStaticBlockedDatesForSpace(space: any): string[] {
+    if (!space) return [];
+    if (space.name === 'Cabaña 1') {
+      return ['2025-12-20', '2025-12-21', '2025-12-22', '2025-12-24', '2025-12-25', '2025-12-31'];
+    }
+    if (space.name === 'Cabaña 2') {
+      return ['2025-12-28', '2025-12-29', '2025-12-30', '2025-12-31', '2026-01-10', '2026-01-11', '2026-01-12', '2026-01-13'];
+    }
+    if (space.name === 'Quincho Central') {
+      return ['2025-12-10', '2025-12-11', '2025-12-28'];
+    }
+    if (space.name === 'Quincho Oriente') {
+      return ['2025-12-31'];
+    }
+    if (space.name === 'Piscina General') {
+      return ['2026-01-05'];
+    }
+    return this.blockedDates[space.id] || [];
+  }
+
   async getBlockedDatesForSpace(spaceId: number): Promise<string[]> {
     await this.expireOldBookings();
     const space = await this.spacesService.getById(spaceId);
@@ -404,7 +424,7 @@ export class BookingsService {
       }
 
       for (const cabin of cabins) {
-        const staticBlocks = this.blockedDates[cabin.id] || [];
+        const staticBlocks = this.getStaticBlockedDatesForSpace(cabin);
         for (const d of staticBlocks) {
           dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
         }
@@ -422,7 +442,7 @@ export class BookingsService {
         .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
         .getMany();
 
-      const staticBlocks = this.blockedDates[spaceId] || [];
+      const staticBlocks = this.getStaticBlockedDatesForSpace(space);
       staticBlocks.forEach((d) => dates.add(d));
 
       const dailyOccupancy: { [date: string]: number } = {};
@@ -445,7 +465,7 @@ export class BookingsService {
         .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
         .getMany();
 
-      const staticBlocks = this.blockedDates[spaceId] || [];
+      const staticBlocks = this.getStaticBlockedDatesForSpace(space);
       staticBlocks.forEach((d) => dates.add(d));
 
       for (const b of bookings) {
@@ -478,7 +498,7 @@ export class BookingsService {
     }
 
     // 1. Static check
-    const staticBlocks = this.blockedDates[spaceId] || [];
+    const staticBlocks = this.getStaticBlockedDatesForSpace(space);
     const hasStaticBlock = datesToCheck.some((d) => staticBlocks.includes(d));
     if (hasStaticBlock) {
       this.logger.warn(`[Bloqueo] Bloqueo estático detectado en fecha(s) consultada(s) para espacio ID ${spaceId}.`);

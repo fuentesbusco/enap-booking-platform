@@ -2,12 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SpacesService } from './spaces.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SpaceEntity } from './space.entity';
+import { FeedbackEntity } from '../feedback/feedback.entity';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 describe('SpacesService', () => {
   let service: SpacesService;
   let repository: jest.Mocked<Repository<SpaceEntity>>;
+  let feedbackRepository: jest.Mocked<Repository<FeedbackEntity>>;
 
   const mockSpace: SpaceEntity = {
     id: 1,
@@ -33,15 +35,21 @@ describe('SpacesService', () => {
       delete: jest.fn(),
     };
 
+    const mockFeedbackRepository = {
+      find: jest.fn().mockResolvedValue([]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SpacesService,
         { provide: getRepositoryToken(SpaceEntity), useValue: mockRepository },
+        { provide: getRepositoryToken(FeedbackEntity), useValue: mockFeedbackRepository },
       ],
     }).compile();
 
     service = module.get<SpacesService>(SpacesService);
     repository = module.get(getRepositoryToken(SpaceEntity));
+    feedbackRepository = module.get(getRepositoryToken(FeedbackEntity));
   });
 
   it('should be defined', () => {
@@ -53,7 +61,7 @@ describe('SpacesService', () => {
       repository.find.mockResolvedValue([mockSpace]);
       const result = await service.getAll();
       expect(repository.find).toHaveBeenCalled();
-      expect(result).toEqual([mockSpace]);
+      expect(result).toEqual([{ ...mockSpace, ratingAverage: 0, ratingCount: 0 }]);
     });
   });
 
@@ -62,7 +70,7 @@ describe('SpacesService', () => {
       repository.findOne.mockResolvedValue(mockSpace);
       const result = await service.getById(1);
       expect(repository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
-      expect(result).toEqual(mockSpace);
+      expect(result).toEqual({ ...mockSpace, ratingAverage: 0, ratingCount: 0 });
     });
 
     it('should throw NotFoundException if not found', async () => {
