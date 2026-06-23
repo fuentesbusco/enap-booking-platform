@@ -48,10 +48,26 @@ export class SpacesListComponent implements OnInit {
   }
 
   filterSpaces() {
-    this.filtered =
-      this.activeType === 'all'
-        ? this.spaces
-        : this.spaces.filter((s) => s.type === this.activeType);
+    const list = this.activeType === 'all'
+      ? this.spaces
+      : this.spaces.filter((s) => s.type === this.activeType);
+
+    const cabins = list.filter((s) => s.type === 'cabin');
+    const others = list.filter((s) => s.type !== 'cabin');
+
+    if (cabins.length > 0) {
+      // Tomamos la primera cabaña como base y consolidamos datos
+      const consolidatedCabin: Space = {
+        ...cabins[0],
+        name: 'Cabañas Familiares (1 al 6)',
+        id: 1, // Inicia el flujo en Cabaña 1
+        description: 'Seis acogedoras cabañas totalmente equipadas para 6 personas con menaje completo, cocina, TV satelital y parrilla exterior. Las cabañas 1 y 2 son del tipo A y las del 3 al 6 son del tipo B (idénticas).',
+        images: Array.from(new Set(cabins.flatMap(c => c.images))),
+      };
+      this.filtered = [consolidatedCabin, ...others];
+    } else {
+      this.filtered = others;
+    }
   }
 
   typeLabel(type: SpaceType) {

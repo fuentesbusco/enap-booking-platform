@@ -29,7 +29,7 @@
         [class.border-forest]="activeTab === 'guest'" [class.text-forest]="activeTab === 'guest'"
         [class.font-semibold]="activeTab === 'guest'"
         class="flex-1 py-3.5 text-sm font-medium text-charcoal/60 hover:text-charcoal transition-colors border-b border-transparent">
-        Invitado
+        Público / Externo
       </button>
     </div>
 
@@ -102,44 +102,23 @@
         </button>
       </form>
 
-      <!-- TAB 3: GUEST BOOKING -->
-      <form *ngIf="activeTab === 'guest'" (ngSubmit)="onGuestSubmit()" class="space-y-4">
-        <div
-          class="bg-forest/5 border border-forest/10 rounded-2xl p-4 text-xs text-forest font-medium flex items-start gap-2 mb-2">
-          <span class="text-base">ℹ️</span>
-          <span>Puedes realizar tu reserva ingresando tus datos personales. Si cuentas con el patrocinio de un socio del sindicato, ingresa su código para acceder a tarifas preferenciales.</span>
-        </div>
-        <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Nombre
-            Completo</label>
-          <input type="text" [(ngModel)]="guestFullName" name="guestFullName" placeholder="Juan Pérez Silva"
-            class="input w-full" required />
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">RUT</label>
-            <input type="text" [(ngModel)]="guestRut" name="guestRut" placeholder="12.345.678-9" class="input w-full"
-              required />
-          </div>
-          <div>
-            <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Código de Socio Patrocinador</label>
-            <input type="text" [(ngModel)]="guestFichaNumber" name="guestFichaNumber" placeholder="ENP-XXXX (Opcional)"
-              class="input w-full" />
+      <!-- TAB 3: GUEST BOOKING (Público General / Externo) -->
+      <div *ngIf="activeTab === 'guest'" class="space-y-4 animate-fadeIn">
+        <div class="bg-forest/5 border border-forest/15 rounded-2xl p-5 text-center">
+          <span class="text-3xl block mb-3">📞</span>
+          <h3 class="font-display font-semibold text-sm text-forest mb-2">Reservas para Público General</h3>
+          <p class="text-xs text-charcoal/70 leading-relaxed mb-4">
+            El acceso y auto-registro en esta plataforma está restringido exclusivamente a <strong>funcionarios activos y socios del Sindicato ENAP</strong> con correo institucional.
+          </p>
+          <p class="text-xs text-charcoal/70 leading-relaxed mb-4">
+            Si eres un cliente externo o jubilado, puedes solicitar y coordinar tu reserva contactando directamente al administrador del recinto, quien gestionará tu reserva en el sistema.
+          </p>
+          <div class="bg-white border border-charcoal/10 rounded-xl p-3 text-xs font-mono text-charcoal">
+            <strong>Contacto Administrador:</strong><br>
+            <a href="mailto:admin&#64;sindicatoenap.cl" class="text-forest hover:underline font-bold">admin&#64;sindicatoenap.cl</a>
           </div>
         </div>
-        <div>
-          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-1.5">Correo
-            Electrónico</label>
-          <input type="email" [(ngModel)]="guestEmail" name="guestEmail" placeholder="juan.perez@ejemplo.cl"
-            class="input w-full" required />
-        </div>
-        <button type="submit" [disabled]="loading"
-          class="btn-sand w-full py-3.5 text-sm font-semibold mt-2 flex justify-center items-center gap-2">
-          <span *ngIf="loading"
-            class="animate-spin rounded-full h-4 w-4 border-2 border-charcoal border-t-transparent"></span>
-          Continuar Reserva como Invitado
-        </button>
-      </form>
+      </div>
 
       <!-- Testing / Demo Bypasses -->
       <div class="mt-8 border-t border-charcoal/5 pt-6 text-center">

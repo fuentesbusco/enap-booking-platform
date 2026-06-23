@@ -34,6 +34,9 @@ export class BookingFlowComponent implements OnInit {
   currentStep = 1;
   steps = ['Fechas', 'Invitados', 'Pago', 'Confirmación'];
 
+  cabins: Space[] = [];
+  selectedCabinId = 0;
+
   activeImageIndex = 0;
   feedbacks: any[] = [];
   weatherData: any = null;
@@ -164,6 +167,13 @@ export class BookingFlowComponent implements OnInit {
         this.router.navigate(['/espacios']);
         return;
       }
+
+      if (s.type === 'cabin') {
+        this.selectedCabinId = s.id;
+        this.spacesService.getAll().subscribe((all) => {
+          this.cabins = all.filter((x) => x.type === 'cabin');
+        });
+      }
       
       // Load blocked dates from backend (public endpoint)
       this.spacesService
@@ -207,6 +217,27 @@ export class BookingFlowComponent implements OnInit {
         this.userPhone = user.phone || '';
       }
     });
+  }
+
+  selectCabin(id: number) {
+    this.selectedCabinId = id;
+    const found = this.cabins.find((c) => c.id === id);
+    if (found) {
+      this.space = found;
+      this.activeImageIndex = 0;
+      this.loading = true;
+      this.spacesService.getBlockedDates(id).subscribe({
+        next: (d) => {
+          this.blockedDates = d;
+          this.loading = false;
+          this.recalculate();
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error(err);
+        }
+      });
+    }
   }
 
   recalculate() {
