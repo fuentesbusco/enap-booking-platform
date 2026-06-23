@@ -302,4 +302,73 @@ describe('BookingsService', () => {
       expect(result.receiptUrl).toBe('http://receipt.pdf');
     });
   });
+
+  describe('Quincho pricing logic in calculatePriceBreakdown', () => {
+    const mockQuincho: SpaceEntity = {
+      id: 7,
+      name: 'Quincho 1',
+      type: 'quincho',
+      description: 'Quincho familiar',
+      maxCapacity: 30,
+      basePrice: 45000,
+      socioPrice: 30000,
+      guestPrice: 3500,
+      freeGuestsForSocio: 0,
+      images: [],
+      amenities: [],
+      bookings: [],
+    };
+
+    it('should charge base socio price and $0 additional guests for <= 15 people', () => {
+      const breakdown = service.calculatePriceBreakdown(mockQuincho, '2025-12-16', '2025-12-16', 12, 'socio', false);
+      expect(breakdown.base).toBe(30000);
+      expect(breakdown.guests_total).toBe(0);
+      expect(breakdown.total).toBe(30000);
+    });
+
+    it('should charge base socio price and additional guest fee for people >= 12yo exceeding 15', () => {
+      const guests = [
+        ...Array(14).fill({ age: 30, full_name: 'Adult', rut: '1' }), // 14 adults
+        ...Array(4).fill({ age: 8, full_name: 'Child', rut: '2' }),   // 4 children under 12
+        ...Array(3).fill({ age: 15, full_name: 'Teen', rut: '3' }),   // 3 teens/adults (total 21 people, 17 adults)
+      ];
+      const breakdown = service.calculatePriceBreakdown(mockQuincho, '2025-12-16', '2025-12-16', guests, 'socio', false);
+      // Limit is 15. Count of adults is 17.
+      // Payable adults = 17 - 15 = 2.
+      // guests_total = 2 * 3500 = 7000.
+      expect(breakdown.base).toBe(30000);
+      expect(breakdown.guests_total).toBe(7000);
+      expect(breakdown.total).toBe(37000);
+    });
+
+    it('should charge base external price and $0 additional guests for <= 10 people', () => {
+      const breakdown = service.calculatePriceBreakdown(mockQuincho, '2025-12-16', '2025-12-16', 8, 'external', false);
+      expect(breakdown.base).toBe(45000);
+      expect(breakdown.guests_total).toBe(0);
+      expect(breakdown.total).toBe(45000);
+    });
+
+    it('should charge base external price and additional guest fee for people >= 12yo exceeding 10', () => {
+      const guests = [
+        ...Array(9).fill({ age: 30, full_name: 'Adult', rut: '1' }), // 9 adults
+        ...Array(3).fill({ age: 5, full_name: 'Child', rut: '2' }),  // 3 children
+        ...Array(4).fill({ age: 12, full_name: 'Teen', rut: '3' }),  // 4 teens (total 16 people, 13 adults)
+      ];
+      const breakdown = service.calculatePriceBreakdown(mockQuincho, '2025-12-16', '2025-12-16', guests, 'external', false);
+      // Limit is 10. Count of adults is 13.
+      // Payable adults = 13 - 10 = 3.
+      // guests_total = 3 * 3500 = 10500.
+      expect(breakdown.base).toBe(45000);
+      expect(breakdown.guests_total).toBe(10500);
+      expect(breakdown.total).toBe(55500);
+    });
+
+    it('should charge entirely per-person with base $0 for group outings (visitType group)', () => {
+      const guests = Array(20).fill({ age: 15, full_name: 'Anyone', rut: '1' });
+      const breakdown = service.calculatePriceBreakdown(mockQuincho, '2025-12-16', '2025-12-16', guests, 'socio', false, 'group');
+      expect(breakdown.base).toBe(0);
+      expect(breakdown.guests_total).toBe(20 * 3500);
+      expect(breakdown.total).toBe(70000);
+    });
+  });
 });

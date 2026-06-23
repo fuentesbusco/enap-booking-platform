@@ -29,11 +29,65 @@ export class BookingsService {
     );
   }
 
-  calculatePrice(space: Space, checkIn: string, checkOut: string, guestCount: number, isForThirdParty: boolean = false): PriceBreakdown {
+  calculatePrice(
+    space: Space,
+    checkIn: string,
+    checkOut: string,
+    guestsOrCount: number | Guest[],
+    isForThirdParty: boolean = false,
+    visitType?: string,
+  ): PriceBreakdown {
     const role = this.auth.currentUser()?.role ?? 'external';
     const resolvedRole = isForThirdParty ? 'external' : role;
     const isSocio = resolvedRole === 'socio';
     const days = this.daysDiff(checkIn, checkOut) || 1;
+
+    // Check if the space is a generic quincho
+    const isGenericQuincho = space.type === 'quincho' && space.name !== 'Club House';
+
+    if (isGenericQuincho) {
+      if (visitType === 'group') {
+        const guestCount = typeof guestsOrCount === 'number' ? guestsOrCount : guestsOrCount.length;
+        const total = guestCount * space.guest_price;
+        return {
+          base: 0,
+          days,
+          guests_count: guestCount,
+          guests_total: total,
+          free_guests_applied: 0,
+          discount: 0,
+          total,
+        };
+      } else {
+        const limit = isSocio ? 15 : 10;
+        const unitPrice = isSocio ? space.socio_price : space.base_price;
+        const base = unitPrice * days;
+        
+        let payable = 0;
+        const guestCount = typeof guestsOrCount === 'number' ? guestsOrCount : guestsOrCount.length;
+        if (typeof guestsOrCount === 'number') {
+          payable = Math.max(0, guestsOrCount - limit);
+        } else {
+          const chargeableGuests = guestsOrCount.filter(
+            (g) => g.age === undefined || g.age === null || g.age >= 12
+          ).length;
+          payable = Math.max(0, chargeableGuests - limit);
+        }
+        
+        const guestsTotal = payable * space.guest_price;
+        return {
+          base,
+          days,
+          guests_count: guestCount,
+          guests_total: guestsTotal,
+          free_guests_applied: 0,
+          discount: 0,
+          total: base + guestsTotal,
+        };
+      }
+    }
+
+    const guestCount = typeof guestsOrCount === 'number' ? guestsOrCount : guestsOrCount.length;
     const unitPrice = isSocio ? space.socio_price : space.base_price;
     const base = unitPrice * days;
     const freeGuests = isSocio ? space.free_guests_for_socio : 0;
@@ -42,7 +96,8 @@ export class BookingsService {
     const freeGuestsApplied = Math.min(guestCount, freeGuests);
     const discount = freeGuestsApplied * space.guest_price;
     return {
-      base, days,
+      base,
+      days,
       guests_count: guestCount,
       guests_total: guestsTotal,
       free_guests_applied: freeGuestsApplied,

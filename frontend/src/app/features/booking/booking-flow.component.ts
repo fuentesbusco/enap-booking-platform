@@ -175,6 +175,19 @@ export class BookingFlowComponent implements OnInit {
             images: Array.from(new Set(cabins.flatMap((c) => c.images))),
           };
         });
+      } else if (s.type === 'quincho' && s.name !== 'Club House') {
+        this.spacesService.getAll().subscribe((all) => {
+          const quinchos = all.filter((x) => x.type === 'quincho' && x.name !== 'Club House');
+          this.space = {
+            ...s,
+            name: 'Quinchos Familiares (1 al 10)',
+            description: 'Diez quinchos equipados con parrilla, mesas y sillas para asados y celebraciones al aire libre. Capacidad de hasta 15 personas para socios y 10 para externos.',
+            images: Array.from(new Set(quinchos.flatMap((q) => q.images))),
+          };
+        });
+        if (!this.isSocio) {
+          this.visitType = 'friends';
+        }
       }
       
       // Load blocked dates from backend (public endpoint)
@@ -229,8 +242,9 @@ export class BookingFlowComponent implements OnInit {
         this.space,
         this.checkIn,
         this.checkOut,
-        this.guests.length,
+        this.guests,
         this.isForThirdParty,
+        this.visitType,
       );
     }
   }

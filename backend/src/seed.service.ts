@@ -108,34 +108,69 @@ export class SeedService implements OnApplicationBootstrap {
       }
 
       // Update/Create Quinchos
-      for (let i = 0; i < mockQuinchos.length; i++) {
-        const mockQuincho = mockQuinchos[i];
-        if (i < dbQuinchos.length) {
-          const dbQuincho = dbQuinchos[i];
-          dbQuincho.name = mockQuincho.name;
-          dbQuincho.description = mockQuincho.description;
-          dbQuincho.maxCapacity = mockQuincho.max_capacity;
-          dbQuincho.basePrice = mockQuincho.base_price;
-          dbQuincho.socioPrice = mockQuincho.socio_price;
-          dbQuincho.guestPrice = mockQuincho.guest_price;
-          dbQuincho.freeGuestsForSocio = mockQuincho.free_guests_for_socio;
-          dbQuincho.images = mockQuincho.images;
-          dbQuincho.amenities = mockQuincho.amenities;
-          await this.spaceRepository.save(dbQuincho);
+      const dbGenericQuinchos = dbQuinchos.filter(q => q.name !== 'Club House');
+      const mockGenericQuinchos = mockQuinchos.filter(q => q.name !== 'Club House');
+      const dbClubHouse = dbQuinchos.find(q => q.name === 'Club House');
+      const mockClubHouse = mockQuinchos.find(q => q.name === 'Club House');
+
+      // Sync Generic Quinchos (1 to 10)
+      for (let i = 0; i < mockGenericQuinchos.length; i++) {
+        const mockQ = mockGenericQuinchos[i];
+        if (i < dbGenericQuinchos.length) {
+          const dbQ = dbGenericQuinchos[i];
+          dbQ.name = mockQ.name;
+          dbQ.description = mockQ.description;
+          dbQ.maxCapacity = mockQ.max_capacity;
+          dbQ.basePrice = mockQ.base_price;
+          dbQ.socioPrice = mockQ.socio_price;
+          dbQ.guestPrice = mockQ.guest_price;
+          dbQ.freeGuestsForSocio = mockQ.free_guests_for_socio;
+          dbQ.images = mockQ.images;
+          dbQ.amenities = mockQ.amenities;
+          await this.spaceRepository.save(dbQ);
         } else {
-          const newQuincho = this.spaceRepository.create({
-            name: mockQuincho.name,
+          const newQ = this.spaceRepository.create({
+            name: mockQ.name,
             type: 'quincho',
-            description: mockQuincho.description,
-            maxCapacity: mockQuincho.max_capacity,
-            basePrice: mockQuincho.base_price,
-            socioPrice: mockQuincho.socio_price,
-            guestPrice: mockQuincho.guest_price,
-            freeGuestsForSocio: mockQuincho.free_guests_for_socio,
-            images: mockQuincho.images,
-            amenities: mockQuincho.amenities,
+            description: mockQ.description,
+            maxCapacity: mockQ.max_capacity,
+            basePrice: mockQ.base_price,
+            socioPrice: mockQ.socio_price,
+            guestPrice: mockQ.guest_price,
+            freeGuestsForSocio: mockQ.free_guests_for_socio,
+            images: mockQ.images,
+            amenities: mockQ.amenities,
           });
-          await this.spaceRepository.save(newQuincho);
+          await this.spaceRepository.save(newQ);
+        }
+      }
+
+      // Sync Club House
+      if (mockClubHouse) {
+        if (dbClubHouse) {
+          dbClubHouse.description = mockClubHouse.description;
+          dbClubHouse.maxCapacity = mockClubHouse.max_capacity;
+          dbClubHouse.basePrice = mockClubHouse.base_price;
+          dbClubHouse.socioPrice = mockClubHouse.socio_price;
+          dbClubHouse.guestPrice = mockClubHouse.guest_price;
+          dbClubHouse.freeGuestsForSocio = mockClubHouse.free_guests_for_socio;
+          dbClubHouse.images = mockClubHouse.images;
+          dbClubHouse.amenities = mockClubHouse.amenities;
+          await this.spaceRepository.save(dbClubHouse);
+        } else {
+          const newClubHouse = this.spaceRepository.create({
+            name: mockClubHouse.name,
+            type: 'quincho',
+            description: mockClubHouse.description,
+            maxCapacity: mockClubHouse.max_capacity,
+            basePrice: mockClubHouse.base_price,
+            socioPrice: mockClubHouse.socio_price,
+            guestPrice: mockClubHouse.guest_price,
+            freeGuestsForSocio: mockClubHouse.free_guests_for_socio,
+            images: mockClubHouse.images,
+            amenities: mockClubHouse.amenities,
+          });
+          await this.spaceRepository.save(newClubHouse);
         }
       }
 

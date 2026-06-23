@@ -22,6 +22,7 @@ export class AdminBookingsComponent implements OnInit {
   bookings: Booking[] = [];
   filtered: Booking[] = [];
   cabins: Space[] = [];
+  quinchos: Space[] = [];
   activeFilter = 'all';
   loading = false;
 
@@ -44,6 +45,7 @@ export class AdminBookingsComponent implements OnInit {
     });
     this.spacesService.getAll().subscribe((all) => {
       this.cabins = all.filter((s) => s.type === 'cabin');
+      this.quinchos = all.filter((s) => s.type === 'quincho' && s.name !== 'Club House');
     });
     this.getWeather();
   }

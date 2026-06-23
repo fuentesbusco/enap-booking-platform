@@ -56,13 +56,62 @@ export class BookingsService {
     space: SpaceEntity,
     checkIn: string,
     checkOut: string,
-    guestCount: number,
+    guestsOrCount: number | any[],
     role: string,
     isForThirdParty: boolean = false,
+    visitType?: string,
   ): PriceBreakdown {
     const resolvedRole = isForThirdParty ? 'external' : role;
     const isSocio = resolvedRole === 'socio';
     const days = this.daysDiff(checkIn, checkOut) || 1;
+
+    // Check if the space is a generic quincho
+    const isGenericQuincho = space.type === 'quincho' && space.name !== 'Club House';
+
+    if (isGenericQuincho) {
+      if (visitType === 'group') {
+        const guestCount = typeof guestsOrCount === 'number' ? guestsOrCount : guestsOrCount.length;
+        const guestsTotal = guestCount * space.guestPrice;
+        return {
+          base: 0,
+          days,
+          guests_count: guestCount,
+          guests_total: guestsTotal,
+          free_guests_applied: 0,
+          discount: 0,
+          total: guestsTotal,
+        };
+      } else {
+        const limit = isSocio ? 15 : 10;
+        const unitPrice = isSocio ? space.socioPrice : space.basePrice;
+        const base = unitPrice * days;
+        
+        let payable = 0;
+        const guestCount = typeof guestsOrCount === 'number' ? guestsOrCount : guestsOrCount.length;
+        if (typeof guestsOrCount === 'number') {
+          payable = Math.max(0, guestsOrCount - limit);
+        } else {
+          // Additional guest fee starts from 12 years old (or undefined/null)
+          const chargeableGuests = guestsOrCount.filter(
+            (g) => g.age === undefined || g.age === null || g.age >= 12
+          ).length;
+          payable = Math.max(0, chargeableGuests - limit);
+        }
+        
+        const guestsTotal = payable * space.guestPrice;
+        return {
+          base,
+          days,
+          guests_count: guestCount,
+          guests_total: guestsTotal,
+          free_guests_applied: 0,
+          discount: 0,
+          total: base + guestsTotal,
+        };
+      }
+    }
+
+    const guestCount = typeof guestsOrCount === 'number' ? guestsOrCount : guestsOrCount.length;
     const unitPrice = isSocio ? space.socioPrice : space.basePrice;
     const base = unitPrice * days;
     const freeGuests = isSocio ? space.freeGuestsForSocio : 0;
@@ -126,6 +175,25 @@ export class BookingsService {
         throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
       }
       resolvedSpace = foundCabin;
+    } else if (space.type === 'quincho' && space.name !== 'Club House') {
+      const quinchos = await this.spacesService.getAll();
+      const quinchoSpaces = quinchos.filter((q) => q.type === 'quincho' && q.name !== 'Club House');
+      let foundQuincho = null;
+      for (const quincho of quinchoSpaces) {
+        try {
+          const blocked = await this.isBlocked(quincho.id, checkIn, checkOut, guests.length);
+          if (!blocked) {
+            foundQuincho = quincho;
+            break;
+          }
+        } catch (e) {
+          throw e;
+        }
+      }
+      if (!foundQuincho) {
+        throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
+      }
+      resolvedSpace = foundQuincho;
     } else {
       const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut, guests.length);
       if (isBlocked) {
@@ -139,9 +207,10 @@ export class BookingsService {
       resolvedSpace,
       checkIn,
       checkOut,
-      guests.length,
+      guests,
       resolvedRole,
-      options?.isForThirdParty
+      options?.isForThirdParty,
+      options?.visitType
     );
     
     // Generate Booking Code based on database count
@@ -435,6 +504,37 @@ export class BookingsService {
           dates.add(date);
         }
       }
+    } else if (space.type === 'quincho' && space.name !== 'Club House') {
+      const allSpaces = await this.spacesService.getAll();
+      const quinchos = allSpaces.filter((s) => s.type === 'quincho' && s.name !== 'Club House');
+      const quinchoIds = quinchos.map((c) => c.id);
+
+      const quinchoBookings = await this.bookingRepository.createQueryBuilder('booking')
+        .where('booking.spaceId IN (:...quinchoIds)', { quinchoIds })
+        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+        .getMany();
+
+      const dailyOccupancy: { [date: string]: number } = {};
+
+      for (const b of quinchoBookings) {
+        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+        for (const d of datesInRange) {
+          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
+        }
+      }
+
+      for (const quincho of quinchos) {
+        const staticBlocks = this.getStaticBlockedDatesForSpace(quincho);
+        for (const d of staticBlocks) {
+          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
+        }
+      }
+
+      for (const [date, count] of Object.entries(dailyOccupancy)) {
+        if (count >= quinchos.length) {
+          dates.add(date);
+        }
+      }
     } else if (space.type === 'pool') {
       const bookings = await this.bookingRepository.createQueryBuilder('booking')
         .leftJoinAndSelect('booking.guests', 'guest')
@@ -608,15 +708,15 @@ export class BookingsService {
 
     booking.space = newSpace;
     
-    // Recalculate price breakdown just in case prices are different
     const resolvedRole = (booking.adminCreatedForExternal || booking.isForThirdParty) ? 'external' : booking.user.role;
     booking.priceBreakdown = this.calculatePriceBreakdown(
       newSpace,
       booking.checkIn,
       booking.checkOut,
-      booking.guests?.length || 0,
+      booking.guests || [],
       resolvedRole,
-      booking.isForThirdParty
+      booking.isForThirdParty,
+      booking.visitType
     );
     booking.totalAmount = booking.priceBreakdown.total;
 

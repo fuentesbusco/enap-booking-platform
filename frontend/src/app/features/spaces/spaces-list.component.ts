@@ -53,21 +53,33 @@ export class SpacesListComponent implements OnInit {
       : this.spaces.filter((s) => s.type === this.activeType);
 
     const cabins = list.filter((s) => s.type === 'cabin');
-    const others = list.filter((s) => s.type !== 'cabin');
+    const quinchos = list.filter((s) => s.type === 'quincho' && s.name !== 'Club House');
+    const individualSpaces = list.filter((s) => s.type !== 'cabin' && (s.type !== 'quincho' || s.name === 'Club House'));
+
+    const resultSpaces: Space[] = [];
 
     if (cabins.length > 0) {
-      // Tomamos la primera cabaña como base y consolidamos datos
-      const consolidatedCabin: Space = {
+      resultSpaces.push({
         ...cabins[0],
         name: 'Cabañas Familiares (1 al 6)',
-        id: 1, // Inicia el flujo en Cabaña 1
+        id: 1,
         description: 'Seis acogedoras cabañas totalmente equipadas para 6 personas con menaje completo, cocina, TV satelital y parrilla exterior. Las cabañas 1 y 2 son del tipo A y las del 3 al 6 son del tipo B (idénticas).',
         images: Array.from(new Set(cabins.flatMap(c => c.images))),
-      };
-      this.filtered = [consolidatedCabin, ...others];
-    } else {
-      this.filtered = others;
+      });
     }
+
+    if (quinchos.length > 0) {
+      resultSpaces.push({
+        ...quinchos[0],
+        name: 'Quinchos Familiares (1 al 10)',
+        id: 7,
+        description: 'Diez quinchos equipados con parrilla, mesas y sillas para asados y celebraciones al aire libre. Capacidad de hasta 15 personas para socios y 10 para externos.',
+        images: Array.from(new Set(quinchos.flatMap(q => q.images))),
+      });
+    }
+
+    resultSpaces.push(...individualSpaces);
+    this.filtered = resultSpaces;
   }
 
   typeLabel(type: SpaceType) {

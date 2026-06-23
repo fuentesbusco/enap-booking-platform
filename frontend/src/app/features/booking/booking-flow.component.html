@@ -316,46 +316,117 @@
       </div>
 
       <!-- Selector para quién es la reserva -->
-      <div *ngIf="isSocio" class="bg-mist rounded-xl p-4 mb-5 border border-charcoal/10">
+      <div *ngIf="space?.type === 'quincho' && space?.name !== 'Club House'; else defaultVisitTypeSelector" class="bg-mist rounded-xl p-4 mb-5 border border-charcoal/10">
         <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2">
           Declaración de Tipo de Visita
         </label>
         <div class="flex flex-col gap-2">
+          <ng-container *ngIf="isSocio">
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="personal"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('personal')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Uso Personal (Tarifa Socio)</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="family"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('family')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Carga Familiar (Tarifa Socio)</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="friends"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('friends')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Familiares o Amigos (Tarifa General)</span>
+            </label>
+          </ng-container>
+          
+          <ng-container *ngIf="!isSocio">
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="friends"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('friends')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Uso Particular (Tarifa General)</span>
+            </label>
+          </ng-container>
+
           <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
             <input
               type="radio"
-              value="personal"
+              value="group"
               name="visitType"
               [(ngModel)]="visitType"
-              (change)="onVisitTypeChange('personal')"
+              (change)="onVisitTypeChange('group')"
               class="form-radio text-forest focus:ring-forest"
             />
-            <span>Uso Personal (Tarifa Socio)</span>
-          </label>
-          <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
-            <input
-              type="radio"
-              value="family"
-              name="visitType"
-              [(ngModel)]="visitType"
-              (change)="onVisitTypeChange('family')"
-              class="form-radio text-forest focus:ring-forest"
-            />
-            <span>Carga Familiar (Tarifa Socio)</span>
-          </label>
-          <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
-            <input
-              type="radio"
-              value="friends"
-              name="visitType"
-              [(ngModel)]="visitType"
-              (change)="onVisitTypeChange('friends')"
-              class="form-radio text-forest focus:ring-forest"
-            />
-            <span>Familiares o Amigos (Tarifa General)</span>
+            <span>Colegio o Paseo Particular (Tarifa por Persona)</span>
           </label>
         </div>
       </div>
+
+      <ng-template #defaultVisitTypeSelector>
+        <div *ngIf="isSocio" class="bg-mist rounded-xl p-4 mb-5 border border-charcoal/10">
+          <label class="text-xs font-mono text-charcoal/50 uppercase tracking-wider block mb-2">
+            Declaración de Tipo de Visita
+          </label>
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="personal"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('personal')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Uso Personal (Tarifa Socio)</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="family"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('family')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Carga Familiar (Tarifa Socio)</span>
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input
+                type="radio"
+                value="friends"
+                name="visitType"
+                [(ngModel)]="visitType"
+                (change)="onVisitTypeChange('friends')"
+                class="form-radio text-forest focus:ring-forest"
+              />
+              <span>Familiares o Amigos (Tarifa General)</span>
+            </label>
+          </div>
+        </div>
+      </ng-template>
 
       <!-- Datos del tercero ocupante si aplica -->
       <div *ngIf="isForThirdParty" class="bg-forest/5 border border-forest/15 rounded-xl p-4 mb-5 space-y-3">
