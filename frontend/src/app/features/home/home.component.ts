@@ -67,7 +67,22 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.spacesService.getAll().subscribe((d) => (this.spaces = d));
+    this.spacesService.getAll().subscribe((d) => {
+      const cabins = d.filter((s) => s.type === 'cabin');
+      const others = d.filter((s) => s.type !== 'cabin');
+      if (cabins.length > 0) {
+        const consolidatedCabin: Space = {
+          ...cabins[0],
+          name: 'Cabañas Familiares (1 al 6)',
+          id: 1,
+          description: 'Seis acogedoras cabañas totalmente equipadas para 6 personas con menaje completo, cocina, TV satelital y parrilla exterior. Las cabañas 1 y 2 son del tipo A y las del 3 al 6 son del tipo B (idénticas).',
+          images: Array.from(new Set(cabins.flatMap((c) => c.images))),
+        };
+        this.spaces = [consolidatedCabin, ...others];
+      } else {
+        this.spaces = others;
+      }
+    });
     this.announcementsService
       .getPublic()
       .subscribe((d) => (this.announcements = d));
