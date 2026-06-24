@@ -51,8 +51,8 @@
 ### [cite_start]Módulo 1 - Portal de Reservas para Socios [cite: 35]
 * [cite_start]Landing con información general, horarios y condiciones de arriendo. [cite: 36]
 * [cite_start]Aceptación de términos con registro de consentimiento. [cite: 36]
-* [cite_start]Selector de espacio: Cabaña, Quincho, Visita Piscina, Club House. [cite: 37]
-* [cite_start]Calendario de disponibilidad en tiempo real por espacio. [cite: 38]
+* [cite_start]Selector de espacio por Categorías consolidadas (Cabañas Familiares, Quinchos Familiares, Piscina General, Club House) sin tener que elegir un recinto físico individual (modelo estilo hotelero). [cite: 37]
+* [cite_start]Calendario de disponibilidad en tiempo real calculado dinámicamente según la cantidad de unidades totales de la categoría y reservas simultáneas. [cite: 38]
 * [cite_start]Formulario de datos del socio: nombre, RUT, N° ficha (autogenerado), teléfono, correo ENAP. [cite: 39]
 * [cite_start]Declaración de tipo de visita: uso personal, carga familiar, familiares o amigos. [cite: 39]
 * [cite_start]Registro de invitados con nombre, RUT y edad (tabla dinámica). [cite: 40]
@@ -61,10 +61,11 @@
 
 ### [cite_start]Módulo 2 - Panel de Administración [cite: 43]
 * [cite_start]Bandeja de reservas pendientes con aprobación o rechazo en un clic. [cite: 44]
-* [cite_start]Calendario de ocupación visual por espacio. [cite: 45]
+* [cite_start]Calendario de ocupación visual por categoría con renderizado de la unidad física específica asignada a cada reserva. [cite: 45]
 * [cite_start]Bloqueo manual de fechas con motivo (mantención, eventos, fuerza mayor). [cite: 46]
+* [cite_start]Reasignación validada de unidades físicas específicas (ej: Cabaña 1 a 6, Quincho 1 a 10) desde el panel de control de reservas, previniendo solapamientos accidentales.
 * [cite_start]Gestión de socios: registro, edición y activación/desactivación. [cite: 46]
-* [cite_start]Configuración de precios por espacio y temporada desde el panel. [cite: 47]
+* [cite_start]Configuración de precios y cantidad de unidades físicas disponibles (totalUnits) por categoría desde el panel. [cite: 47]
 * [cite_start]Reportes: reservas por período, ingresos por espacio, ocupación mensual. [cite: 48]
 
 ### [cite_start]Módulo 3 - Infraestructura y Automatización [cite: 49]

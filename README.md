@@ -17,15 +17,20 @@ El proyecto está diseñado bajo una arquitectura desacoplada:
 *   **Estilos:** Tailwind CSS + PostCSS.
 *   **Mock State:** Persistencia temporal en `sessionStorage` y Angular Signals reactivos.
 
-### Backend (Actual)
+### Backend
 *   **Framework:** NestJS 11 + TypeScript.
 *   **Servidor HTTP:** Express (bajo NestJS).
-*   **Autenticación:** Tokens firmados en Base64 que emulan el comportamiento y los roles de un JWT (`socio`, `admin`, `external`).
+*   **Autenticación:** Tokens JWT reales firmados mediante `JwtModule` y encriptación PBKDF2 para contraseñas de usuarios.
+*   **Base de Datos:** MySQL integrada con TypeORM.
+*   **Almacenamiento:** Amazon S3 para comprobantes de pago, fotos de recintos y anuncios.
+*   **Notificaciones:** Amazon SES para correos automatizados transaccionales (confirmaciones, notificaciones a administración, rechazos).
+*   **Pasarela de Pago:** Mercado Pago (Checkout Pro y Sandbox) con confirmación automática.
 
-### Infraestructura (Siguiente Fase de Producción)
-*   **Base de Datos:** MySQL conectada mediante TypeORM.
-*   **Almacenamiento (S3):** Para la subida de comprobantes de transferencia y fotos de espacios.
-*   **Infraestructura:** AWS EC2 (Servidor API) + RDS (MySQL) + SES (Notificaciones por email).
+### Infraestructura (Producción)
+*   **Backend:** AWS Lambda + API Gateway (Serverless Framework) para escalado elástico y alta disponibilidad.
+*   **Base de Datos:** AWS RDS MySQL.
+*   **Frontend:** Vercel (Angular 18 Standalone Components + Signals).
+*   **Meteorología:** Integración en vivo con Open-Meteo API para pronósticos y alertas preventivas de lluvia en Limache.
 
 ---
 
@@ -126,3 +131,18 @@ Para realizar una reserva sin tener una cuenta registrada en la plataforma:
 3. Al avanzar al paso de Pago, el sistema detectará que no estás logueado y te llevará a la pantalla de ingreso, conservando tu reserva en segundo plano (`sessionStorage`).
 4. Selecciona la pestaña **"Invitado"**, completa tus datos personales (nombre, RUT, correo), introduce tu **Código de Socio** de pruebas (ej: `ENP-0078`) y presiona **"Continuar como Invitado"**.
 5. Se te autenticará de forma temporal y regresarás directamente al paso de pago para cargar el comprobante bancario real y confirmar tu reserva.
+
+---
+
+## 🏨 Sistema de Categorías y Unidades de Inventario (Modelo Hotelero)
+
+La plataforma utiliza un modelo de inventario estilo hotelero para optimizar la ocupación y evitar la selección de cabañas o quinchos específicos por parte del usuario final:
+
+1. **Gestión Consolidada**: En lugar de exponer recintos físicos individuales en la base de datos (por ejemplo, 6 cabañas como filas separadas), la base de datos registra 4 grandes categorías de espacios con la propiedad `totalUnits`.
+2. **Capacidad y Unidades**:
+   *   **Cabañas Familiares**: 1 categoría, 6 unidades físicas disponibles (`totalUnits: 6`), capacidad de 6 personas por unidad.
+   *   **Quinchos Familiares**: 1 categoría, 10 unidades físicas disponibles (`totalUnits: 10`), capacidad de 15 personas por unidad.
+   *   **Piscina General**: 1 categoría, aforo total compartido (`totalUnits: 1`), capacidad máxima de 80 personas concurrentes.
+   *   **Club House**: 1 categoría, 1 unidad física (`totalUnits: 1`), capacidad máxima de 50 personas.
+3. **Asignación Automática**: Durante el checkout, el backend busca secuencialmente la primera unidad libre (ej: `"Cabaña 3"` o `"Quincho 5"`) que no posea solapamientos para las fechas seleccionadas, asegurando una estadía continua.
+4. **Reasignación Administrativa**: El panel de administración permite cambiar la unidad asignada a una reserva a través de un dropdown. La API valida automáticamente que la nueva unidad no tenga colisiones con otras reservas activas antes de confirmar el cambio.

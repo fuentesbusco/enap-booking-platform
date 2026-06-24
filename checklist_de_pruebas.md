@@ -44,6 +44,12 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
 - [x] **Instrucciones Sandbox de Mercado Pago (Paso 3)**
   - *Acción:* Seleccionar Mercado Pago en el Paso 3.
   - *Resultado:* Despliegue de un recuadro de ayuda ámbar detallando cómo simular pagos sin el error de "ambientes mezclados".
+- [x] **Asignación Automática de Unidad Física**
+  - *Acción:* Reservar una Cabaña o Quincho y verificar la reserva creada en la base de datos o en Mis Reservas.
+  - *Resultado:* Asignación secuencial automatizada de una unidad libre (ej: `"Cabaña 1"` a `"Cabaña 6"`, `"Quincho 1"` a `"Quincho 10"`).
+- [x] **Bloqueo por Límite de Unidades de Inventario**
+  - *Acción:* Reservar la totalidad de las 6 cabañas para las mismas fechas y verificar la disponibilidad para una séptima reserva.
+  - *Resultado:* Las fechas se muestran bloqueadas e imposibilitan la reserva al alcanzar las 6 unidades ocupadas simultáneamente.
 
 - [x] **Cálculo de Precios Dinámico (Paso 2)**
   - *Acción:* Elegir fechas de arriendo e invitados.
@@ -101,6 +107,7 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - *Resultado:* Acceso denegado, redirección al Inicio.
 - [x] **Administración de Espacios (`/admin/espacios`)**
   - [x] Crear un espacio subiendo múltiples fotos de prueba a AWS S3.
+  - [x] Configurar y modificar el campo "Unidades Disponibles" (`totalUnits`) y comprobar que se guarda correctamente.
   - [x] Editar tarifas del espacio y validar en el checkout.
   - [x] Eliminar un espacio libre de reservas.
 - [x] **Administración de Usuarios (`/admin/usuarios`)**
@@ -114,12 +121,20 @@ Este documento sirve como bitácora y lista de verificación (checklist) de aseg
   - [x] Comprobar enlace `📄 Comprobante` del depósito abriéndose en pestaña nueva.
   - [x] Aprobar una reserva (estado pasa a **Confirmada**).
   - [x] Comprobar columna "Tipo" que diferencia si el solicitante es Socio o Externo.
+- [x] **Reasignación de Unidad Específica por Dropdown (Admin Reservas)**
+  - [x] Desplegar el dropdown de espacio de una reserva de cabaña o quincho activa.
+  - [x] Seleccionar una unidad específica (ej. Cabaña 2) y confirmar el cambio.
+  - [x] Validar la reasignación exitosa de la propiedad `assignedUnit`.
+  - [x] Intentar reasignar a una unidad ocupada en las mismas fechas y comprobar la alerta de colisión del servidor.
 - [x] **Rechazo de Comprobantes con Comentario**
   - [x] Rechazar reserva ingresando comentarios de retroalimentación.
   - [x] Verificar que el cliente ve la reserva en estado "Sin pago" con el motivo expuesto.
 - [x] **Administración de Galería (`/admin/galeria`)**
   - [x] Subir una foto a la galería asociándola directamente a AWS S3.
   - [x] Eliminar una foto de la galería del centro.
+- [x] **Visualización de Unidad en Calendario (Admin Calendario)**
+  - [x] Abrir la pestaña del calendario de administración.
+  - [x] Verificar que las celdas diarias de ocupación renderizan explícitamente el nombre de la unidad física (ej: `"Cabaña 3"`, `"Quincho 5"`).
 
 ---
 

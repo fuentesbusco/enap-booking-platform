@@ -2,29 +2,30 @@
 
 Este directorio contiene la aplicación cliente (Frontend) para la **Plataforma de Reservas del Sindicato ENAP**, desarrollada con **Angular 18** y **Tailwind CSS**.
 
-La interfaz simula todos los flujos e interacciones de los usuarios y administradores utilizando **Angular Signals** como gestor de estado reactivo y persistencia local en `sessionStorage` para testing rápido.
+La interfaz interactúa directamente con la API en NestJS (usando `jwtInterceptor` para adjuntar de forma transparente el token JWT en las cabeceras). El estado reactivo y del clima local de Limache se gestiona de forma eficiente a través de **Angular Signals**.
 
 ---
 
 ## ✨ Características Implementadas
 
 ### Vista del Socio / Cliente
-*   **Inicio & Mural de Anuncios:** Página principal con un carrusel o listado de anuncios fijados.
-*   **Selector de Espacios:** Catálogo interactivo de Cabañas, Quinchos y Piscinas con tarjetas visuales, equipamiento (`amenities`) y precios diferenciados por rol.
-*   **Flujo de Reservas Interactiva (4 Pasos):**
-    1.  *Detalle del Recinto:* Consulta de capacidades y condiciones.
-    2.  *Selección de Fechas:* Rango de noches inhabilitando automáticamente las fechas bloqueadas y ocupadas.
-    3.  *Invitados:* Ingreso de Nombre, RUT y Teléfono de acompañantes con tope de capacidad.
-    4.  *Resumen y Pago:* Desglose detallado del precio, instrucciones de transferencia bancaria y zona para emular la carga de comprobantes.
-*   **Mis Reservas:** Panel personal del socio para consultar sus solicitudes, códigos de reserva auto-generados y estados en tiempo real (`pending_payment`, `pending_approval`, `confirmed`, `rejected`).
-*   **Accesos Rápidos de Autenticación:** Zona de ingreso (Login) con botones rápidos para iniciar sesión inmediatamente como Socio, Administrador o Público General para testeo rápido sin claves.
+*   **Inicio & Mural de Anuncios:** Página de portada con avisos destacados, carruseles de fotos locales del recinto, y un acordeón dinámico de Preguntas Frecuentes (FAQs) cargado desde base de datos.
+*   **Clima y Alertas:** Widget en el Hero con la temperatura actual en vivo de Limache (vía Open-Meteo) y alertas preventivas color ámbar si se intenta reservar un espacio al aire libre en un día con lluvia pronosticada.
+*   **Selector de Espacios:** Catálogo de recintos agrupados por categorías (Cabañas Familiares, Quinchos Familiares, Piscina General, Club House) con galerías de imágenes y tarifas dinámicas socio/público.
+*   **Flujo de Reservas en 4 Pasos:**
+    1.  *Detalle:* Fotos y descripción del espacio.
+    2.  *Fechas:* Selector de rango de noches (cabañas) o día único (quinchos/piscina). Se deshabilitan lunes (mantenimiento) y días agotados según disponibilidad física de unidades (6 cabañas, 10 quinchos).
+    3.  *Invitados:* Tarjeta del titular (para verificar RUT/Ficha y actualizar Teléfono/Correo) y registro dinámico de invitados (Nombre, RUT, Edad) con validación de aforo. Selector de arriendo a terceros con tarifas base general.
+    4.  *Pago:* Desglose detallado, instrucciones de transferencia bancaria con cargador multipart a S3, o botón de Mercado Pago Checkout Pro (con aviso e instrucciones para pruebas en Sandbox). Las reservas con valor $0 (ej: piscina con socio y menos de 5 invitados) se confirman al instante con un solo clic.
+*   **Mis Reservas:** Historial de solicitudes (con insignia de estado en revisión, confirmada, cancelada, expirada o rechazada). Las reservas sin pago se cancelan de forma pasiva tras 48 horas de inactividad.
+*   **Opiniones y Valoraciones:** Botón para valorar con estrellas (1 a 5) y comentario al finalizar una estadía.
+*   **Mi Perfil y Seguridad (`/perfil`):** Edición de contacto (validación de celular chileno) y cambio de contraseña con hashing PBKDF2.
 
 ### Vista del Administrador (Panel de Control)
-*   **Dashboard de Reservas:** Tablas con filtros de estado para ver las solicitudes entrantes y revisar comprobantes de transferencia.
-*   **Flujo de Aprobación:** Botones para aprobar (`confirmed`) o rechazar (`rejected` con comentarios) comprobantes.
-*   **CRUD de Espacios:** Pantalla completa de administración que abre un modal estilizado para agregar, editar y eliminar cabañas, quinchos o piscinas, actualizando las tarifas y capacidades al instante.
-*   **CRUD de Usuarios:** Listado de socios y externos con botones de acción para activar o desactivar socios de manera inmediata.
-*   **Calendario Visual de Ocupación:** Grilla mensual interactiva estructurada de lunes a domingo. Permite filtrar por recinto y muestra chips de color de reservas; al pasar el cursor (hover) despliega detalles de la reserva.
+*   **Dashboard de Reservas:** Visualización global de reservas con buscador y filtros. Columna "Tipo" diferenciando Socio/No Socio y badge "Para Tercero". Acciones rápidas para aprobar o rechazar con comentarios (se notifica automáticamente por email al socio).
+*   **Reasignación de Unidad Específica:** Dropdown en la grilla para reasignar la reserva a una cabaña (1 al 6) o quincho (1 al 10) específico, con validación de colisiones en tiempo real.
+*   **Calendario Mensual de Ocupación:** Grilla interactiva estructurada por mes que despliega explícitamente el nombre de la unidad reservada (ej: `"Cabaña 3"`, `"Quincho 5"`) en cada día y permite filtrar por recinto.
+*   **CRUDs de Gestión:** Módulos completos para administrar Espacios (con carga multipart de fotos a S3), FAQs, Usuarios (activar/desactivar y contraseñas temporales automáticas), Avisos, Opiniones (moderador) y Fotos de Galería.
 
 ---
 
@@ -33,18 +34,18 @@ La interfaz simula todos los flujos e interacciones de los usuarios y administra
 ```bash
 src/app/
 ├── core/                   # Capa lógica global
-│   ├── guards/             # Guards para protección de rutas (Auth, Admin)
-│   ├── mock-data.ts        # Semillas de datos y bloqueos estáticos
-│   ├── models.ts           # Interfaces compartidas de TypeScript
-│   └── services/           # Servicios reactivos (Auth, Bookings, Spaces, Users, Announcements)
-├── features/               # Módulos y vistas principales
-│   ├── admin/              # Componentes de administración (Reservas, Espacios, Usuarios, Calendario)
-│   ├── auth/               # Pantalla de login
-│   ├── booking/            # Componente de flujo de reserva paso a paso
-│   ├── home/               # Cartelera de avisos e inicio
-│   ├── my-bookings/        # Historial de reservas del usuario activo
-│   └── spaces/             # Grilla pública de recintos
-└── shared/                 # Componentes genéricos compartidos (Navbar, etc.)
+├── core/guards/            # Guards de protección de rutas por rol y jwtInterceptor
+├── core/services/          # Servicios HTTP (Auth, Bookings, Spaces, Users, Announcements, Weather)
+├── core/models.ts          # Interfaces de datos físicas compartidas con el backend
+├── features/               # Módulos y pantallas principales
+│   ├── admin/              # Componentes de administración (Reservas, Espacios, Usuarios, Calendario, Galería, FAQs, Opiniones)
+│   ├── auth/               # Pantalla de Login y Registro de socios/externos
+│   ├── booking/            # Componente de flujo de reserva paso a paso (Steps 1 a 4)
+│   ├── home/               # Cartelera de avisos, normas y FAQs interactivos
+│   ├── my-bookings/        # Historial de reservas del usuario y formulario de opiniones
+│   ├── profile/            # Edición de perfil y seguridad
+│   └── spaces/             # Grilla pública del catálogo de recintos
+└── shared/                 # Componentes genéricos compartidos (Navbar, Footer, etc.)
 ```
 
 ---

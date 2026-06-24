@@ -27,11 +27,12 @@ sequenceDiagram
     participant DB as Base de Datos MySQL
     
     Cliente->>Srv: Inicia sesión (carlos.munoz@enap.cl)
-    Cliente->>Srv: Selecciona Espacio (Cabaña Boldos) y Fechas
+    Cliente->>Srv: Selecciona Categoría (Cabañas Familiares) y Fechas
     Cliente->>Srv: Registra acompañantes (Paso 2)
     Cliente->>Srv: Sube comprobante de transferencia y envía (Paso 3)
-    Srv->>DB: Guarda reserva con estado "pending_approval"
-    Srv-->>Cliente: Redirecciona a Paso 4 (Código ENP-2026-XXXXX)
+    Srv->>Srv: Asigna automáticamente la primera unidad física disponible (ej: Cabaña 1)
+    Srv->>DB: Guarda reserva con estado "pending_approval" y assignedUnit
+    Srv-->>Cliente: Redirecciona a Paso 4 (Código ENP-2025-XXXXX)
     Admin->>Srv: Inicia sesión y va a Reservas -> Por Aprobar
     Admin->>Srv: Revisa comprobante y hace clic en "Aprobar"
     Srv->>DB: Actualiza estado a "confirmed" y envía email de confirmación
@@ -115,10 +116,10 @@ Valida la consulta de soporte dinámico.
 ---
 
 ### Flujo G: Reserva de Quinchos y Piscina (Jornada Única)
-1.  **Iniciar Reserva:** Ve a **Espacios**, selecciona un Quincho o la *Piscina General*.
+1.  **Iniciar Reserva:** Ve a **Espacios**, selecciona *Quinchos Familiares* o la *Piscina General*.
 2.  **Selector de Fecha de Jornada:** Verás el selector **"Día de la Jornada"** (check_in = check_out).
 3.  **Verificación de Conflictos:**
-    *   **Quinchos:** Si intentas seleccionar una fecha ocupada, aparecerá una alerta de conflicto en color rojo impidiendo continuar.
+    *   **Quinchos Familiares:** Si intentas seleccionar una fecha ocupada (donde las 10 unidades físicas de Quinchos ya están reservadas), el sistema deshabilitará esa fecha y aparecerá una alerta de conflicto en color rojo.
     *   **Piscina:** Múltiples socios pueden reservar el mismo día. La alerta de conflicto se mostrará únicamente cuando el aforo acumulado de todas las reservas de ese día alcance los 80 cupos máximos.
 
 ---
@@ -153,6 +154,20 @@ Valida que la barra de navegación se adapte y funcione correctamente en smartph
 2.  **Verificar Ocultación:** Constata que el menú superior horizontal de navegación tradicional desaparece por completo y es sustituido por el botón de hamburguesa (`☰`) en la esquina derecha de la Navbar.
 3.  **Desplegar Menú:** Haz clic en el botón de hamburguesa `☰`. Se debe deslizar un cajón vertical de color verde que lista todos los accesos principales de la plataforma (Inicio, Espacios, etc.) y botones de ingreso/cierre de sesión.
 4.  **Navegación e Interacción:** Haz clic en el icono `✕` para cerrar el cajón, o pulsa sobre cualquier enlace (ej: *Espacios*) para comprobar que te redirige a la ruta correcta y que el cajón se cierra automáticamente tras la pulsación.
+
+---
+
+### Flujo K: Reasignación y Gestión de Unidades Físicas (Administración)
+Este flujo valida cómo el administrador gestiona e inspecciona el inventario de recintos físicos asignados.
+1.  **Ingresar a Reservas**: Carga la administración con perfil de Administrador y ve a la pestaña **Reservas**.
+2.  **Ver Asignación Actual**: En la grilla de reservas, la columna **Espacio** mostrará la categoría ("Cabañas Familiares" o "Quinchos Familiares") junto con un dropdown pre-seleccionado con la unidad física asignada automáticamente (ej: `"Cabaña 1"`).
+3.  **Cambio de Unidad**: Abre el selector de la unidad y cámbialo a otra unidad (ej: `"Cabaña 3"`). Presiona aceptar.
+    *   El frontend invoca la API `PATCH /bookings/:id/assign-space` pasando el ID de categoría y el nombre de la unidad `"Cabaña 3"`.
+    *   Si la unidad se encuentra desocupada en esas fechas, se actualiza exitosamente en la grilla y el backend.
+    *   Si la unidad ya se encuentra reservada por otro usuario para ese rango, el backend arrojará una excepción `400 BadRequest` ("La unidad Cabaña 3 ya se encuentra ocupada...") y la plataforma mostrará la alerta correspondiente, manteniendo intacta la asignación previa.
+4.  **Inspección Visual en el Calendario**: Ve a la pestaña **Calendario** en la barra superior.
+    *   Elige ver todas las categorías de espacios.
+    *   Verás que las celdas del mes muestran específicamente el nombre de la unidad física reservada (ej: `"Cabaña 3"` o `"Quincho 5"`) en las celdas diarias del calendario, facilitando el control logístico de los recintos.
 
 ---
 

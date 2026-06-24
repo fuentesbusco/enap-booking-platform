@@ -6,6 +6,16 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/
 
 ---
 
+## [1.24.0] - 2026-06-24
+### Añadido
+- **Migración a Modelo de Categorías y Unidades de Inventario (Estilo Hotelero)**:
+  - **Estructura de Base de Datos**: Añadida la columna `total_units` a `SpaceEntity` y `assigned_unit` a `Booking` en MySQL. Creada y ejecutada la migración `CategoryUnitsMigration1782328041715`.
+  - **Sincronización de Datos Semilla**: Actualizado `seedSpaces()` para persistir y sincronizar únicamente las 4 categorías principales del Centro (Cabañas Familiares, Quinchos Familiares, Piscina General, Club House) con sus cantidades y capacidades correspondientes, eliminando filas físicas duplicadas redundantes.
+  - **Asignación de Unidades Automática**: El backend asigna secuencialmente una unidad física desocupada (ej: Cabaña 1 a 6) para el rango de la reserva durante el checkout, garantizando estadía continua.
+  - **Detección de Disponibilidad Dinámica**: El cálculo de bloqueos en `bookings.service.ts` se realiza a nivel de categoría comparando la cantidad de reservas solapadas contra `totalUnits`.
+  - **Reasignación y Edición por el Administrador**: Selector dropdown en el módulo de reservas para cambiar y validar la asignación de unidades físicas (ej. Cabaña 1 a 6, Quincho 1 a 10) previniendo solapamientos accidentales.
+  - **Calendario por Unidades**: El visualizador mensual de ocupación ahora renderiza explícitamente el nombre de la unidad física reservada (ej: `"Cabaña 3"`) en las celdas diarias de ocupación.
+
 ## [1.23.0] - 2026-06-23
 ### Añadido
 - **Restricciones de Acceso y Solicitudes para Externos (Hito 2)**:

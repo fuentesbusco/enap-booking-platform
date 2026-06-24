@@ -20,16 +20,16 @@ La plataforma diferencia las tarifas y accesos basándose en el tipo de usuario 
 
 ---
 
-## 🏡 2. Catálogo de Espacios y Habitaciones
+## 🏡 2. Catálogo de Espacios y Categorías de Alojamiento
 
-El Centro Vacacional ubicado en Limache ofrece tres tipos de recintos que puedes reservar:
+El Centro Vacacional ubicado en Limache ofrece cuatro categorías principales de recintos que puedes reservar:
 
-*   **Cabañas Familiares (Cabañas 1 a 6):** Equipadas completamente para un máximo de 6 personas. Incluyen menaje, servicios, batería de cocina, refrigerador, hornos, juguera, secador de pelo, TV satelital, internet y estacionamiento para 2 vehículos.
+*   **Cabañas Familiares (Categoría Única - 6 unidades):** Cabañas totalmente equipadas para un máximo de 6 personas. El centro cuenta con 6 unidades físicas idénticas. Incluyen menaje, servicios, batería de cocina, refrigerador, hornos, juguera, secador de pelo, TV satelital, internet y de estacionamiento para 2 vehículos.
     *   > [!IMPORTANT]
     *   > **Nota de Equipaje:** La estadía **no incluye** sábanas, fundas de almohada ni toallas. Es obligatorio que cada socio las traiga para su estadía.
-*   **Quinchos Centrales:** Espacios techados equipados con parrilla para asados. El arriendo es por **jornada única diaria** (de 09:00 a 19:00 hrs). Debes traer tu propio carbón y utensilios de asado.
-*   **Piscina General:** Acceso al recinto de piscina y reposeras por **jornada única diaria**. Los socios tienen derecho a ingresar con hasta 5 acompañantes de forma gratuita.
-*   **Club House (Sede Social):** Salón de eventos con capacidad para 50 personas. Equipado con cocina completa, salón de reuniones, servicios higiénicos y amplia zona exterior. Ideal para asambleas, reuniones o celebraciones familiares mayores.
+*   **Quinchos Familiares (Categoría Única - 10 unidades):** Espacios techados independientes equipados con parrilla para asados. El arriendo es por **jornada única diaria** (de 09:00 a 19:00 hrs). El centro cuenta con 10 unidades de quinchos disponibles. Debes traer tu propio carbón y utensilios de asado.
+*   **Piscina General (Categoría Única - 1 unidad compartida):** Acceso al recinto de piscina y reposeras por **jornada única diaria**. Los socios tienen derecho a ingresar con hasta 5 acompañantes de forma gratuita. La capacidad máxima total y acumulada de este recinto es de 80 personas.
+*   **Club House (Sede Social - 1 unidad):** Salón de eventos con capacidad para 50 personas. Equipado con cocina completa, salón de reuniones, servicios higiénicos y amplia zona exterior. Ideal para asambleas, reuniones o celebraciones familiares mayores.
 
 ---
 
@@ -58,7 +58,8 @@ Realizar una reserva consta de 4 sencillos pasos interactivos:
 ### Paso 1: Selección de Fechas
 *   Para **Cabañas**, debes definir un rango de fechas (Fecha de entrada y Fecha de salida).
 *   Para **Quinchos y Piscina**, se te presentará un único control llamado **"Día de la Jornada"** (ya que su arriendo es por un solo día de uso).
-*   El calendario te mostrará de forma visual las fechas bloqueadas por mantenimiento o ya ocupadas por otros usuarios.
+*   El calendario te mostrará de forma visual las fechas bloqueadas por mantenimiento o ya ocupadas por otros usuarios (los días se bloquean automáticamente cuando la cantidad total de reservas activas alcanza o supera el número de unidades de la categoría: 6 para Cabañas y 10 para Quinchos).
+*   **Asignación de Unidad Autómata**: Durante el proceso de confirmación de reserva, la plataforma asignará automáticamente la primera unidad física disponible (ej: `"Cabaña 3"` o `"Quincho 5"`) asegurando una estadía continua en la misma unidad.
 
 ### Paso 2: Acompañantes e Invitados
 *   **Confirmación y Edición de Datos del Titular:** Si el usuario está autenticado, la plataforma desplegará una tarjeta con la información personal del titular de la reserva (Nombre, RUT y N° de Ficha Sindical en caso de ser socio). Desde esta misma tarjeta, se puede revisar y editar el **Correo electrónico** y el **Teléfono de contacto**. Al presionar continuar, cualquier cambio realizado se guardará automáticamente en el perfil del usuario para futuras notificaciones.
@@ -115,9 +116,10 @@ Los usuarios con el rol de **Administrador** disponen de la pestaña **Administr
 *   Haz clic en `📄 Comprobante` para examinar el depósito bancario.
 *   Pulsar **"Aprobar"** pasa la reserva a *Confirmada* y le envía un correo de bienvenida automático al socio con las normas del recinto.
 *   Pulsar **"Rechazar"** abre un modal donde debes ingresar el motivo del rechazo (ej: *Monto incorrecto*). El usuario recibirá un correo con tus notas y su reserva volverá a quedar en estado "Sin Pago" para que pueda subir un nuevo comprobante.
+*   **Reasignación de Unidad**: La administración puede modificar y reasignar la unidad física de una reserva (ej: mover de `"Cabaña 1"` a `"Cabaña 3"`) seleccionándola directamente en el dropdown de la columna "Espacio". Si la unidad seleccionada ya está ocupada por otra reserva en esas fechas, la plataforma lanzará una advertencia impidiendo la reasignación para evitar colisiones.
 
 ### 8.2 CRUD de Espacios (Recintos)
-*   **Crear/Editar Espacio:** Permite dar de alta o modificar Cabañas, Quinchos y Piscinas. Puedes definir capacidad máxima, tarifas diferenciadas, cupos de invitados gratis para socios y comodidades.
+*   **Crear/Editar Espacio:** Permite dar de alta o modificar Cabañas, Quinchos y Piscinas. Puedes definir la capacidad máxima, tarifas diferenciadas, cupos de invitados gratis para socios, comodidades y el número total de **Unidades Disponibles** (`totalUnits`).
 *   **Carga de Fotos a S3:** El formulario te permite subir múltiples fotos reales desde tu computador. Se almacenarán en Amazon S3 y podrás ver sus miniaturas y borrarlas individualmente antes de guardar el espacio.
 
 ### 8.3 CRUD de Usuarios
@@ -135,4 +137,6 @@ Los usuarios con el rol de **Administrador** disponen de la pestaña **Administr
 *   Panel CRUD para supervisar las reseñas que dejan los socios. Puedes aprobar comentarios para que se promedien en las estrellas del catálogo público, o rechazar comentarios indebidos.
 
 ### 8.7 Calendario Visual de Ocupación
-*   Una grilla interactiva tipo calendario mensual que te permite ver visualmente qué espacios están ocupados en qué días. Cuenta con filtros por tipo de espacio y hovers informativos que muestran los detalles de la reserva al posar el mouse sobre un día ocupado.
+*   Una grilla interactiva tipo calendario mensual que te permite ver visualmente qué espacios están ocupados en qué días.
+*   Muestra detalladamente el nombre de la unidad física específica asignada a cada reserva (ej: `"Cabaña 2"`, `"Quincho 7"`) en las celdas diarias del calendario.
+*   Cuenta con filtros por tipo de espacio y hovers informativos que muestran los detalles de la reserva al posar el mouse sobre un día ocupado.

@@ -35,8 +35,10 @@ El frontend está desarrollado en Angular 18 + Tailwind CSS. A continuación se 
   - [x] Mensaje advirtiendo validación de transferencia bancaria en un plazo máximo de 48 horas en Paso 4.
   - [x] Restricción de registro y login de socios exclusivamente a dominios `@enap.cl` y `@enaprefinerias.cl` en frontend y backend.
   - [x] Campo opcional de Correo Adicional en el checkout para duplicar notificaciones de reserva.
-  - [x] Consolidación de cabañas en catálogo y disponibilidad a nivel de conjunto de cabañas (sin selección de cabaña específica por el usuario).
-  - [x] Asignación automática de cabaña libre en backend y reasignación/validación administrativa de cabaña (1 al 6) en el panel de control.
+  - [x] Consolidación del catálogo de recintos bajo el modelo de Categorías y Unidades de Inventario (estilo hotelero) en lugar de recintos físicos duplicados en base de datos.
+  - [x] Asignación secuencial automatizada de unidades físicas libres (ej: Cabaña 1 a 6, Quincho 1 a 10) al confirmar la reserva, previniendo solapamientos.
+  - [x] Reasignación interactiva y validada de la unidad física específica desde la grilla de reservas del panel de control de administración.
+  - [x] Renderizado del nombre de la unidad física asignada en las celdas diarias del calendario visual de ocupación de administración.
   - [x] Formulario de solicitud de reserva para externos con despacho SMTP estructurado al administrador y soporte `replyTo` directo.
 
 ### Panel de Administración
@@ -97,6 +99,9 @@ Para la siguiente etapa de desarrollo, se implementará el backend en **NestJS**
   - [x] API para la actualización de datos de perfil (Email, Teléfono) y guardado automático durante el flujo.
   - [x] Expiración pasiva dinámica de reservas sin pago tras 48 horas de inactividad.
   - [x] Cierre automático de disponibilidades los días lunes (mantención general).
+  - [x] Refactorización de persistencia a Categorías y Unidades de Inventario (columna `totalUnits` en `spaces` y `assignedUnit` en `bookings` con migración de DB ejecutada).
+  - [x] Lógica de asignación secuencial automática de unidades y validación de colisiones de reserva en checkout.
+  - [x] Endpoint de reasignación administrativa validada de unidades físicas (`PATCH /bookings/:id/assign-space`).
 
 ### Integración de Almacenamiento (AWS S3)
 - [x] Configuración del SDK de AWS en NestJS.
