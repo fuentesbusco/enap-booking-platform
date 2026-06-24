@@ -101,8 +101,8 @@
                   [ngClass]="b.status === 'confirmed' ? 'bg-green-500' : 'bg-yellow-500'"
                 ></span>
               </div>
-              <span *ngIf="selectedSpaceId === 'all'" class="text-[9px] text-charcoal/50 truncate font-mono">
-                {{ b.space.name }}
+              <span class="text-[9px] text-charcoal/50 truncate font-mono">
+                {{ b.assigned_unit || b.space.name }}
               </span>
             </div>
           </div>

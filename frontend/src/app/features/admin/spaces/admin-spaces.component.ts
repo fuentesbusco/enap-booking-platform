@@ -34,6 +34,7 @@ export class AdminSpacesComponent implements OnInit {
   formFreeGuestsForSocio = 0;
   formImages: string[] = [];
   formAmenities = '';
+  formTotalUnits = 1;
 
   uploadingImage = false;
 
@@ -88,6 +89,7 @@ export class AdminSpacesComponent implements OnInit {
     this.formFreeGuestsForSocio = 0;
     this.formImages = ['https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80'];
     this.formAmenities = 'Cocina equipada, TV, Parrilla, Estacionamiento';
+    this.formTotalUnits = 1;
     
     this.showModal = true;
   }
@@ -106,6 +108,7 @@ export class AdminSpacesComponent implements OnInit {
     this.formFreeGuestsForSocio = space.free_guests_for_socio;
     this.formImages = space.images ? [...space.images] : [];
     this.formAmenities = space.amenities.join(', ');
+    this.formTotalUnits = space.total_units || 1;
     
     this.showModal = true;
   }
@@ -138,6 +141,7 @@ export class AdminSpacesComponent implements OnInit {
       free_guests_for_socio: Number(this.formFreeGuestsForSocio),
       images: this.formImages.length > 0 ? this.formImages : ['https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80'],
       amenities: amenitiesList,
+      total_units: Number(this.formTotalUnits),
     };
 
     if (this.isEditMode && this.editingId !== null) {

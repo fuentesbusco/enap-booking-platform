@@ -71,4 +71,7 @@ export class Booking {
 
   @Column({ name: 'additional_email', type: 'varchar', nullable: true })
   additionalEmail?: string;
+
+  @Column({ name: 'assigned_unit', type: 'varchar', nullable: true })
+  assignedUnit?: string;
 }

@@ -114,14 +114,13 @@ export class AdminBookingsComponent implements OnInit {
     });
   }
 
-  changeCabin(b: Booking, newSpaceIdStr: string) {
-    const spaceId = Number(newSpaceIdStr);
-    if (isNaN(spaceId)) return;
+  changeUnit(b: Booking, newUnit: string) {
+    if (!newUnit) return;
 
     this.loading = true;
-    this.bookingsService.assignSpace(b.id, spaceId).subscribe({
+    this.bookingsService.assignSpace(b.id, b.space.id, newUnit).subscribe({
       next: (updatedBooking) => {
-        this.toastService.success(`Cabaña de la reserva ${b.booking_code} cambiada a ${updatedBooking.space.name} con éxito.`);
+        this.toastService.success(`Unidad de la reserva ${b.booking_code} cambiada a ${newUnit} con éxito.`);
         this.bookingsService.getAll().subscribe((d) => {
           this.bookings = d;
           this.applyFilter();
@@ -129,7 +128,7 @@ export class AdminBookingsComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.toastService.error(err.error?.message || 'Error al cambiar la asignación de la cabaña.');
+        this.toastService.error(err.error?.message || 'Error al cambiar la asignación de la unidad.');
         this.loading = false;
         this.bookingsService.getAll().subscribe((d) => {
           this.bookings = d;
@@ -137,6 +136,29 @@ export class AdminBookingsComponent implements OnInit {
         });
       }
     });
+  }
+
+  getUnitsList(space: Space): string[] {
+    const total = space.total_units || 1;
+    if (total <= 1) {
+      return [space.name];
+    }
+    
+    let prefix = space.name;
+    if (space.type === 'cabin') {
+      prefix = 'Cabaña';
+    } else if (space.type === 'quincho') {
+      if (space.name.toLowerCase().includes('club house')) {
+        return ['Club House'];
+      }
+      prefix = 'Quincho';
+    }
+    
+    const list: string[] = [];
+    for (let i = 1; i <= total; i++) {
+      list.push(`${prefix} ${i}`);
+    }
+    return list;
   }
 
   statusLabel(s: BookingStatus) {

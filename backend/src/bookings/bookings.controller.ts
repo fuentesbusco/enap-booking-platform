@@ -153,10 +153,10 @@ export class BookingsController {
   async assignSpace(
     @Headers() headers: Record<string, string>,
     @Param('id') id: string,
-    @Body() body: { spaceId: number },
+    @Body() body: { spaceId: number; assignedUnit?: string },
   ) {
     await this.getAdminUser(headers);
-    return this.bookingsService.assignSpace(Number(id), body.spaceId);
+    return this.bookingsService.assignSpace(Number(id), body.spaceId, body.assignedUnit);
   }
 
   @Patch(':id/approve')

@@ -37,6 +37,9 @@ export class SpaceEntity {
   @Column({ type: 'simple-json' })
   amenities: string[];
 
+  @Column({ name: 'total_units', default: 1 })
+  totalUnits: number;
+
   @OneToMany(() => Booking, (booking) => booking.space)
   bookings: Booking[];
 }

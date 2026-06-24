@@ -177,8 +177,8 @@ export class BookingsService {
     return this.http.post<any>(`${environment.apiUrl}/bookings/external-request`, data);
   }
 
-  assignSpace(bookingId: number, spaceId: number): Observable<any> {
-    return this.http.patch<any>(`${environment.apiUrl}/bookings/${bookingId}/assign-space`, { spaceId }).pipe(
+  assignSpace(bookingId: number, spaceId: number, assignedUnit?: string): Observable<any> {
+    return this.http.patch<any>(`${environment.apiUrl}/bookings/${bookingId}/assign-space`, { spaceId, assignedUnit }).pipe(
       map(mapBookingToFrontend)
     );
   }

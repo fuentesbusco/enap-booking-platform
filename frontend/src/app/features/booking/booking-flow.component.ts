@@ -166,26 +166,7 @@ export class BookingFlowComponent implements OnInit {
         return;
       }
 
-      if (s.type === 'cabin') {
-        this.spacesService.getAll().subscribe((all) => {
-          const cabins = all.filter((x) => x.type === 'cabin');
-          this.space = {
-            ...s,
-            name: 'Cabañas Familiares (1 al 6)',
-            description: 'Seis acogedoras cabañas totalmente equipadas para 6 personas con menaje completo, cocina, TV satelital y parrilla exterior. Las cabañas 1 y 2 son del tipo A y las del 3 al 6 son del tipo B (idénticas).',
-            images: Array.from(new Set(cabins.flatMap((c) => c.images))),
-          };
-        });
-      } else if (s.type === 'quincho' && s.name !== 'Club House') {
-        this.spacesService.getAll().subscribe((all) => {
-          const quinchos = all.filter((x) => x.type === 'quincho' && x.name !== 'Club House');
-          this.space = {
-            ...s,
-            name: 'Quinchos Familiares (1 al 10)',
-            description: 'Diez quinchos equipados con parrilla, mesas y sillas para asados y celebraciones al aire libre. Capacidad de hasta 15 personas para socios y 10 para externos.',
-            images: Array.from(new Set(quinchos.flatMap((q) => q.images))),
-          };
-        });
+      if (s.type === 'quincho' && s.name !== 'Club House') {
         if (!this.isSocio) {
           this.visitType = 'friends';
         }

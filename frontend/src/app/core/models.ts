@@ -37,6 +37,7 @@ export interface Space {
   amenities: string[];
   rating_average?: number;
   rating_count?: number;
+  total_units?: number;
 }
 
 export interface Guest {
@@ -69,6 +70,7 @@ export interface Booking {
   feedback?: any;
   visit_type?: string;
   additional_email?: string;
+  assigned_unit?: string;
 }
 
 export interface PriceBreakdown {
@@ -146,6 +148,7 @@ export function mapSpaceToFrontend(space: any): Space {
     amenities: space.amenities || [],
     rating_average: space.ratingAverage !== undefined ? space.ratingAverage : space.rating_average,
     rating_count: space.ratingCount !== undefined ? space.ratingCount : space.rating_count,
+    total_units: space.totalUnits !== undefined ? space.totalUnits : space.total_units,
   };
 }
 
@@ -165,6 +168,7 @@ export function mapSpaceToBackend(space: any): any {
     amenities: space.amenities,
     ratingAverage: space.rating_average,
     ratingCount: space.rating_count,
+    totalUnits: space.total_units,
   };
 }
 
@@ -214,6 +218,7 @@ export function mapBookingToFrontend(booking: any): Booking {
     feedback: booking.feedback,
     visit_type: booking.visitType || booking.visit_type,
     additional_email: booking.additionalEmail || booking.additional_email,
+    assigned_unit: booking.assignedUnit || booking.assigned_unit,
   };
 }
 

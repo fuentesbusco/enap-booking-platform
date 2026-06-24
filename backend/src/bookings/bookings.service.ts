@@ -155,53 +155,13 @@ export class BookingsService {
       throw new BadRequestException(`El espacio supera la capacidad máxima permitida de ${space.maxCapacity} personas.`);
     }
 
-    let resolvedSpace = space;
-    if (space.type === 'cabin') {
-      const cabins = await this.spacesService.getAll();
-      const cabinSpaces = cabins.filter((c) => c.type === 'cabin');
-      let foundCabin = null;
-      for (const cabin of cabinSpaces) {
-        try {
-          const blocked = await this.isBlocked(cabin.id, checkIn, checkOut, guests.length);
-          if (!blocked) {
-            foundCabin = cabin;
-            break;
-          }
-        } catch (e) {
-          throw e;
-        }
-      }
-      if (!foundCabin) {
-        throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
-      }
-      resolvedSpace = foundCabin;
-    } else if (space.type === 'quincho' && space.name !== 'Club House') {
-      const quinchos = await this.spacesService.getAll();
-      const quinchoSpaces = quinchos.filter((q) => q.type === 'quincho' && q.name !== 'Club House');
-      let foundQuincho = null;
-      for (const quincho of quinchoSpaces) {
-        try {
-          const blocked = await this.isBlocked(quincho.id, checkIn, checkOut, guests.length);
-          if (!blocked) {
-            foundQuincho = quincho;
-            break;
-          }
-        } catch (e) {
-          throw e;
-        }
-      }
-      if (!foundQuincho) {
-        throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
-      }
-      resolvedSpace = foundQuincho;
-    } else {
-      const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut, guests.length);
-      if (isBlocked) {
-        this.logger.warn(`[Reserva] Creación fallida: conflicto de disponibilidad para ${space.name} en rango ${checkIn} a ${checkOut}.`);
-        throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
-      }
+    const isBlocked = await this.isBlocked(spaceId, checkIn, checkOut, guests.length);
+    if (isBlocked) {
+      this.logger.warn(`[Reserva] Creación fallida: conflicto de disponibilidad para ${space.name} en rango ${checkIn} a ${checkOut}.`);
+      throw new BadRequestException('Las fechas seleccionadas no están disponibles.');
     }
 
+    const resolvedSpace = space;
     const resolvedRole = (options?.adminCreatedForExternal || options?.isForThirdParty) ? 'external' : user.role;
     const breakdown = this.calculatePriceBreakdown(
       resolvedSpace,
@@ -217,6 +177,8 @@ export class BookingsService {
     const totalCount = await this.bookingRepository.count();
     const nextId = totalCount + 1;
     const bookingCode = `ENP-2025-${String(nextId).padStart(5, '0')}`;
+
+    const assignedUnit = await this.getAvailableUnit(resolvedSpace, checkIn, checkOut);
 
     const newBooking = this.bookingRepository.create({
       bookingCode,
@@ -235,6 +197,7 @@ export class BookingsService {
       termsAccepted: true,
       visitType: options?.visitType,
       additionalEmail: options?.additionalEmail,
+      assignedUnit,
     });
 
     const savedBooking = await this.bookingRepository.save(newBooking);
@@ -438,6 +401,52 @@ export class BookingsService {
 
 
 
+  async getAvailableUnit(
+    space: SpaceEntity,
+    checkIn: string,
+    checkOut: string,
+    excludeBookingId?: number,
+  ): Promise<string> {
+    if ((space.totalUnits || 1) <= 1) {
+      return space.name;
+    }
+
+    // Find all overlapping bookings for this space category
+    let query = this.bookingRepository.createQueryBuilder('booking')
+      .where('booking.spaceId = :spaceId', { spaceId: space.id })
+      .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+      .andWhere('booking.check_in <= :checkOut', { checkOut })
+      .andWhere('booking.check_out >= :checkIn', { checkIn });
+
+    if (excludeBookingId) {
+      query = query.andWhere('booking.id != :excludeBookingId', { excludeBookingId });
+    }
+
+    const overlapping = await query.getMany();
+    const assignedUnits = new Set(overlapping.map((b) => b.assignedUnit).filter(Boolean));
+
+    // Determine unit name prefix
+    let prefix = space.name;
+    if (space.type === 'cabin') {
+      prefix = 'Cabaña';
+    } else if (space.type === 'quincho') {
+      if (space.name.toLowerCase().includes('club house')) {
+        prefix = 'Club House';
+      } else {
+        prefix = 'Quincho';
+      }
+    }
+
+    for (let i = 1; i <= space.totalUnits; i++) {
+      const unitName = `${prefix} ${i}`;
+      if (!assignedUnits.has(unitName)) {
+        return unitName;
+      }
+    }
+
+    return `${prefix} 1`;
+  }
+
   async getBlockedDatesForSpace(spaceId: number): Promise<string[]> {
     await this.expireOldBookings();
     const space = await this.spacesService.getById(spaceId);
@@ -455,66 +464,12 @@ export class BookingsService {
       current.setDate(current.getDate() + 1);
     }
 
-    if (space.type === 'cabin') {
-      const allSpaces = await this.spacesService.getAll();
-      const cabins = allSpaces.filter((s) => s.type === 'cabin');
-      const cabinIds = cabins.map((c) => c.id);
-
-      const cabinBookings = await this.bookingRepository.createQueryBuilder('booking')
-        .where('booking.spaceId IN (:...cabinIds)', { cabinIds })
-        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
-        .getMany();
-
-      const dailyOccupancy: { [date: string]: number } = {};
-      
-      for (const b of cabinBookings) {
-        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
-        for (const d of datesInRange) {
-          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
-        }
-      }
-
-
-
-      for (const [date, count] of Object.entries(dailyOccupancy)) {
-        if (count >= cabins.length) {
-          dates.add(date);
-        }
-      }
-    } else if (space.type === 'quincho' && space.name !== 'Club House') {
-      const allSpaces = await this.spacesService.getAll();
-      const quinchos = allSpaces.filter((s) => s.type === 'quincho' && s.name !== 'Club House');
-      const quinchoIds = quinchos.map((c) => c.id);
-
-      const quinchoBookings = await this.bookingRepository.createQueryBuilder('booking')
-        .where('booking.spaceId IN (:...quinchoIds)', { quinchoIds })
-        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
-        .getMany();
-
-      const dailyOccupancy: { [date: string]: number } = {};
-
-      for (const b of quinchoBookings) {
-        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
-        for (const d of datesInRange) {
-          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
-        }
-      }
-
-
-
-      for (const [date, count] of Object.entries(dailyOccupancy)) {
-        if (count >= quinchos.length) {
-          dates.add(date);
-        }
-      }
-    } else if (space.type === 'pool') {
+    if (space.type === 'pool') {
       const bookings = await this.bookingRepository.createQueryBuilder('booking')
         .leftJoinAndSelect('booking.guests', 'guest')
         .where('booking.spaceId = :spaceId', { spaceId })
         .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
         .getMany();
-
-
 
       const dailyOccupancy: { [date: string]: number } = {};
       for (const b of bookings) {
@@ -531,16 +486,21 @@ export class BookingsService {
       }
     } else {
       const bookings = await this.bookingRepository.createQueryBuilder('booking')
-        .leftJoinAndSelect('booking.guests', 'guest')
         .where('booking.spaceId = :spaceId', { spaceId })
         .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
         .getMany();
 
-
-
+      const dailyOccupancy: { [date: string]: number } = {};
       for (const b of bookings) {
         const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
-        datesInRange.forEach((d) => dates.add(d));
+        for (const d of datesInRange) {
+          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
+        }
+      }
+      for (const [date, count] of Object.entries(dailyOccupancy)) {
+        if (count >= (space.totalUnits || 1)) {
+          dates.add(date);
+        }
       }
     }
 
@@ -567,8 +527,6 @@ export class BookingsService {
       throw new BadRequestException('El Centro Vacacional se encuentra cerrado los días lunes por mantención general.');
     }
 
-
-
     // 2. Overlapping check in DB
     if (space.type === 'pool') {
       let query = this.bookingRepository.createQueryBuilder('booking')
@@ -581,7 +539,6 @@ export class BookingsService {
       }
 
       const overlappingBookings = await query.getMany();
-
       const newBookingOccupants = 1 + newGuestsCount;
 
       for (const date of datesToCheck) {
@@ -614,8 +571,32 @@ export class BookingsService {
       }
 
       const overlapping = await query.getMany();
+      const assignedUnits = new Set(overlapping.map((b) => b.assignedUnit).filter(Boolean));
 
-      return overlapping.length > 0;
+      let prefix = space.name;
+      if (space.type === 'cabin') {
+        prefix = 'Cabaña';
+      } else if (space.type === 'quincho') {
+        if (space.name.toLowerCase().includes('club house')) {
+          prefix = 'Club House';
+        } else {
+          prefix = 'Quincho';
+        }
+      }
+
+      let availableUnitExists = false;
+      if ((space.totalUnits || 1) <= 1) {
+        availableUnitExists = !assignedUnits.has(space.name);
+      } else {
+        for (let i = 1; i <= space.totalUnits; i++) {
+          const unitName = `${prefix} ${i}`;
+          if (!assignedUnits.has(unitName)) {
+            availableUnitExists = true;
+            break;
+          }
+        }
+      }
+      return !availableUnitExists;
     }
   }
 
@@ -653,8 +634,8 @@ export class BookingsService {
     return dates;
   }
 
-  async assignSpace(bookingId: number, spaceId: number): Promise<Booking> {
-    this.logger.log(`[Asignar Espacio] Cambiando cabaña/recinto para reserva ID ${bookingId} a espacio ID ${spaceId}`);
+  async assignSpace(bookingId: number, spaceId: number, assignedUnit?: string): Promise<Booking> {
+    this.logger.log(`[Asignar Espacio] Cambiando cabaña/recinto para reserva ID ${bookingId} a espacio ID ${spaceId}, unidad: ${assignedUnit}`);
     const booking = await this.getById(bookingId);
     if (!booking) {
       throw new BadRequestException('Reserva no encontrada.');
@@ -664,10 +645,26 @@ export class BookingsService {
       throw new BadRequestException('El espacio solicitado no existe.');
     }
 
-    // Check if the requested space is available for booking's dates (excluding the booking itself)
-    const blocked = await this.isBlocked(spaceId, booking.checkIn, booking.checkOut, booking.guests?.length || 0, booking.id);
-    if (blocked) {
-      throw new BadRequestException(`El espacio ${newSpace.name} no está disponible en las fechas de la reserva.`);
+    if (assignedUnit) {
+      let query = this.bookingRepository.createQueryBuilder('booking')
+        .where('booking.spaceId = :spaceId', { spaceId })
+        .andWhere('booking.assigned_unit = :assignedUnit', { assignedUnit })
+        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+        .andWhere('booking.check_in <= :checkOut', { checkOut: booking.checkOut })
+        .andWhere('booking.check_out >= :checkIn', { checkIn: booking.checkIn })
+        .andWhere('booking.id != :bookingId', { bookingId });
+
+      const overlappingCount = await query.getCount();
+      if (overlappingCount > 0) {
+        throw new BadRequestException(`La unidad ${assignedUnit} ya se encuentra ocupada en las fechas solicitadas.`);
+      }
+      booking.assignedUnit = assignedUnit;
+    } else {
+      const blocked = await this.isBlocked(spaceId, booking.checkIn, booking.checkOut, booking.guests?.length || 0, booking.id);
+      if (blocked) {
+        throw new BadRequestException(`El espacio ${newSpace.name} no tiene unidades disponibles en las fechas de la reserva.`);
+      }
+      booking.assignedUnit = await this.getAvailableUnit(newSpace, booking.checkIn, booking.checkOut, booking.id);
     }
 
     booking.space = newSpace;
@@ -685,7 +682,7 @@ export class BookingsService {
     booking.totalAmount = booking.priceBreakdown.total;
 
     const savedBooking = await this.bookingRepository.save(booking);
-    this.logger.log(`[Asignar Espacio] Reserva ID ${bookingId} reasignada con éxito a ${newSpace.name}. Nuevo total: ${savedBooking.totalAmount}`);
+    this.logger.log(`[Asignar Espacio] Reserva ID ${bookingId} reasignada con éxito a ${newSpace.name} (${booking.assignedUnit}). Nuevo total: ${savedBooking.totalAmount}`);
     
     return this.getById(savedBooking.id);
   }
