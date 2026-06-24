@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit {
         resultSpaces.push({
           ...cabins[0],
           name: 'Cabañas Familiares (1 al 6)',
-          id: 1,
+          id: cabins[0].id,
           description: 'Seis acogedoras cabañas totalmente equipadas para 6 personas con menaje completo, cocina, TV satelital y parrilla exterior. Las cabañas 1 y 2 son del tipo A y las del 3 al 6 son del tipo B (idénticas).',
           images: Array.from(new Set(cabins.flatMap((c) => c.images))),
         });
@@ -88,7 +88,7 @@ export class HomeComponent implements OnInit {
         resultSpaces.push({
           ...quinchos[0],
           name: 'Quinchos Familiares (1 al 10)',
-          id: 7,
+          id: quinchos[0].id,
           description: 'Diez quinchos equipados con parrilla, mesas y sillas para asados y celebraciones al aire libre. Capacidad de hasta 15 personas para socios y 10 para externos.',
           images: Array.from(new Set(quinchos.flatMap((q) => q.images))),
         });

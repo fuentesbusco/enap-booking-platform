@@ -158,6 +158,7 @@ export class BookingFlowComponent implements OnInit {
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('spaceId'));
+    this.blockedDates = []; // Reset state to prevent leakage
     this.spacesService.getById(id).subscribe((s) => {
       this.space = s;
       if (!s) {
@@ -193,7 +194,13 @@ export class BookingFlowComponent implements OnInit {
       // Load blocked dates from backend (public endpoint)
       this.spacesService
         .getBlockedDates(id)
-        .subscribe((d) => (this.blockedDates = d));
+        .subscribe({
+          next: (d) => (this.blockedDates = d),
+          error: (err) => {
+            console.error('Error fetching blocked dates:', err);
+            this.blockedDates = [];
+          }
+        });
 
       // Load feedbacks
       this.feedbackService.getApprovedBySpace(id).subscribe({

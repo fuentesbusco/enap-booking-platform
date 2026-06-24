@@ -147,12 +147,12 @@ describe('BookingsService', () => {
       ).rejects.toThrow(new BadRequestException(`El espacio supera la capacidad máxima permitida de ${mockSpace.maxCapacity} personas.`));
     });
 
-    it('should throw BadRequestException if date range is blocked statically', async () => {
+    it('should throw BadRequestException if date range contains a Monday', async () => {
       spacesService.getById.mockResolvedValue(mockSpace);
-      // '2025-12-20' is statically blocked in models.ts BLOCKED_DATES for space 1
+      // '2026-06-22' is a Monday
       await expect(
-        service.createBooking(mockUser, mockSpace.id, '2025-12-20', '2025-12-21', []),
-      ).rejects.toThrow(new BadRequestException('Las fechas seleccionadas no están disponibles.'));
+        service.createBooking(mockUser, mockSpace.id, '2026-06-22', '2026-06-23', []),
+      ).rejects.toThrow(new BadRequestException('El Centro Vacacional se encuentra cerrado los días lunes por mantención general.'));
     });
 
     it('should create booking and guest entities if all validations pass', async () => {
