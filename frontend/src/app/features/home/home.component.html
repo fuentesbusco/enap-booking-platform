@@ -109,8 +109,10 @@
       </h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <article *ngFor="let s of spaces" [routerLink]="['/reservar', s.id]"
-        class="card overflow-hidden group cursor-pointer hover:shadow-card-hover transition-shadow">
+      <article *ngFor="let s of spaces" [routerLink]="s.name !== 'Club House' ? ['/reservar', s.id] : null"
+        class="card overflow-hidden group hover:shadow-card-hover transition-shadow"
+        [class.cursor-pointer]="s.name !== 'Club House'"
+        [class.cursor-default]="s.name === 'Club House'">
         <div class="relative h-44 overflow-hidden bg-sage/10">
           <img [src]="s.images[0]" [alt]="s.name"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -124,7 +126,7 @@
             {{ s.description }}
           </p>
           <div class="flex items-center justify-between">
-            <div>
+            <div *ngIf="s.name !== 'Club House'">
               <p class="text-[10px] font-mono text-charcoal/40 uppercase">
                 Socios desde
               </p>
@@ -135,6 +137,14 @@
                 : (s.socio_price | currency: "CLP" : "$" : "1.0-0")
                 }}
                 <span *ngIf="s.socio_price > 0" class="text-xs font-normal text-charcoal/40">/noche</span>
+              </p>
+            </div>
+            <div *ngIf="s.name === 'Club House'">
+              <p class="text-[10px] font-mono text-amber-700/60 uppercase">
+                Estado
+              </p>
+              <p class="font-semibold text-amber-700 text-sm">
+                Pronto disponible
               </p>
             </div>
             <span class="text-xs text-charcoal/40">👥 Hasta {{ s.max_capacity }}</span>

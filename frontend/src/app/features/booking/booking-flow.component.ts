@@ -166,6 +166,12 @@ export class BookingFlowComponent implements OnInit {
         return;
       }
 
+      if (s.name === 'Club House' && s.base_price === 0) {
+        alert('El espacio Club House se encuentra temporalmente no disponible para reservas (Pronto disponible).');
+        this.router.navigate(['/espacios']);
+        return;
+      }
+
       if (s.type === 'quincho' && s.name !== 'Club House') {
         if (!this.isSocio) {
           this.visitType = 'friends';

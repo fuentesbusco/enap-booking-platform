@@ -150,7 +150,11 @@ export class BookingsService {
     this.logger.log(`[Reserva] Creando intento para usuario ${user.email} (ID: ${user.id}) en espacio ID ${spaceId} (${checkIn} a ${checkOut}) con ${guests.length} invitados.`);
     const space = await this.spacesService.getById(spaceId);
 
-    if (guests.length > space.maxCapacity) {
+    if ((space.name.toLowerCase().includes('club house') || space.id === 4) && space.basePrice === 0) {
+      throw new BadRequestException('El espacio Club House se encuentra temporalmente no disponible para reservas (Pronto disponible).');
+    }
+
+    if (space.type !== 'pool' && guests.length > space.maxCapacity) {
       this.logger.warn(`[Reserva] Creación fallida: ${guests.length} invitados supera capacidad máxima de ${space.maxCapacity} para ${space.name}.`);
       throw new BadRequestException(`El espacio supera la capacidad máxima permitida de ${space.maxCapacity} personas.`);
     }
@@ -464,40 +468,42 @@ export class BookingsService {
       current.setDate(current.getDate() + 1);
     }
 
-    if (space.type === 'pool') {
-      const bookings = await this.bookingRepository.createQueryBuilder('booking')
-        .leftJoinAndSelect('booking.guests', 'guest')
-        .where('booking.spaceId = :spaceId', { spaceId })
-        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
-        .getMany();
+    // 1. Fetch ALL active bookings in the resort (any space)
+    const allBookings = await this.bookingRepository.createQueryBuilder('booking')
+      .leftJoinAndSelect('booking.guests', 'guest')
+      .leftJoinAndSelect('booking.space', 'space')
+      .where('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+      .getMany();
 
-      const dailyOccupancy: { [date: string]: number } = {};
-      for (const b of bookings) {
-        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
-        const bookingOccupants = 1 + (b.guests?.length || 0);
-        for (const d of datesInRange) {
-          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + bookingOccupants;
-        }
+    // 2. Calculate global resort daily occupants (total 1000 limit)
+    const globalLimit = 1000;
+    const globalDailyOccupancy: { [date: string]: number } = {};
+    for (const b of allBookings) {
+      const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+      const bookingOccupants = 1 + (b.guests?.length || 0);
+      for (const d of datesInRange) {
+        globalDailyOccupancy[d] = (globalDailyOccupancy[d] || 0) + bookingOccupants;
       }
-      for (const [date, count] of Object.entries(dailyOccupancy)) {
-        if (count >= space.maxCapacity) {
-          dates.add(date);
-        }
-      }
-    } else {
-      const bookings = await this.bookingRepository.createQueryBuilder('booking')
-        .where('booking.spaceId = :spaceId', { spaceId })
-        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
-        .getMany();
+    }
 
-      const dailyOccupancy: { [date: string]: number } = {};
-      for (const b of bookings) {
+    // Block dates where the entire resort is at maximum capacity (1000 people)
+    for (const [date, count] of Object.entries(globalDailyOccupancy)) {
+      if (count >= globalLimit) {
+        dates.add(date);
+      }
+    }
+
+    // 3. For non-pool spaces, block dates where the category units are fully occupied
+    if (space.type !== 'pool') {
+      const spaceBookings = allBookings.filter((b) => b.space && b.space.id === spaceId);
+      const dailySpaceOccupancy: { [date: string]: number } = {};
+      for (const b of spaceBookings) {
         const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
         for (const d of datesInRange) {
-          dailyOccupancy[d] = (dailyOccupancy[d] || 0) + 1;
+          dailySpaceOccupancy[d] = (dailySpaceOccupancy[d] || 0) + 1;
         }
       }
-      for (const [date, count] of Object.entries(dailyOccupancy)) {
+      for (const [date, count] of Object.entries(dailySpaceOccupancy)) {
         if (count >= (space.totalUnits || 1)) {
           dates.add(date);
         }
@@ -527,77 +533,82 @@ export class BookingsService {
       throw new BadRequestException('El Centro Vacacional se encuentra cerrado los días lunes por mantención general.');
     }
 
-    // 2. Overlapping check in DB
-    if (space.type === 'pool') {
-      let query = this.bookingRepository.createQueryBuilder('booking')
-        .leftJoinAndSelect('booking.guests', 'guest')
-        .where('booking.spaceId = :spaceId', { spaceId })
-        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] });
+    // 1. Validar aforo global de 1.000 personas al día en todo el recinto (piscina, cabañas, quinchos, club house)
+    const globalLimit = 1000;
+    const newBookingOccupants = 1 + newGuestsCount;
 
-      if (excludeBookingId) {
-        query = query.andWhere('booking.id != :excludeBookingId', { excludeBookingId });
-      }
+    let globalQuery = this.bookingRepository.createQueryBuilder('booking')
+      .leftJoinAndSelect('booking.guests', 'guest')
+      .leftJoinAndSelect('booking.space', 'space')
+      .where('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] });
 
-      const overlappingBookings = await query.getMany();
-      const newBookingOccupants = 1 + newGuestsCount;
-
-      for (const date of datesToCheck) {
-        let dailyOccupancy = 0;
-        for (const b of overlappingBookings) {
-          const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
-          if (datesInRange.includes(date)) {
-            dailyOccupancy += 1 + (b.guests?.length || 0);
-          }
-        }
-        if (dailyOccupancy + newBookingOccupants > space.maxCapacity) {
-          this.logger.warn(`[Bloqueo Piscina] Sin cupos el ${date}. Ocupación actual: ${dailyOccupancy}, Nuevos ocupantes: ${newBookingOccupants}, Máximo: ${space.maxCapacity}`);
-          throw new BadRequestException(
-            `El recinto de Piscina no tiene suficientes cupos disponibles para este día. Cupos restantes: ${
-              space.maxCapacity - dailyOccupancy
-            }, requeridos: ${newBookingOccupants}.`
-          );
-        }
-      }
-      return false;
-    } else {
-      let query = this.bookingRepository.createQueryBuilder('booking')
-        .where('booking.spaceId = :spaceId', { spaceId })
-        .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
-        .andWhere('booking.check_in <= :checkOut', { checkOut })
-        .andWhere('booking.check_out >= :checkIn', { checkIn });
-
-      if (excludeBookingId) {
-        query = query.andWhere('booking.id != :excludeBookingId', { excludeBookingId });
-      }
-
-      const overlapping = await query.getMany();
-      const assignedUnits = new Set(overlapping.map((b) => b.assignedUnit).filter(Boolean));
-
-      let prefix = space.name;
-      if (space.type === 'cabin') {
-        prefix = 'Cabaña';
-      } else if (space.type === 'quincho') {
-        if (space.name.toLowerCase().includes('club house')) {
-          prefix = 'Club House';
-        } else {
-          prefix = 'Quincho';
-        }
-      }
-
-      let availableUnitExists = false;
-      if ((space.totalUnits || 1) <= 1) {
-        availableUnitExists = !assignedUnits.has(space.name);
-      } else {
-        for (let i = 1; i <= space.totalUnits; i++) {
-          const unitName = `${prefix} ${i}`;
-          if (!assignedUnits.has(unitName)) {
-            availableUnitExists = true;
-            break;
-          }
-        }
-      }
-      return !availableUnitExists;
+    if (excludeBookingId) {
+      globalQuery = globalQuery.andWhere('booking.id != :excludeBookingId', { excludeBookingId });
     }
+
+    const allOverlapping = await globalQuery.getMany();
+
+    for (const date of datesToCheck) {
+      let totalDailyOccupancy = 0;
+      for (const b of allOverlapping) {
+        const datesInRange = this.getDatesInRange(b.checkIn, b.checkOut);
+        if (datesInRange.includes(date)) {
+          totalDailyOccupancy += 1 + (b.guests?.length || 0);
+        }
+      }
+      if (totalDailyOccupancy + newBookingOccupants > globalLimit) {
+        this.logger.warn(`[Bloqueo Capacidad Global] Supera aforo total del recinto el ${date}. Ocupación actual: ${totalDailyOccupancy}, Nuevos ocupantes: ${newBookingOccupants}, Máximo: ${globalLimit}`);
+        throw new BadRequestException(
+          `El Centro Vacacional ha alcanzado su aforo máximo diario de 1.000 personas para el día ${date}. Cupos disponibles: ${
+            globalLimit - totalDailyOccupancy
+          }, requeridos: ${newBookingOccupants}.`
+        );
+      }
+    }
+
+    // 2. Si es piscina, no hay límite de unidades físicas
+    if (space.type === 'pool') {
+      return false;
+    }
+
+    // 3. Para otros espacios (cabañas, quinchos, club house), validar disponibilidad de unidad física
+    let query = this.bookingRepository.createQueryBuilder('booking')
+      .where('booking.spaceId = :spaceId', { spaceId })
+      .andWhere('booking.status IN (:...statuses)', { statuses: ['confirmed', 'pending_approval'] })
+      .andWhere('booking.check_in <= :checkOut', { checkOut })
+      .andWhere('booking.check_out >= :checkIn', { checkIn });
+
+    if (excludeBookingId) {
+      query = query.andWhere('booking.id != :excludeBookingId', { excludeBookingId });
+    }
+
+    const overlapping = await query.getMany();
+    const assignedUnits = new Set(overlapping.map((b) => b.assignedUnit).filter(Boolean));
+
+    let prefix = space.name;
+    if (space.type === 'cabin') {
+      prefix = 'Cabaña';
+    } else if (space.type === 'quincho') {
+      if (space.name.toLowerCase().includes('club house')) {
+        prefix = 'Club House';
+      } else {
+        prefix = 'Quincho';
+      }
+    }
+
+    let availableUnitExists = false;
+    if ((space.totalUnits || 1) <= 1) {
+      availableUnitExists = !assignedUnits.has(space.name);
+    } else {
+      for (let i = 1; i <= space.totalUnits; i++) {
+        const unitName = `${prefix} ${i}`;
+        if (!assignedUnits.has(unitName)) {
+          availableUnitExists = true;
+          break;
+        }
+      }
+    }
+    return !availableUnitExists;
   }
 
   async expireOldBookings(): Promise<void> {

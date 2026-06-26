@@ -49,8 +49,10 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       <article
         *ngFor="let s of filtered"
-        class="card overflow-hidden group cursor-pointer hover:shadow-card-hover transition-all"
-        [routerLink]="['/reservar', s.id]"
+        class="card overflow-hidden group hover:shadow-card-hover transition-all"
+        [class.cursor-pointer]="s.name !== 'Club House'"
+        [class.cursor-default]="s.name === 'Club House'"
+        [routerLink]="s.name !== 'Club House' ? ['/reservar', s.id] : null"
       >
         <div class="relative h-48 overflow-hidden group/carousel">
           <img
@@ -123,7 +125,7 @@
           </div>
 
           <!-- Precios -->
-          <div class="grid grid-cols-2 gap-2 border-t border-charcoal/5 pt-4">
+          <div *ngIf="s.name !== 'Club House'" class="grid grid-cols-2 gap-2 border-t border-charcoal/5 pt-4">
             <div class="bg-forest/5 border border-forest/15 rounded-xl p-2">
               <p class="text-[8px] font-mono text-forest uppercase tracking-wider font-bold mb-0.5">
                 Socio Sindicato
@@ -145,16 +147,29 @@
               </p>
             </div>
           </div>
+          <div *ngIf="s.name === 'Club House'" class="border-t border-charcoal/5 pt-4">
+            <div class="bg-amber-50 border border-amber-200/50 rounded-xl p-3 text-center animate-fadeIn">
+              <p class="text-xs font-semibold text-amber-800">Pronto disponible</p>
+              <p class="text-[10px] text-amber-700/70 mt-0.5">Valores y arriendos no definidos aún</p>
+            </div>
+          </div>
           <div class="flex items-center justify-between mt-3.5">
             <span class="text-[10px] text-charcoal/40 font-mono">
-              * {{ s.type === 'cabin' ? 'Valor por día' : 'Valor por jornada' }}
+              * {{ s.name === 'Club House' ? 'Pronto disponible' : (s.type === 'cabin' ? 'Valor por día' : 'Valor por jornada') }}
             </span>
             <a
+              *ngIf="s.name !== 'Club House'"
               [routerLink]="['/reservar', s.id]"
               class="btn-primary text-xs py-1.5 px-3.5"
             >
               Reservar
             </a>
+            <span
+              *ngIf="s.name === 'Club House'"
+              class="bg-charcoal/10 text-charcoal/40 font-semibold rounded-xl text-xs py-1.5 px-3.5 cursor-not-allowed"
+            >
+              Pronto disponible
+            </span>
           </div>
         </div>
       </article>

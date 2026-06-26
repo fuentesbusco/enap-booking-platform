@@ -516,7 +516,7 @@
 
       <button
         (click)="addGuest()"
-        [disabled]="guests.length >= (space?.max_capacity ?? 0) - 1"
+        [disabled]="space?.type !== 'pool' && guests.length >= (space?.max_capacity ?? 0) - 1"
         class="w-full border-2 border-dashed border-charcoal/15 rounded-xl py-3 text-sm text-charcoal/40 hover:border-forest/30 hover:text-forest transition-all"
       >
         + Agregar invitado
