@@ -142,7 +142,7 @@ La plataforma utiliza un modelo de inventario estilo hotelero para optimizar la 
 2. **Capacidad y Unidades**:
    *   **Cabañas Familiares**: 1 categoría, 6 unidades físicas disponibles (`totalUnits: 6`), capacidad de 6 personas por unidad.
    *   **Quinchos Familiares**: 1 categoría, 10 unidades físicas disponibles (`totalUnits: 10`), capacidad de 15 personas por unidad.
-   *   **Piscina General**: 1 categoría, aforo total compartido (`totalUnits: 1`), capacidad máxima de 80 personas concurrentes.
-   *   **Club House**: 1 categoría, 1 unidad física (`totalUnits: 1`), capacidad máxima de 50 personas.
+   *   **Piscina General**: 1 categoría, aforo total compartido (`totalUnits: 1`), capacidad máxima de 1.000 personas concurrentes.
+   *   **Club House**: 1 categoría, 1 unidad física (`totalUnits: 1`), capacidad máxima de 120 personas (Pronto disponible).
 3. **Asignación Automática**: Durante el checkout, el backend busca secuencialmente la primera unidad libre (ej: `"Cabaña 3"` o `"Quincho 5"`) que no posea solapamientos para las fechas seleccionadas, asegurando una estadía continua.
 4. **Reasignación Administrativa**: El panel de administración permite cambiar la unidad asignada a una reserva a través de un dropdown. La API valida automáticamente que la nueva unidad no tenga colisiones con otras reservas activas antes de confirmar el cambio.

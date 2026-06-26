@@ -28,8 +28,8 @@ El Centro Vacacional ubicado en Limache ofrece cuatro categorías principales de
     *   > [!IMPORTANT]
     *   > **Nota de Equipaje:** La estadía **no incluye** sábanas, fundas de almohada ni toallas. Es obligatorio que cada socio las traiga para su estadía.
 *   **Quinchos Familiares (Categoría Única - 10 unidades):** Espacios techados independientes equipados con parrilla para asados. El arriendo es por **jornada única diaria** (de 09:00 a 19:00 hrs). El centro cuenta con 10 unidades de quinchos disponibles. Debes traer tu propio carbón y utensilios de asado.
-*   **Piscina General (Categoría Única - 1 unidad compartida):** Acceso al recinto de piscina y reposeras por **jornada única diaria**. Los socios tienen derecho a ingresar con hasta 5 acompañantes de forma gratuita. La capacidad máxima total y acumulada de este recinto es de 80 personas.
-*   **Club House (Sede Social - 1 unidad):** Salón de eventos con capacidad para 50 personas. Equipado con cocina completa, salón de reuniones, servicios higiénicos y amplia zona exterior. Ideal para asambleas, reuniones o celebraciones familiares mayores.
+*   **Piscina General (Categoría Única - aforo compartido):** Acceso al recinto de piscina y reposeras por **jornada única diaria**. Los socios tienen derecho a ingresar con hasta 5 acompañantes de forma gratuita, cobrándose un precio adicional parametrizado por cada invitado extra. Las reservas individuales no poseen tope de invitados, y el recinto completo admite un aforo máximo acumulado de hasta 1.000 personas por día.
+*   **Club House (Sede Social - 1 unidad):** Salón de eventos con capacidad para 120 personas. Equipado con cocina completa, salón de eventos, baños y área exterior. Ideal para asambleas, reuniones o celebraciones familiares mayores. *Nota: Actualmente figura como "Pronto disponible" en la plataforma sin valores definidos, y requiere configuración de tarifas desde la administración para habilitar sus reservas.*
 
 ---
 

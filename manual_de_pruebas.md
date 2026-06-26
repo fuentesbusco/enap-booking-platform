@@ -120,7 +120,7 @@ Valida la consulta de soporte dinámico.
 2.  **Selector de Fecha de Jornada:** Verás el selector **"Día de la Jornada"** (check_in = check_out).
 3.  **Verificación de Conflictos:**
     *   **Quinchos Familiares:** Si intentas seleccionar una fecha ocupada (donde las 10 unidades físicas de Quinchos ya están reservadas), el sistema deshabilitará esa fecha y aparecerá una alerta de conflicto en color rojo.
-    *   **Piscina:** Múltiples socios pueden reservar el mismo día. La alerta de conflicto se mostrará únicamente cuando el aforo acumulado de todas las reservas de ese día alcance los 80 cupos máximos.
+    *   **Piscina:** Múltiples socios pueden reservar el mismo día. La alerta de conflicto se mostrará únicamente cuando el aforo acumulado de todas las reservas de ese día alcance los 1.000 cupos máximos.
 
 ---
 

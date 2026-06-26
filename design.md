@@ -144,7 +144,7 @@ Las reservas creadas en estado `pending_payment` que no cuenten con un comproban
 ### 3.10 Modelo de Categorías y Unidades de Inventario (Estilo Hotelero)
 *   **Gestión por Categorías**: En vez de almacenar cada cabaña o quincho físico como fila separada en la base de datos, se guardan como un único registro de categoría con la propiedad `totalUnits`.
 *   **Asignación de Unidades Automática**: El backend asigna secuencialmente la primera unidad física desocupada para el rango de estadía solicitado (ej. si se reserva Cabañas, busca cuál de `"Cabaña 1"` a `"Cabaña 6"` no se solapa en esas fechas).
-*   **Control de Disponibilidad**: Una fecha se bloquea si el número de reservas simultáneas para esa categoría iguala o supera su `totalUnits` (con la excepción de la piscina que se valida sumando el aforo de todas las reservas de ese día contra su aforo límite de 80 personas).
+*   **Control de Disponibilidad**: Una fecha se bloquea si el número de reservas simultáneas para esa categoría iguala o supera su `totalUnits` (con la excepción de la piscina que se valida sumando el aforo de todas las reservas de ese día contra su aforo límite de 1.000 personas).
 *   **Reasignación de Unidad Administrativa**: El panel de administración despliega un dropdown para cambiar la unidad física de una reserva. Al cambiarla, la API valida que esa unidad específica no tenga solapamientos en las fechas solicitadas.
 
 ---
