@@ -246,6 +246,73 @@ describe('BookingsService', () => {
         service.createBooking(mockUser, poolSpace.id, '2025-12-16', '2025-12-16', guests),
       ).rejects.toThrow(BadRequestException);
     });
+
+    it('should retry code generation if a duplicate booking code collision occurs', async () => {
+      spacesService.getById.mockResolvedValue(mockSpace);
+
+      bookingRepository.create.mockImplementation((dto: any) => dto);
+
+      let saveAttempts = 0;
+      bookingRepository.save.mockImplementation(async (booking: any) => {
+        if (saveAttempts === 0) {
+          saveAttempts++;
+          const err = new Error('Duplicate entry') as any;
+          err.code = 'ER_DUP_ENTRY';
+          throw err;
+        }
+        return { ...booking, id: 99 };
+      });
+
+      let findOneAttempts = 0;
+      bookingRepository.findOne.mockImplementation(async (options: any) => {
+        if (options && options.where && options.where.bookingCode) {
+          findOneAttempts++;
+          if (findOneAttempts === 1) {
+            return { bookingCode: 'ENP-2026-00005' } as any;
+          } else {
+            return { bookingCode: 'ENP-2026-00006' } as any;
+          }
+        }
+        return {
+          id: 99,
+          bookingCode: 'ENP-2026-00007',
+          user: mockUser,
+          space: mockSpace,
+          guests: [],
+          checkIn: '2026-07-16',
+          checkOut: '2026-07-16',
+          priceBreakdown: {
+            days: 1,
+            base: 30000,
+            guests_count: 0,
+            guests_total: 0,
+            free_guests_applied: 0,
+            discount: 0,
+            total: 30000
+          }
+        } as any;
+      });
+
+      const mockQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]),
+      };
+      bookingRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-06-29T12:00:00Z'));
+
+      try {
+        const result = await service.createBooking(mockUser, mockSpace.id, '2026-07-16', '2026-07-16', []);
+        
+        expect(result.bookingCode).toBe('ENP-2026-00007');
+        expect(bookingRepository.save).toHaveBeenCalledTimes(2);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
   });
 
   describe('admin actions', () => {

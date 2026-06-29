@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Booking } from './booking.entity';
 import { GuestEntity } from './guest.entity';
 import { SpaceEntity } from '../spaces/space.entity';
@@ -177,34 +177,76 @@ export class BookingsService {
       options?.visitType
     );
     
-    // Generate Booking Code based on database count
-    const totalCount = await this.bookingRepository.count();
-    const nextId = totalCount + 1;
-    const bookingCode = `ENP-2025-${String(nextId).padStart(5, '0')}`;
-
     const assignedUnit = await this.getAvailableUnit(resolvedSpace, checkIn, checkOut);
 
-    const newBooking = this.bookingRepository.create({
-      bookingCode,
-      user,
-      space: resolvedSpace,
-      checkIn,
-      checkOut,
-      status: breakdown.total === 0 ? 'confirmed' : 'pending_payment',
-      totalAmount: breakdown.total,
-      priceBreakdown: breakdown,
-      isForThirdParty: !!options?.isForThirdParty,
-      thirdPartyName: options?.thirdPartyName,
-      thirdPartyRut: options?.thirdPartyRut,
-      thirdPartyPhone: options?.thirdPartyPhone,
-      adminCreatedForExternal: !!options?.adminCreatedForExternal,
-      termsAccepted: true,
-      visitType: options?.visitType,
-      additionalEmail: options?.additionalEmail,
-      assignedUnit,
-    });
+    let savedBooking: Booking = null as any;
+    let attempts = 0;
+    const maxAttempts = 5;
 
-    const savedBooking = await this.bookingRepository.save(newBooking);
+    while (attempts < maxAttempts) {
+      const year = new Date().getFullYear();
+      const prefix = `ENP-${year}-`;
+
+      const latestBooking = await this.bookingRepository.findOne({
+        where: {
+          bookingCode: Like(`${prefix}%`),
+        },
+        order: {
+          bookingCode: 'DESC',
+        },
+      });
+
+      let nextId = 1;
+      if (latestBooking) {
+        const parts = latestBooking.bookingCode.split('-');
+        if (parts.length === 3) {
+          const lastSeq = parseInt(parts[2], 10);
+          if (!isNaN(lastSeq)) {
+            nextId = lastSeq + 1;
+          }
+        }
+      }
+      const bookingCode = `${prefix}${String(nextId).padStart(5, '0')}`;
+
+      const newBooking = this.bookingRepository.create({
+        bookingCode,
+        user,
+        space: resolvedSpace,
+        checkIn,
+        checkOut,
+        status: breakdown.total === 0 ? 'confirmed' : 'pending_payment',
+        totalAmount: breakdown.total,
+        priceBreakdown: breakdown,
+        isForThirdParty: !!options?.isForThirdParty,
+        thirdPartyName: options?.thirdPartyName,
+        thirdPartyRut: options?.thirdPartyRut,
+        thirdPartyPhone: options?.thirdPartyPhone,
+        adminCreatedForExternal: !!options?.adminCreatedForExternal,
+        termsAccepted: true,
+        visitType: options?.visitType,
+        additionalEmail: options?.additionalEmail,
+        assignedUnit,
+      });
+
+      try {
+        savedBooking = await this.bookingRepository.save(newBooking);
+        break;
+      } catch (error) {
+        const isDup = error.code === 'ER_DUP_ENTRY' ||
+                      error.errno === 1062 ||
+                      error.message?.includes('Duplicate entry') ||
+                      error.sqlState === '23000';
+        if (isDup) {
+          attempts++;
+          this.logger.warn(`Duplicate booking code ${bookingCode} encountered. Retrying (${attempts}/${maxAttempts})...`);
+          if (attempts >= maxAttempts) {
+            throw error;
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
     this.logger.log(`[Reserva] Registro guardado con éxito. ID: ${savedBooking.id}, Código: ${savedBooking.bookingCode}, Estado inicial: ${savedBooking.status}, Total: ${savedBooking.totalAmount}`);
 
     // Create guests referencing saved booking
